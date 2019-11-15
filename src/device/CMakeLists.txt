@@ -72,6 +72,7 @@ target_link_libraries(device
     ${HIDAPI_LIBRARIES}
     cncrypto
     ringct_basic
+    wallet-crypto
     ${OPENSSL_CRYPTO_LIBRARIES}
     ${Boost_SERIALIZATION_LIBRARY}
   PRIVATE
