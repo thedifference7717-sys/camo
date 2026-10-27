@@ -8980,6 +8980,8 @@ uint32_t wallet2::adjust_priority(uint32_t priority)
       if (result)
         return 1;
       const uint64_t full_reward_zone = block_weight_limit / 2;
+      if (full_reward_zone == 0)
+          return fee_priority::Unimportant;
 
       // get the last N block headers and sum the block sizes
       const size_t N = 10;
