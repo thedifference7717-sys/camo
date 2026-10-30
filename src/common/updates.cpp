@@ -43,6 +43,7 @@ namespace tools
     bool found = false;
 
     MDEBUG("Checking updates for " << buildtag << " " << software);
+    return false; // CAMO: no update domain yet
 
     // All four MoneroPulse domains have DNSSEC on and valid
     static const std::vector<std::string> dns_urls = {
