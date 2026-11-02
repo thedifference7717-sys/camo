@@ -22,15 +22,21 @@ CAMO is a privacy cryptocurrency: a rebranded fork of **Monero v0.18** (C++), ow
 | CMake `OUTPUT_NAME`s | binaries `camod`, `camo-wallet-cli`, `camo-wallet-rpc`, `camo-blockchain-*` |
 | `src/daemon/*`, `src/simplewallet/simplewallet.cpp` | user-facing "Monero" → "CAMO" |
 | `src/version.cpp.in` | release name "CAMO Genesis" |
+| `src/cryptonote_config.h` `DIFFICULTY_TARGET_V2` | **1-minute blocks** (60 s). Emission per minute is unchanged: the reward formula scales by block time, so blocks pay ~17.25 CAMO at start and the tail is 0.3 CAMO/block |
 
-Mainnet genesis block hash: `9b1db372e5494d8acaa221dc3d4c7fa180a78a9f3a2f7259ad854f9258265636`.
-The genesis keys come from hashing fixed phrases onto ed25519 — `contrib/camo/tools/camo_params.py` regenerates them.
+Launch plan: mainnet **Dec 15, 2026 18:00 UTC**; public stagenet from Nov 10. Roadmap doc: https://claude.ai/artifact/Afc9iNZRfzU3dqgiZ3QsDc
+
+**Founder allocation (disclosed):** the mainnet genesis tx pays **360,000 CAMO (~2%)** to Anthony's public address.
+Generate it with `python3 contrib/camo/tools/make_genesis.py <address> --amount 360000` (needs only the PUBLIC
+address — a CAMO or Monero address from the same seed; never ask for seed words or private keys) and paste the
+`GENESIS_TX` hex into `config::GENESIS_TX`. The current mainnet genesis (hash `9b1db372…`) is a placeholder that
+burns 17.59 CAMO and must be replaced before launch. Keep the white paper and website in sync with the allocation.
 
 ## Build
 Linux (Ubuntu 22.04/24.04): deps are listed in `contrib/camo/deploy-seed-node.sh`, then
 ```
 mkdir -p build/release && cd build/release
-cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -DUSE_DEVICE_TREZOR=OFF ../..
+cmake -DARCH=x86-64 -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -DUSE_DEVICE_TREZOR=OFF ../..
 make -j$(nproc) daemon simplewallet wallet_rpc_server
 ```
 macOS (Homebrew): `brew install cmake pkg-config boost openssl zeromq unbound libsodium expat readline hidapi protobuf libusb`
@@ -38,6 +44,8 @@ then the same cmake/make. Newer Homebrew Boost can break Monero 0.18 builds; if 
 `brew install boost@1.85` and pass `-DBOOST_ROOT=$(brew --prefix boost@1.85)`.
 
 Full build ≈ 45–60 min on 2 cores; use `ccache` (`-DUSE_CCACHE=ON`).
+Always pass `-DARCH=x86-64` (or `armv8-a` on Apple Silicon) for anything shared: the default `native` build
+crashes with "invalid opcode" on other CPUs.
 
 ## Test
 `bash contrib/camo/regtest-demo.sh` — starts a private regtest node, mines to wallet Alice, sends 12.345 CAMO
@@ -50,4 +58,9 @@ to Bob, and prints Bob's balance plus what the chain reveals (ring size 16, amou
 - [ ] Push to GitHub (`thedifference7717-sys/camo`)
 - [ ] Rent 2–3 VPS seed nodes, add their IPs to `get_ip_seed_nodes()`
 - [ ] Public stagenet 2–4 weeks → signed reproducible binaries (`contrib/guix`) → announced fair launch
-- [ ] Explorer, pool, GUI wallet, website
+- [x] 1-minute blocks; founder genesis tool
+- [ ] Founder address from Anthony → real mainnet genesis
+- [ ] Explorer, pool, website
+- [ ] v1.1 (Q1 2027): **Ghillie** wallet (working name) — desktop + mobile, fast sync, built-in "mine while idle"
+- [ ] v1.2 (Q2 2027): built-in BTC↔CAMO atomic swaps; merchant checkout plugins
+- [ ] Adopt FCMP++ after it is audited and live on Monero
