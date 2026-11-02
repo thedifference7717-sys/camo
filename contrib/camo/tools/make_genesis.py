@@ -2,7 +2,7 @@
 """Build a CAMO genesis transaction that pays a founder allocation to a public address.
 
 Usage:
-  python3 make_genesis.py <address> [--amount 360000] [--net mainnet|testnet|stagenet]
+  python3 make_genesis.py <founder-address> [--amount 360000] [--burn-pct 15] [--extra ADDR:AMOUNT] [--net mainnet]
 
 <address> may be a CAMO address (C...) or a standard Monero address made from the same
 keys: both encode the same public spend and view keys, so a 25-word seed created in any
@@ -116,21 +116,39 @@ def output_key(r, view_pub, spend_pub, index=0):
     D = mul(8, mul(r, dec(view_pub)))
     return enc(add(mul(hs(enc(D) + varint(index)), G), dec(spend_pub)))
 
-def build(addr, amount_camo, net):
-    prefix, spend, view = parse_address(addr)
+def build(outputs, net):
+    """outputs: list of (address, amount_camo). One tx key r; output i uses derivation index i."""
     r = int.from_bytes(os.urandom(64), "little") % L
-    R = enc(mul(r, G)); P = output_key(r, view, spend)
-    amount = int(round(amount_camo * 10**12))
-    tx = bytes([0x01, 0x3C, 0x01, 0xFF, 0x00, 0x01]) + varint(amount) + b"\x02" + P + b"\x21\x01" + R
-    return tx.hex(), camo_address(spend, view, net), KNOWN[prefix]
+    R = enc(mul(r, G))
+    body = bytes([0x01, 0x3C, 0x01, 0xFF, 0x00]) + varint(len(outputs))
+    info = []
+    for i, (addr, amt) in enumerate(outputs):
+        prefix, spend, view = parse_address(addr)
+        body += varint(int(round(amt * 10**12))) + b"\x02" + output_key(r, view, spend, i)
+        info.append((camo_address(spend, view, net), amt, KNOWN[prefix]))
+    tx = body + b"\x21\x01" + R
+    return tx.hex(), info
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser()
-    ap.add_argument("address"); ap.add_argument("--amount", type=float, default=360000.0)
+    ap = argparse.ArgumentParser(description="Genesis paying the founder, optional extra wallets, and an optional provable burn.")
+    ap.add_argument("address", help="founder address (CAMO C... or Monero 4... from the same seed)")
+    ap.add_argument("--amount", type=float, default=360000.0, help="total allocation in CAMO, burn included (default 360000)")
+    ap.add_argument("--burn-pct", type=float, default=0.0, help="percent of the allocation sent to the provable burn address")
+    ap.add_argument("--extra", action="append", default=[], metavar="ADDRESS:AMOUNT", help="another output, e.g. a marketing wallet; taken out of the founder share")
     ap.add_argument("--net", choices=list(PREFIX), default="mainnet")
     a = ap.parse_args()
-    hexs, caddr, kind = build(a.address, a.amount, a.net)
-    print(f"Input address type : {kind}")
-    print(f"CAMO {a.net} address: {caddr}")
-    print(f"Allocation         : {a.amount:,.12f} CAMO")
-    print(f"GENESIS_TX         : {hexs}")
+    burn = round(a.amount * a.burn_pct / 100, 12)
+    extras = [(x.rsplit(":", 1)[0], float(x.rsplit(":", 1)[1])) for x in a.extra]
+    founder = a.amount - burn - sum(v for _, v in extras)
+    if founder <= 0: sys.exit("Burn and extra outputs exceed the allocation.")
+    outs = [(a.address, founder)] + extras
+    if burn > 0:
+        spec = __import__("importlib.util").util.spec_from_file_location("mb", os.path.join(os.path.dirname(os.path.abspath(__file__)), "make_burn_address.py"))
+        mb = __import__("importlib.util").util.module_from_spec(spec); spec.loader.exec_module(mb)
+        sp, _, vp, _ = mb.burn_keys()
+        outs.append((camo_address(sp, vp, a.net), burn))
+    hexs, info = build(outs, a.net)
+    for caddr, amt, kind in info:
+        print(f"{amt:>14,.2f} CAMO -> {caddr}  ({kind})")
+    print(f"{'total':>14}: {a.amount:,.2f} CAMO in genesis")
+    print(f"GENESIS_TX: {hexs}")
