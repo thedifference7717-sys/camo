@@ -1454,6 +1454,11 @@ namespace cryptonote
     bool validate_miner_transaction(const block& b, size_t cumulative_block_weight, uint64_t fee, uint64_t& base_reward, uint64_t already_generated_coins, bool &partial_block_reward, uint8_t version);
 
     /**
+     * @brief CAMO: parse the published block-1 allocation coinbase for this network (camo_allocation.h)
+     */
+    bool camo_allocation_tx(transaction& tx) const;
+
+    /**
      * @brief reverts the blockchain to its previous state following a failed switch
      *
      * If Blockchain fails to switch to an alternate chain when it means

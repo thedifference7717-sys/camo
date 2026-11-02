@@ -62,8 +62,14 @@ to Bob, and prints Bob's balance plus what the chain reveals (ring size 16, amou
 - [ ] Rent 2–3 VPS seed nodes, add their IPs to `get_ip_seed_nodes()`
 - [ ] Public stagenet 2–4 weeks → signed reproducible binaries (`contrib/guix`) → announced fair launch
 - [x] 1-minute blocks; founder genesis tool
-- [ ] Founder address from Anthony → real mainnet genesis
+- [x] Founder + marketing addresses received; real genesis committed (640,000 CAMO: 489,600 / 54,400 / 96,000 burn)
+- [x] Genesis exempted from the block-reward check (`Blockchain::validate_miner_transaction`, height 0 only)
+- [ ] **BLOCKER (next session):** genesis coins are not usable yet. (1) wallet2 never scans block 0 (it seeds
+      `m_blockchain` with the genesis hash and starts at height 1); (2) the genesis tx is version 1, so its outputs
+      are indexed by exact amount and can't form a 16-member ring. Fix: make the genesis tx version 2 with RCT type
+      null (outputs indexed under amount 0, like modern coinbases) and have wallet2 process block 0's miner tx.
+      Verify end to end: a test wallet receives a genesis output, sees it after unlock, and spends it with ring 16.
 - [ ] Explorer, pool, website
-- [ ] v1.1 (Q1 2027): **Ghillie** wallet (working name) — desktop + mobile, fast sync, built-in "mine while idle"
+- [ ] v1.1 (Q1 2027): **Ghillie** wallet (name locked Nov 2) — desktop + mobile, fast sync, built-in "mine while idle"
 - [ ] v1.2 (Q2 2027): built-in BTC↔CAMO atomic swaps; merchant checkout plugins
 - [ ] Adopt FCMP++ after it is audited and live on Monero
