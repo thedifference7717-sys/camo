@@ -39,6 +39,7 @@
 #include "cryptonote_basic/cryptonote_basic_impl.h"
 #include "tx_pool.h"
 #include "blockchain.h"
+#include "camo_allocation.h"
 #include "blockchain_db/blockchain_db.h"
 #include "cryptonote_basic/cryptonote_boost_serialization.h"
 #include "cryptonote_basic/events.h"
@@ -1330,6 +1331,14 @@ bool Blockchain::prevalidate_miner_transaction(const block& b, uint64_t height, 
 }
 //------------------------------------------------------------------
 // This function validates the miner transaction reward
+bool Blockchain::camo_allocation_tx(transaction& tx) const
+{
+  blobdata blob;
+  if (!epee::string_tools::parse_hexstr_to_binbuff(std::string(camo::allocation_tx_hex(m_nettype)), blob))
+    return false;
+  return parse_and_validate_tx_from_blob(blob, tx);
+}
+//------------------------------------------------------------------
 bool Blockchain::validate_miner_transaction(const block& b, size_t cumulative_block_weight, uint64_t fee, uint64_t& base_reward, uint64_t already_generated_coins, bool &partial_block_reward, uint8_t version)
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
@@ -1338,6 +1347,32 @@ bool Blockchain::validate_miner_transaction(const block& b, size_t cumulative_bl
   for (auto& o: b.miner_tx.vout)
     money_in_use += o.amount;
   partial_block_reward = false;
+
+  // CAMO: block 1 carries the disclosed allocation (founder, marketing, provable burn). Its coinbase must match
+  // the transaction published in camo_allocation.h in everything except the extra field (where miners put their
+  // nonce), and its transaction public key -- which wallets need to find the outputs -- must be the published one.
+  // That transaction is exempt from the normal reward formula. Every other block is checked as usual.
+  if (b.miner_tx.vin.size() == 1 && b.miner_tx.vin[0].type() == typeid(txin_gen)
+      && boost::get<txin_gen>(b.miner_tx.vin[0]).height == camo::ALLOCATION_HEIGHT)
+  {
+    transaction expected;
+    if (!camo_allocation_tx(expected))
+    {
+      MERROR_VER("Failed to parse the CAMO block-1 allocation transaction");
+      return false;
+    }
+    transaction candidate = b.miner_tx;
+    candidate.extra = expected.extra;
+    candidate.invalidate_hashes();
+    if (get_transaction_hash(candidate) != get_transaction_hash(expected)
+        || get_tx_pub_key_from_extra(b.miner_tx) != get_tx_pub_key_from_extra(expected))
+    {
+      MERROR_VER("Block 1 coinbase does not match the published CAMO allocation transaction");
+      return false;
+    }
+    base_reward = money_in_use;
+    return true;
+  }
 
   if (version == 3) {
     for (auto &o: b.miner_tx.vout) {
@@ -1739,6 +1774,21 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
     MDEBUG("Creating block template: miner tx weight " << coinbase_weight <<
         ", cumulative weight " << cumulative_weight << " is now good");
 #endif
+
+    // CAMO: block 1's coinbase is fixed to the published allocation transaction (see validate_miner_transaction).
+    if (height == camo::ALLOCATION_HEIGHT)
+    {
+      transaction expected;
+      CHECK_AND_ASSERT_MES(camo_allocation_tx(expected), false, "Failed to parse the CAMO block-1 allocation transaction");
+      // keep the miner's extra (tx key slot + extra nonce reserved for pools), swap in the published outputs and key
+      const crypto::public_key alloc_pub = get_tx_pub_key_from_extra(expected);
+      CHECK_AND_ASSERT_MES(b.miner_tx.extra.size() >= 1 + sizeof(crypto::public_key) && b.miner_tx.extra[0] == TX_EXTRA_TAG_PUBKEY,
+          false, "unexpected coinbase extra layout");
+      memcpy(&b.miner_tx.extra[1], &alloc_pub, sizeof(crypto::public_key));
+      b.miner_tx.vout = expected.vout;
+      b.miner_tx.invalidate_hashes();
+      expected_reward = get_outs_money_amount(b.miner_tx);
+    }
 
     if (!from_block)
       cache_block_template(b, miner_address, ex_nonce, diffic, height, expected_reward, seed_height, seed_hash, pool_cookie, include_sensitive);

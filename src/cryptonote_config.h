@@ -233,7 +233,7 @@ namespace config
   boost::uuids::uuid const NETWORK_ID = { {
       0x10, 0xB9, 0xCF, 0xDD, 0x56, 0x97, 0x46, 0xD4, 0x95, 0x39, 0x73, 0x7F, 0xD8, 0x2E, 0x84, 0xD5
     } }; // CAMO
-  std::string const GENESIS_TX = "013c01ff00038080a090b293dae5060294983be2449dff542eb5de5df59f1adb49301d027776a5ddf4d78c5e535f5ebc8080a09eb090d16002d2f52fef8ae48320fae06d977155e2f6f46a6e855286240d8dcf2508fdce399c8080c0d3dcefc3aa0102cf99a56bff6c1c64732fa9c89c4c7dd583d1b2c092364625c4b056a21df0fe2c210136a5d7a1e4e06a5fa9217a4faf597b504f9c5b367e772f17c80493fb942fcb2d"; // CAMO genesis: 489,600 founder + 54,400 marketing + 96,000 burned
+  std::string const GENESIS_TX = "013c01ff0001ffffffffffff030285b25ce9bfe1bd22e140fbc73a4bcd54475d32ea2504a08d347abdf32bc5e19221012b84594df9b28cb785a590c2718b24549b15dabea0253f27c20a7489b3d7dc5e"; // burned genesis (no allocation here; see camo_allocation.h)
   uint32_t const GENESIS_NONCE = 7171;
 
   // Hash domain separators
@@ -276,7 +276,7 @@ namespace config
     boost::uuids::uuid const NETWORK_ID = { {
         0x17, 0x7A, 0x7A, 0xB0, 0xED, 0x1D, 0x4D, 0xB3, 0x9A, 0x52, 0xF6, 0x7C, 0x13, 0xF4, 0x20, 0x78
       } }; // CAMO
-    std::string const GENESIS_TX = "013c01ff00038080a090b293dae506027ac0d78d98378579ad2e074c2446b77bd500a124092a816edad19353c3665ecd8080a09eb090d1600264d0ce302627c28eca381c2b3de3824cbc55b77ca26daf60b18e3ed242d372688080c0d3dcefc3aa01022f44c0da80b172301f0966a0b4a436295bc9c43e0583cb8828913ba8cd1384ba21011a05f4a02b166ff457d101dfab0514f90d5371239cd693ee970a42fe63c2ff50"; // CAMO genesis: 489,600 founder + 54,400 marketing + 96,000 burned
+    std::string const GENESIS_TX = "013c01ff0001ffffffffffff03029eadcf93d4f9aceb2d503b5b39bc4fa34a0035c1adcd3b3c3ac39faba0c1ab9521018fc34011459dbf75321a46ed2800ab90fb5d7d1a555de5f8def1ed18fbd942c9"; // burned genesis (no allocation here; see camo_allocation.h)
     uint32_t const GENESIS_NONCE = 7172;
   }
 
@@ -291,7 +291,7 @@ namespace config
     boost::uuids::uuid const NETWORK_ID = { {
         0x62, 0x15, 0x8B, 0xEF, 0xED, 0xB8, 0x4C, 0xFE, 0x8F, 0x6D, 0x5F, 0xC6, 0x95, 0xA8, 0x3F, 0x95
       } }; // CAMO
-    std::string const GENESIS_TX = "013c01ff00038080a090b293dae50602383b1ff5d2e15b5c4ecabb8b326d073d028d92c87d9ffdd9f479ec87abcfe09a8080a09eb090d16002206ab6952753a80b9211b3867c55159362c2dc64986edc21be05da19e3ca1a228080c0d3dcefc3aa01027970ea5c4aff8eb7bfd6697d355e633121cf69af13c54eae2823ae0bb0b1e84121012b96f3cabb3e077f411a7a3e335a0319c32d2c172149319cb5b799b846336555"; // CAMO genesis: 489,600 founder + 54,400 marketing + 96,000 burned
+    std::string const GENESIS_TX = "013c01ff0001ffffffffffff0302bf01c97fcb650297b2aa672e2ebc34cf63f4007ca3dd1418d348b77ee9e8324f2101c98970baca6514111d3eeaeb37e39328901df8a0f43a27edec15abe59063acab"; // burned genesis (no allocation here; see camo_allocation.h)
     uint32_t const GENESIS_NONCE = 7173;
   }
 }
