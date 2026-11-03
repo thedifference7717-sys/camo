@@ -64,6 +64,11 @@ crashes with "invalid opcode" on other CPUs.
 `bash contrib/camo/regtest-demo.sh` — starts a private regtest node, mines to wallet Alice, sends 12.345 CAMO
 to Bob, and prints Bob's balance plus what the chain reveals (ring size 16, amounts hidden). Verified working on
 2026-10-30 (Linux build).
+The test scripts must NOT pass `--allow-mismatched-daemon-version`: it skips the wallet's hard-fork checks and hid
+the sparse-fork-table bug below until Nov 3.
+`python3 contrib/camo/tools/attack_block1.py <rpc_port> <address>` against a fresh regtest node (block-1 attack test).
+`bash contrib/camo/stagenet-rehearsal.sh` — launch rehearsal (3 local stagenet nodes, real difficulty, ~80 min);
+exits non-zero if the miner sees no rewards, the spend fails, or the friend doesn't receive exactly 5 CAMO.
 
 ## Status and next steps
 - [x] Fork, rebrand, build, local mainnet-mode mining, private regtest transfer
@@ -77,7 +82,11 @@ to Bob, and prints Bob's balance plus what the chain reveals (ring size 16, amou
 - [ ] Public stagenet 2–4 weeks → signed reproducible binaries (`contrib/guix`) → announced fair launch
 - [x] 1-minute blocks; founder genesis tool
 - [x] Founder + marketing addresses received; block-1 allocation (489,600 / 54,400 / 96,000 burn) built and tested end to end
-- [ ] Explorer, pool, website
+- [x] Website (Nov 3): `website/` here, published from the PUBLIC repo `thedifference7717-sys/camo-website`
+      (GitHub Pages, branch `main`): https://thedifference7717-sys.github.io/camo-website/ . `index.html` is the opening
+      screen (living camo field, scope, hidden word CAMO; aim + click to enter), main site is `home.html`. Static, no
+      third-party requests (self-hosted fonts, strict CSP). Edit in `website/` and copy to the public repo (keep in sync).
+- [ ] Explorer, pool
 - [ ] v1.1 (Q1 2027): **Ghillie** wallet (name locked Nov 2) — desktop + mobile, fast sync, built-in "mine while idle"
       + **remote mining control** (decided Nov 3): Ghillie mobile starts/stops and monitors mining on the user's own
       computers. Phones never mine (Apple and Google Play ban on-device mining; RandomX is weak on phones).
@@ -92,10 +101,22 @@ Work moves to Claude Code from here; that session stops editing this repo.
 - Docs (claude.ai artifacts, private to Anthony): white paper https://claude.ai/artifact/DWmFzRRjgYfXJ53bTX5H7d ·
   launch roadmap https://claude.ai/artifact/Afc9iNZRfzU3dqgiZ3QsDc · logo canvas https://claude.ai/artifact/RrMKu9mj5zbZPte1fEREni ·
   website design https://claude.ai/artifact/QB6piNbZWjL9suC5Kvfirw. Keep them in sync with code decisions.
-- Launch rehearsal: `bash contrib/camo/stagenet-rehearsal.sh` (3 local stagenet nodes, real difficulty, ~75 min). First run
-  Nov 3: nodes connected and block 1 carried the stagenet allocation; full results pending, so re-run it after building.
-- Free next steps, in order: (1) website code from the design, hosted free (Cloudflare Pages / GitHub Pages from a
-  separate public repo); (2) rebrand + test the block explorer (onion-monero-blockchain-explorer fork); (3) mining pool
+- Launch rehearsal: `bash contrib/camo/stagenet-rehearsal.sh` (3 local stagenet nodes, real difficulty, ~80 min).
+  **Nov 3 run 1 found a launch blocker**: wallets refused to sync ("Unexpected hard fork version v16 at height 1")
+  because `wallet2.cpp` indexed the hard-fork table by version number and CAMO's table is sparse ({v1@0, v16@1}).
+  Fixed in commit "Wallet: look up hard forks by version, not table index" (wallet-side checks only; no consensus
+  or crypto change). **Nov 3 run 2 (with the fix, Linux x86-64 Release build): PASS.**
+  - block 1 carried the stagenet allocation (489,600 / 54,400 / 96,000) on a node that didn't mine it
+  - all 3 nodes on the same chain at heights 20, 35 and 87; node 2 taken offline at 20, restarted at 35, caught up in ~1 s
+  - block times: first 20 avg 22 s (difficulty ramping up from the start), last 20 avg 78 s, difficulty ~28,000 with
+    2 mining threads. Not yet settled at 60 s after 87 blocks; expected, since the difficulty window is 720 blocks.
+    Watch this on the public stagenet.
+  - miner wallet synced and saw 1,239.63 CAMO (237.74 unlocked); 5 CAMO spend sent; friend received exactly 5.0 CAMO
+  - no ERROR/EXCEPTION lines in the node logs
+  Same day, with the fix: `regtest-demo.sh` passed without the mismatch flag (Bob 12.345 CAMO, ring 16, amounts
+  hidden, RingCT type 6) and `attack_block1.py` passed all 4 checks. `allocation-spend-test.sh` was not re-run (it
+  needs a build made with the TEST allocation keys).
+- Free next steps, in order: (1) ~~website~~ done Nov 3, see Status; (2) rebrand + test the block explorer (onion-monero-blockchain-explorer fork); (3) mining pool
   with the 1% fee to the marketing wallet; (4) Windows/Mac/Linux release builds via `contrib/depends`;
   (5) mining guide, FAQ, BitcoinTalk announcement; (6) Ghillie mockups incl. remote mining control.
 - Needs Anthony: 3 seed servers (Oracle Always Free can host 2 small ARM ones for stagenet; plan 1 paid server before

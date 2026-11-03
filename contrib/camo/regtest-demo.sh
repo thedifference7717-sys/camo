@@ -10,7 +10,7 @@ trap cleanup EXIT
 "$B/camod" --regtest --offline --fixed-difficulty 1 --data-dir "$T/node" --non-interactive --detach \
   --pidfile "$T/d.pid" --log-file "$T/d.log" --rpc-bind-port $DP >/dev/null
 "$B/camo-wallet-rpc" --wallet-dir "$T" --rpc-bind-port $WP --disable-rpc-login --daemon-address 127.0.0.1:$DP \
-  --trusted-daemon --allow-mismatched-daemon-version --non-interactive --detach --pidfile "$T/w.pid" --log-file "$T/w.log" >/dev/null
+  --trusted-daemon --non-interactive --detach --pidfile "$T/w.pid" --log-file "$T/w.log" >/dev/null
 
 w(){ curl -s 127.0.0.1:$WP/json_rpc -d "{\"jsonrpc\":\"2.0\",\"id\":0,\"method\":\"$1\",\"params\":$2}"; }
 d(){ curl -s 127.0.0.1:$DP/json_rpc -d "{\"jsonrpc\":\"2.0\",\"id\":0,\"method\":\"$1\",\"params\":$2}"; }

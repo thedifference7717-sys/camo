@@ -3487,15 +3487,28 @@ void check_block_hard_fork_version(cryptonote::network_type nettype, uint8_t hf_
   const hardfork_t *wallet_hard_forks = nettype == TESTNET ? testnet_hard_forks
     : nettype == STAGENET ? stagenet_hard_forks : mainnet_hard_forks;
 
-  wallet_is_outdated = static_cast<size_t>(hf_version) > wallet_num_hard_forks;
+  // CAMO: the fork table is sparse (v1 at 0, v16 at 1), so look entries up by
+  // their .version instead of indexing the table by version number.
+  wallet_is_outdated = wallet_num_hard_forks == 0 || hf_version > wallet_hard_forks[wallet_num_hard_forks - 1].version;
+  daemon_is_outdated = false;
   if (wallet_is_outdated)
     return;
 
+  size_t idx = 0;
+  while (idx < wallet_num_hard_forks && wallet_hard_forks[idx].version != hf_version)
+    ++idx;
+  if (idx == wallet_num_hard_forks)
+  {
+    // a version this wallet's schedule never uses: the daemon follows different rules
+    daemon_is_outdated = true;
+    return;
+  }
+
   // check block's height falls within wallet's expected range for block's given version
-  uint64_t start_height = hf_version == 1 ? 0 : wallet_hard_forks[hf_version - 1].height;
-  uint64_t end_height = static_cast<size_t>(hf_version) + 1 > wallet_num_hard_forks
-    ? std::numeric_limits<uint64_t>::max()
-    : wallet_hard_forks[hf_version].height;
+  const uint64_t start_height = wallet_hard_forks[idx].height;
+  const uint64_t end_height = idx + 1 < wallet_num_hard_forks
+    ? wallet_hard_forks[idx + 1].height
+    : std::numeric_limits<uint64_t>::max();
 
   daemon_is_outdated = height < start_height || height >= end_height;
 }
@@ -6422,10 +6435,14 @@ bool wallet2::check_hard_fork_version(cryptonote::network_type nettype, const st
 
   // First check if wallet or daemon is outdated (whether either are unaware of
   // a hard fork). Then check if fork has passed rendering versions incompatible
+  // CAMO: compare fork versions, not table sizes or positions, since the fork
+  // tables are sparse (v1 at 0, v16 at 1).
+  const uint8_t wallet_max_version = wallet_num_hard_forks ? wallet_hard_forks[wallet_num_hard_forks - 1].version : 0;
   if (daemon_hard_forks.size() > 0)
   {
-    bool daemon_outdated = daemon_hard_forks.size() < wallet_num_hard_forks;
-    bool wallet_outdated = daemon_hard_forks.size() > wallet_num_hard_forks;
+    const uint8_t daemon_max_version = daemon_hard_forks.back().first;
+    bool daemon_outdated = daemon_max_version < wallet_max_version;
+    bool wallet_outdated = daemon_max_version > wallet_max_version;
 
     if (daemon_is_outdated)
       *daemon_is_outdated = daemon_outdated;
@@ -6434,31 +6451,47 @@ bool wallet2::check_hard_fork_version(cryptonote::network_type nettype, const st
 
     if (daemon_outdated)
     {
-      uint64_t daemon_missed_fork_height = wallet_hard_forks[daemon_hard_forks.size()].height;
+      // first fork the wallet knows that the daemon does not
+      uint64_t daemon_missed_fork_height = std::numeric_limits<uint64_t>::max();
+      for (size_t i = 0; i < wallet_num_hard_forks; ++i)
+        if (wallet_hard_forks[i].version > daemon_max_version)
+        {
+          daemon_missed_fork_height = wallet_hard_forks[i].height;
+          break;
+        }
 
       // If the daemon missed the fork, then technically it is no longer part of
-      // the Monero network. Don't connect.
+      // the network. Don't connect.
       bool daemon_missed_fork = height >= daemon_missed_fork_height || target_height >= daemon_missed_fork_height;
       if (daemon_missed_fork)
         return false;
     }
     else if (wallet_outdated)
     {
-      uint64_t wallet_missed_fork_height = daemon_hard_forks[wallet_num_hard_forks].second;
+      // first fork the daemon knows that the wallet does not
+      uint64_t wallet_missed_fork_height = std::numeric_limits<uint64_t>::max();
+      for (const auto &hf: daemon_hard_forks)
+        if (hf.first > wallet_max_version)
+        {
+          wallet_missed_fork_height = hf.second;
+          break;
+        }
 
       // If the wallet missed the fork, then technically it is no longer able
-      // to communicate with the Monero network. Don't connect.
+      // to communicate with the network. Don't connect.
       bool wallet_missed_fork = height >= wallet_missed_fork_height || target_height >= wallet_missed_fork_height;
       if (wallet_missed_fork)
         return false;
     }
   }
-  else
+  else if (wallet_num_hard_forks >= 2)
   {
     // Non-updated daemons won't return daemon_hard_forks in response to
     // get_version. Fall back to extra call to get_hard_fork_info by version.
+    // The wallet expects the "double fork" pattern: ask about the second-to-last fork.
+    const hardfork_t &prev_fork = wallet_hard_forks[wallet_num_hard_forks - 2];
     uint64_t daemon_fork_height;
-    get_hard_fork_info(wallet_num_hard_forks-1/* wallet expects "double fork" pattern */, daemon_fork_height);
+    get_hard_fork_info(prev_fork.version, daemon_fork_height);
     bool daemon_outdated = daemon_fork_height == std::numeric_limits<uint64_t>::max();
 
     if (daemon_is_outdated)
@@ -6466,7 +6499,7 @@ bool wallet2::check_hard_fork_version(cryptonote::network_type nettype, const st
 
     if (daemon_outdated)
     {
-      uint64_t daemon_missed_fork_height = wallet_hard_forks[wallet_num_hard_forks-2].height;
+      uint64_t daemon_missed_fork_height = prev_fork.height;
       bool daemon_missed_fork = height >= daemon_missed_fork_height || target_height >= daemon_missed_fork_height;
       if (daemon_missed_fork)
         return false;
