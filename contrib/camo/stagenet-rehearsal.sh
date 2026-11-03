@@ -20,6 +20,9 @@ w(){ curl -s 127.0.0.1:$WP/json_rpc -d "{\"jsonrpc\":\"2.0\",\"id\":0,\"method\"
 info(){ curl -s 127.0.0.1:$1/get_info | python3 -c "import sys,json;r=json.load(sys.stdin);print(r['height'],r['top_block_hash'][:12],r['outgoing_connections_count']+r['incoming_connections_count'])"; }
 wait_up(){ for k in $(seq 1 90); do curl -s 127.0.0.1:$1/get_info | grep -q height && return 0; timeout 1 tail -f /dev/null; done; return 1; }
 log(){ echo "[$(date -u +%H:%M:%S)] $*"; }
+RC=0
+teardown(){ curl -s 127.0.0.1:${R[0]}/stop_mining >/dev/null
+  for i in 0 1 2; do curl -s 127.0.0.1:${R[$i]}/stop_daemon >/dev/null; done; kill $(cat $T/w.pid 2>/dev/null) 2>/dev/null; }
 
 for i in 0 1 2; do start_node $i; done
 for i in 0 1 2; do wait_up ${R[$i]} || { log "node $i failed to start"; tail -5 $T/n$i.log; exit 1; }; done
@@ -60,14 +63,23 @@ gaps = [b["timestamp"] - a["timestamp"] for a, b in zip(hs, hs[1:])]
 last = gaps[-20:]
 print(f"block times: first 20 avg {sum(gaps[:20])/20:.0f}s, last 20 avg {sum(last)/len(last):.0f}s, difficulty now {hs[-1]['difficulty']}")
 EOF
-w refresh >/dev/null
-w get_balance '{"account_index":0}' | python3 -c "import sys,json;r=json.load(sys.stdin)['result'];print('miner balance', r['balance']/1e12, 'unlocked', r['unlocked_balance']/1e12)"
-w transfer "{\"destinations\":[{\"amount\":5000000000000,\"address\":\"$FRIEND\"}]}" | python3 -c "import sys,json;r=json.load(sys.stdin);print('spend 5 CAMO:', r.get('error') or ('sent', r['result']['tx_hash'][:16]))"
+REF=$(w refresh); echo "$REF" | grep -q '"error"' && log "WALLET REFRESH ERROR: $REF"
+BAL=$(w get_balance '{"account_index":0}' | python3 -c "import sys,json;r=json.load(sys.stdin)['result'];print(r['balance'], r['unlocked_balance'])")
+log "miner balance $(python3 -c "print(${BAL% *}/1e12)") unlocked $(python3 -c "print(${BAL#* }/1e12)")"
+if [ -z "$BAL" ] || [ "${BAL% *}" = "0" ]; then
+  log "FAIL: miner wallet sees no rewards after $N blocks (check $T/w.log for 'Unexpected hard fork version')"
+  grep -m3 -E "ERROR|Exception" $T/w.log; teardown; exit 1
+fi
+SPEND=$(w transfer "{\"destinations\":[{\"amount\":5000000000000,\"address\":\"$FRIEND\"}]}" | python3 -c "import sys,json;r=json.load(sys.stdin);print('ERROR', r['error']) if 'error' in r else print('sent', r['result']['tx_hash'][:16])")
+log "spend 5 CAMO: $SPEND"
+case "$SPEND" in ERROR*) log "FAIL: spend failed"; teardown; exit 1;; esac
 H0=$(height ${R[0]}); until [ "$(height ${R[0]})" -ge $((H0 + 11)) ]; do timeout 15 tail -f /dev/null; done
 w close_wallet >/dev/null; w open_wallet '{"filename":"friend","password":""}' >/dev/null; w refresh >/dev/null
-w get_balance '{"account_index":0}' | python3 -c "import sys,json;print('friend received', json.load(sys.stdin)['result']['balance']/1e12, 'CAMO')"
+FB=$(w get_balance '{"account_index":0}' | python3 -c "import sys,json;print(json.load(sys.stdin)['result']['balance'])")
+log "friend received $(python3 -c "print($FB/1e12)") CAMO"
+[ "$FB" = "5000000000000" ] || { log "FAIL: friend should have received exactly 5 CAMO"; RC=1; }
 log "final: $(for i in 0 1 2; do echo -n "n$i=$(info ${R[$i]}) | "; done)"
 grep -hE "ERROR|EXCEPTION" $T/n*.log | grep -vE "log categories|Failed to connect to" | sort | uniq -c | sort -rn | head -8
-curl -s 127.0.0.1:${R[0]}/stop_mining >/dev/null
-for i in 0 1 2; do curl -s 127.0.0.1:${R[$i]}/stop_daemon >/dev/null; done; kill $(cat $T/w.pid) 2>/dev/null
-log "rehearsal done"
+teardown
+[ $RC = 0 ] && log "rehearsal done: PASS" || log "rehearsal done: FAIL"
+exit $RC

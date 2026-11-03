@@ -6,7 +6,7 @@ B=/root/camo/build/release/bin; T=$(mktemp -d); DP=19990; WP=19991
 K="$S/test_genesis_wallets.json"
 key(){ python3 -c "import json;print(json.load(open('$K'))['$1']['$2'])"; }
 $B/camod --regtest --offline --fixed-difficulty 1 --data-dir $T/n --non-interactive --detach --pidfile $T/d.pid --log-file $T/d.log --rpc-bind-port $DP --p2p-bind-port 19992 --zmq-rpc-bind-port 19993 >/dev/null
-$B/camo-wallet-rpc --wallet-dir $T --rpc-bind-port $WP --disable-rpc-login --daemon-address 127.0.0.1:$DP --trusted-daemon --allow-mismatched-daemon-version --non-interactive --detach --pidfile $T/w.pid --log-file $T/w.log >/dev/null
+$B/camo-wallet-rpc --wallet-dir $T --rpc-bind-port $WP --disable-rpc-login --daemon-address 127.0.0.1:$DP --trusted-daemon --non-interactive --detach --pidfile $T/w.pid --log-file $T/w.log >/dev/null
 w(){ curl -s 127.0.0.1:$WP/json_rpc -d "{\"jsonrpc\":\"2.0\",\"id\":0,\"method\":\"$1\",\"params\":$2}"; }
 d(){ curl -s 127.0.0.1:$DP/json_rpc -d "{\"jsonrpc\":\"2.0\",\"id\":0,\"method\":\"$1\",\"params\":$2}"; }
 j(){ python3 -c "import sys,json;r=json.load(sys.stdin);print($1)"; }
