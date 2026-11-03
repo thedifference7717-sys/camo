@@ -75,6 +75,8 @@ to Bob, and prints Bob's balance plus what the chain reveals (ring size 16, amou
 - [x] Founder + marketing addresses received; block-1 allocation (489,600 / 54,400 / 96,000 burn) built and tested end to end
 - [ ] Explorer, pool, website
 - [ ] v1.1 (Q1 2027): **Ghillie** wallet (name locked Nov 2) — desktop + mobile, fast sync, built-in "mine while idle"
+      + **remote mining control** (decided Nov 3): Ghillie mobile starts/stops and monitors mining on the user's own
+      computers. Phones never mine (Apple and Google Play ban on-device mining; RandomX is weak on phones).
 - [ ] v1.2 (Q2 2027): built-in BTC↔CAMO atomic swaps; merchant checkout plugins
 - Ghillie fee model (decided Nov 3): **no fee on sends, ever** (an extra output would fingerprint Ghillie txs);
   0.25% on built-in swaps, 1% official pool fee, optional tip off by default; all to the marketing wallet.
