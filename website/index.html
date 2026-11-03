@@ -14,6 +14,7 @@
 <link rel="icon" href="assets/favicon.ico" sizes="any">
 <link rel="icon" href="assets/camo-logo.svg" type="image/svg+xml">
 <link rel="preload" href="assets/fonts/chakra-petch-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="styles.css">
 <script src="main.js" defer></script>
 </head>
@@ -40,34 +41,38 @@
 
 <main>
 <!-- HERO -->
-<section id="top" class="wrap hero">
-  <div class="hero-copy">
-    <p class="kicker">// OPERATION: PRIVATE MONEY</p>
-    <h1>Hidden in<br>plain sight.</h1>
+<section id="top" class="hero">
+  <canvas id="camo-field" class="hero-field" aria-hidden="true"></canvas>
+  <div class="hero-shade" aria-hidden="true"></div>
+  <div class="wrap hero-in">
+    <p class="kicker" data-decrypt>// OPERATION: PRIVATE MONEY</p>
+    <h1 aria-label="Hidden in plain sight.">
+      <span class="h1-line" data-decrypt aria-hidden="true">HIDDEN IN</span>
+      <span class="h1-line h1-outline" data-decrypt aria-hidden="true">PLAIN SIGHT.</span>
+    </h1>
     <p class="lede">CAMO is digital cash that hides the sender, the receiver and the amount of every payment. No opt-in. No exceptions. Mined on ordinary computers, launched fair.</p>
     <div class="actions">
       <a class="btn btn-solid" href="#deploy">DEPLOY: GET CAMO</a>
       <a class="btn btn-ghost" href="#intel">READ THE BRIEFING</a>
     </div>
-  </div>
-  <div class="panel hero-panel">
-    <span class="corner tl" aria-hidden="true"></span>
-    <span class="corner br" aria-hidden="true"></span>
-    <div class="launch">
-      <img src="assets/camo-logo.svg" alt="CAMO coin" width="84" height="84">
-      <div>
-        <p class="label">MAINNET LAUNCH</p>
-        <p class="countdown" id="countdown" data-launch="2026-12-15T18:00:00Z">DEC 15</p>
-        <p class="mono-sm">DEC 15, 2026 · 18:00 UTC</p>
+    <div class="launch-box">
+      <p class="label"><span class="blink" aria-hidden="true"></span>MAINNET LAUNCH · DEC 15, 2026 · 18:00 UTC</p>
+      <div class="clock" id="countdown" data-launch="2026-12-15T18:00:00Z" role="timer" aria-live="off">
+        <div><span class="num" data-unit="d">--</span><span class="unit">DAYS</span></div>
+        <div><span class="num" data-unit="h">--</span><span class="unit">HRS</span></div>
+        <div><span class="num" data-unit="m">--</span><span class="unit">MIN</span></div>
+        <div><span class="num" data-unit="s">--</span><span class="unit">SEC</span></div>
       </div>
     </div>
-    <dl class="stats stats-2">
+    <dl class="hero-stats">
       <div><dt>BLOCK TIME</dt><dd>60 s</dd></div>
       <div><dt>RING SIZE</dt><dd>16</dd></div>
       <div><dt>MAIN EMISSION</dt><dd>18.13M</dd></div>
       <div><dt>PROOF OF WORK</dt><dd>RandomX</dd></div>
     </dl>
   </div>
+  <p class="hint" aria-hidden="true">SOMETHING IS HIDING IN THE CAMO · <span class="hint-act hint-mouse">MOVE THE SCOPE</span><span class="hint-act hint-touch">TAP THE CAMO</span></p>
+  <a class="scroll-cue" href="#intel"><span aria-hidden="true">▾</span> SCROLL FOR BRIEFING</a>
 </section>
 
 <!-- 01 INTEL -->
