@@ -67,7 +67,10 @@ to Bob, and prints Bob's balance plus what the chain reveals (ring size 16, amou
 
 ## Status and next steps
 - [x] Fork, rebrand, build, local mainnet-mode mining, private regtest transfer
-- [x] Logo (`contrib/camo/branding/`), white paper, seed-node installer (`contrib/camo/deploy-seed-node.sh` + `camod.service`)
+- [x] Logo (`contrib/camo/branding/`), white paper, hardened seed-node installer (`contrib/camo/deploy-seed-node.sh`:
+      `--binary` for the private repo, `--stagenet`; firewall, SSH key-only, fail2ban, auto-updates, sandboxed service)
+- [x] Security: `SECURITY.md` (threat model, key handling, Ghillie requirements, release checklist);
+      `contrib/camo/tools/attack_block1.py` adversarial test passes (Nov 3)
 - [x] Pushed to GitHub `thedifference7717-sys/camo` (PRIVATE, Nov 3; make public when stagenet opens Nov 10). Branch `main`;
       Monero's repo is remote `upstream`. Seed servers can't clone a private repo: copy built binaries to them instead.
 - [ ] Rent 2–3 VPS seed nodes, add their IPs to `get_ip_seed_nodes()`
