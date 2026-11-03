@@ -3,220 +3,39 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CAMO: private digital cash</title>
-<meta name="description" content="CAMO is digital cash that hides the sender, the receiver and the amount of every payment. Built on Monero's audited privacy technology. Fair launch Dec 15, 2026.">
+<title>CAMO: hidden in plain sight</title>
+<meta name="description" content="CAMO is digital cash that hides the sender, the receiver and the amount of every payment. Fair launch Dec 15, 2026, 18:00 UTC.">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; font-src 'self'; style-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#0B0F0C">
 <meta property="og:title" content="CAMO: hidden in plain sight">
-<meta property="og:description" content="Private digital cash. Sender, receiver and amount hidden in every payment. Fair launch Dec 15, 2026, 18:00 UTC.">
+<meta property="og:description" content="Private digital cash. Something is hiding in the camo. Fair launch Dec 15, 2026, 18:00 UTC.">
 <meta property="og:image" content="assets/camo-logo-512.png">
 <link rel="icon" href="assets/favicon.ico" sizes="any">
 <link rel="icon" href="assets/camo-logo.svg" type="image/svg+xml">
 <link rel="preload" href="assets/fonts/chakra-petch-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/jetbrains-mono-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="prefetch" href="home.html">
 <link rel="stylesheet" href="styles.css">
-<script src="main.js" defer></script>
+<script src="intro.js" defer></script>
 </head>
-<body>
-<a class="skip" href="#intel">Skip to content</a>
-<div class="grid-bg">
+<body class="intro">
+<canvas id="camo-field" class="intro-field" aria-hidden="true"></canvas>
+<div class="intro-vignette" aria-hidden="true"></div>
 
-<header class="topbar">
-  <nav class="wrap nav" aria-label="Main">
-    <a class="brand" href="#top">
-      <img src="assets/camo-logo.svg" alt="" width="36" height="36">
-      <span>CAMO</span>
-    </a>
-    <div class="nav-links">
-      <a href="#intel">01 INTEL</a>
-      <a href="#ghillie">02 GHILLIE</a>
-      <a href="#supply">03 SUPPLY</a>
-      <a href="#deploy">04 DEPLOY</a>
-      <a href="#ops">05 OPS</a>
-    </div>
-    <a class="btn btn-solid btn-sm" href="#deploy">JOIN STAGENET</a>
-  </nav>
+<header class="intro-top">
+  <span class="brand brand-sm"><img src="assets/camo-logo.svg" alt="" width="28" height="28"><span>CAMO</span></span>
+  <a class="intro-skip" href="home.html">ENTER SITE <span aria-hidden="true">→</span></a>
 </header>
 
-<main>
-<!-- HERO -->
-<section id="top" class="hero">
-  <canvas id="camo-field" class="hero-field" aria-hidden="true"></canvas>
-  <div class="hero-shade" aria-hidden="true"></div>
-  <div class="wrap hero-in">
-    <p class="kicker" data-decrypt>// OPERATION: PRIVATE MONEY</p>
-    <h1 aria-label="Hidden in plain sight.">
-      <span class="h1-line" data-decrypt aria-hidden="true">HIDDEN IN</span>
-      <span class="h1-line h1-outline" data-decrypt aria-hidden="true">PLAIN SIGHT.</span>
-    </h1>
-    <p class="lede">CAMO is digital cash that hides the sender, the receiver and the amount of every payment. No opt-in. No exceptions. Mined on ordinary computers, launched fair.</p>
-    <div class="actions">
-      <a class="btn btn-solid" href="#deploy">DEPLOY: GET CAMO</a>
-      <a class="btn btn-ghost" href="#intel">READ THE BRIEFING</a>
-    </div>
-    <div class="launch-box">
-      <p class="label"><span class="blink" aria-hidden="true"></span>MAINNET LAUNCH · DEC 15, 2026 · 18:00 UTC</p>
-      <div class="clock" id="countdown" data-launch="2026-12-15T18:00:00Z" role="timer" aria-live="off">
-        <div><span class="num" data-unit="d">--</span><span class="unit">DAYS</span></div>
-        <div><span class="num" data-unit="h">--</span><span class="unit">HRS</span></div>
-        <div><span class="num" data-unit="m">--</span><span class="unit">MIN</span></div>
-        <div><span class="num" data-unit="s">--</span><span class="unit">SEC</span></div>
-      </div>
-    </div>
-    <dl class="hero-stats">
-      <div><dt>BLOCK TIME</dt><dd>60 s</dd></div>
-      <div><dt>RING SIZE</dt><dd>16</dd></div>
-      <div><dt>MAIN EMISSION</dt><dd>18.13M</dd></div>
-      <div><dt>PROOF OF WORK</dt><dd>RandomX</dd></div>
-    </dl>
-  </div>
-  <p class="hint" aria-hidden="true">SOMETHING IS HIDING IN THE CAMO · <span class="hint-act hint-mouse">MOVE THE SCOPE</span><span class="hint-act hint-touch">TAP THE CAMO</span></p>
-  <a class="scroll-cue" href="#intel"><span aria-hidden="true">▾</span> SCROLL FOR BRIEFING</a>
-</section>
-
-<!-- 01 INTEL -->
-<section id="intel" class="band band-dark">
-  <div class="wrap stack">
-    <header class="sec-head">
-      <p class="kicker">01 // INTEL BRIEFING</p>
-      <h2>Four things every payment hides</h2>
-      <p class="sub">CAMO runs Monero's audited privacy technology, unchanged. Every layer is on for every transaction.</p>
-    </header>
-    <div class="cards">
-      <article class="card">
-        <p class="tag">TARGET: SENDER</p>
-        <h3>Ring signatures</h3>
-        <p>Every spend hides among 16 possible senders. Observers can verify it, never trace it.</p>
-      </article>
-      <article class="card">
-        <p class="tag">TARGET: RECEIVER</p>
-        <h3>Stealth addresses</h3>
-        <p>Your address never touches the chain. Each payment lands at a fresh one-time key.</p>
-      </article>
-      <article class="card">
-        <p class="tag">TARGET: AMOUNT</p>
-        <h3>RingCT + Bulletproofs+</h3>
-        <p>Amounts are sealed. The network checks the math balances without seeing a single number.</p>
-      </article>
-      <article class="card">
-        <p class="tag">TARGET: LOCATION</p>
-        <h3>Dandelion++ and Tor</h3>
-        <p>Transactions are relayed through a random path before broadcast, so your IP stays off the record.</p>
-      </article>
-    </div>
-  </div>
-</section>
-
-<!-- 02 GHILLIE -->
-<section id="ghillie" class="band">
-  <div class="wrap split">
-    <div class="ghillie-art">
-      <div class="panel">
-        <span class="corner tr amber" aria-hidden="true"></span>
-        <img src="assets/ghillie-icon-512.png" alt="Ghillie wallet icon: a camouflage hood with a keyhole face" width="240" height="240">
-      </div>
-    </div>
-    <div class="stack-sm grow">
-      <p class="kicker">02 // GEAR: GHILLIE WALLET</p>
-      <h2>Your camo for money</h2>
-      <p class="sub">Ghillie is CAMO's own wallet for desktop and phone. One app to hold, send, mine and swap, with your 25 recovery words as the only key.</p>
-      <ul class="features">
-        <li><strong>Mine while idle</strong><span>One switch on your computer. Start, stop and track it from your phone.</span></li>
-        <li><strong>Fast sync</strong><span>Ready in seconds, not hours.</span></li>
-        <li><strong>BTC ↔ CAMO swaps</strong><span>Peer to peer. No exchange account.</span></li>
-        <li><strong>Desktop + mobile</strong><span>Mac, Windows, Linux, iOS, Android.</span></li>
-      </ul>
-      <p class="status">STATUS: IN DEVELOPMENT · WALLET Q1 2027 · SWAPS Q2 2027</p>
-    </div>
-  </div>
-</section>
-
-<!-- 03 SUPPLY -->
-<section id="supply" class="band band-dark">
-  <div class="wrap stack">
-    <header class="sec-head">
-      <p class="kicker">03 // SUPPLY INTEL</p>
-      <h2>Every coin accounted for</h2>
-      <p class="sub">No pre-sale. One disclosed allocation, fixed into block 1 by the protocol and checkable by anyone. Everything else is mined.</p>
-    </header>
-    <dl class="stats stats-wide">
-      <div><dt>MAIN EMISSION</dt><dd>18.13M</dd><p>over ~8 years</p></div>
-      <div><dt>TAIL EMISSION</dt><dd>0.3 / block</dd><p>miners always paid</p></div>
-      <div><dt>FOUNDER + MARKETING</dt><dd>3.0%</dd><p>489,600 + 54,400 CAMO</p></div>
-      <div class="hot"><dt>BURNED AT LAUNCH</dt><dd>96,000</dd><p>provably unspendable</p></div>
-    </dl>
-    <div class="panel burn">
-      <p class="label">BURN ADDRESS · AUDIT IT WITH THE PUBLIC VIEW KEY</p>
-      <p class="addr">Cdqd3jC3ocP6H1BX4G2Uis8qVYj6ddShVfqGaxkvCE64YEgGgZTt5RjLZ4toVBJ3pae1HJR1AcWQxBmSRi55ePTv4dxHzs8</p>
-      <p class="addr dim">view key 4846a9442b62be63ac514878acb76bc3ede0468f7f3d3b0710d191fcedf57f09</p>
-    </div>
-  </div>
-</section>
-
-<!-- 04 DEPLOY -->
-<section id="deploy" class="band">
-  <div class="wrap stack">
-    <header class="sec-head">
-      <p class="kicker">04 // DEPLOY</p>
-      <h2>Gear up before launch</h2>
-    </header>
-    <ol class="cards steps">
-      <li class="card">
-        <p class="step-no" aria-hidden="true">01</p>
-        <h3>Download</h3>
-        <p>Signed releases for Mac, Windows and Linux go live Dec 7. Check the published hashes before you run anything.</p>
-        <p class="soon">DOWNLOADS OPEN DEC 7</p>
-      </li>
-      <li class="card">
-        <p class="step-no" aria-hidden="true">02</p>
-        <h3>Create your wallet</h3>
-        <p>Write your 25 words on paper. Never photograph them, never share them. They are the only key to your coins.</p>
-      </li>
-      <li class="card">
-        <p class="step-no" aria-hidden="true">03</p>
-        <h3>Mine at 18:00 UTC</h3>
-        <p>Mining opens Dec 15. Any modern CPU works. Practice on the public stagenet now so you're ready.</p>
-        <p class="soon">MINING GUIDE COMING SOON</p>
-      </li>
-    </ol>
-  </div>
-</section>
-
-<!-- 05 OPS -->
-<section id="ops" class="band band-dark">
-  <div class="wrap stack">
-    <header class="sec-head">
-      <p class="kicker">05 // OPERATIONS TIMELINE</p>
-      <h2>The mission plan</h2>
-    </header>
-    <ol class="timeline">
-      <li><span class="when">NOV 10, 2026</span><span>Public stagenet opens: test mining, sending and wallet restores</span></li>
-      <li><span class="when">DEC 7, 2026</span><span>Signed release binaries published, launch time confirmed</span></li>
-      <li class="hot"><span class="when">DEC 15, 2026</span><span>Mainnet launch, 18:00 UTC. Fair launch: anyone can mine from the first block.</span></li>
-      <li><span class="when">Q1 2027</span><span>Ghillie wallet for desktop and mobile, with mine-while-idle</span></li>
-      <li><span class="when">Q2 2027</span><span>BTC ↔ CAMO swaps in Ghillie, merchant checkout plugins</span></li>
-      <li><span class="when">LATER</span><span>FCMP++: every spend hidden among every coin on the chain</span></li>
-    </ol>
-  </div>
-</section>
+<main class="intro-bottom">
+  <h1 class="visually-hidden">CAMO: hidden in plain sight</h1>
+  <p class="kicker">// SOMETHING IS HIDING IN THE CAMO</p>
+  <p class="intro-cta" id="scope-status" aria-live="polite">
+    <span class="when-searching"><span class="hint-mouse">MOVE THE SCOPE TO FIND IT</span><span class="hint-touch">TAP THE CAMO TO AIM THE SCOPE</span></span>
+    <span class="when-locked"><span class="hint-mouse">TARGET ACQUIRED · CLICK TO ENTER</span><span class="hint-touch">TARGET ACQUIRED · TAP TO ENTER</span></span>
+  </p>
+  <noscript><p class="intro-cta"><a href="home.html">ENTER THE CAMO SITE</a></p></noscript>
 </main>
-
-<footer class="footer">
-  <div class="wrap footer-in">
-    <div class="stack-xs">
-      <div class="brand brand-sm"><img src="assets/camo-logo.svg" alt="" width="28" height="28"><span>CAMO</span></div>
-      <p class="fine">Open-source software built on Monero. Not an offer to sell anything and not investment advice. Follow the laws where you live.</p>
-    </div>
-    <nav class="footer-links" aria-label="Footer">
-      <a href="assets/CAMO-White-Paper.pdf">WHITE PAPER</a>
-      <a href="https://github.com/thedifference7717-sys/camo" rel="noopener">GITHUB</a>
-      <span class="soon">BLOCK EXPLORER · SOON</span>
-      <span class="soon">COMMUNITY · SOON</span>
-    </nav>
-  </div>
-</footer>
-
-</div>
 </body>
 </html>
