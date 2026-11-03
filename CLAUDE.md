@@ -14,7 +14,7 @@ CAMO is a privacy cryptocurrency: a rebranded fork of **Monero v0.18** (C++), ow
 | File | Change |
 |---|---|
 | `src/cryptonote_config.h` | name `camo`, address prefixes (mainnet 69/70/71 → addresses start with `C`), ports 19740/19741/19742 (testnet 297xx, stagenet 397xx), new network IDs, new genesis txs (burned keys) and nonces 7171/7172/7173, message-signing key `CamoMessageSignature` |
-| `src/hardforks/hardforks.cpp` | fresh schedule: v1 at height 1, v16 (all current Monero rules) at height 2 |
+| `src/hardforks/hardforks.cpp` | fresh schedule: v1 for the genesis block only, v16 (all current Monero rules) from block 1 |
 | `src/checkpoints/checkpoints.cpp` | Monero checkpoints removed; DNS checkpoints disabled |
 | `src/p2p/net_node.inl`, `net_node.h` | Monero seed IPs, DNS seeds and DNS blocklist removed (**add CAMO seed IPs in `get_ip_seed_nodes()`**) |
 | `src/common/updates.cpp` | update check disabled |
@@ -68,7 +68,8 @@ to Bob, and prints Bob's balance plus what the chain reveals (ring size 16, amou
 ## Status and next steps
 - [x] Fork, rebrand, build, local mainnet-mode mining, private regtest transfer
 - [x] Logo (`contrib/camo/branding/`), white paper, seed-node installer (`contrib/camo/deploy-seed-node.sh` + `camod.service`)
-- [ ] Push to GitHub (`thedifference7717-sys/camo`)
+- [x] Pushed to GitHub `thedifference7717-sys/camo` (PRIVATE, Nov 3; make public when stagenet opens Nov 10). Branch `main`;
+      Monero's repo is remote `upstream`. Seed servers can't clone a private repo: copy built binaries to them instead.
 - [ ] Rent 2–3 VPS seed nodes, add their IPs to `get_ip_seed_nodes()`
 - [ ] Public stagenet 2–4 weeks → signed reproducible binaries (`contrib/guix`) → announced fair launch
 - [x] 1-minute blocks; founder genesis tool
