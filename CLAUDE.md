@@ -92,7 +92,13 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       rehearsal chain: block 1 allocation, ring 16 + hidden amounts, view-key decode finds exactly 5 CAMO, Monero
       addresses rejected. Code: PRIVATE repo `thedifference7717-sys/camo-explorer` (branch `main`, full upstream
       history kept for BSD-3 attribution; see its README). Still needs a server. Operator rule: never run it with `--enable-mixin-guess`.
-- [ ] Pool
+- [~] Mining pool (Nov 3): jtgrassie/monero-pool at `db16e73` in PRIVATE repo `thedifference7717-sys/camo-pool`
+      (see its `camo/README.md`). **CAMO fix: never pay out block 1** (camod reports its 640,000 CAMO allocation as
+      the block reward; unpatched, the pool would credit it to block 1's miner). 1% fee via `pool-fee-wallet` =
+      marketing wallet; the pool wallet needs a small CAMO float for payout network fees; run camod with
+      `--block-notify`; XMRig needs `-a rx/0`. `camo/pool-test.sh` (regtest + XMRig) PASSES: block 1 mined through the
+      pool with the allocation, miner paid 99%, fee wallet 1.00%, payouts = exactly what the pool earned.
+      Still needs a server, the real wallets, and a minimum payout decision.
 - [ ] v1.1 (Q1 2027): **Ghillie** wallet (name locked Nov 2) — desktop + mobile, fast sync, built-in "mine while idle"
       + **remote mining control** (decided Nov 3): Ghillie mobile starts/stops and monitors mining on the user's own
       computers. Phones never mine (Apple and Google Play ban on-device mining; RandomX is weak on phones).
@@ -122,8 +128,7 @@ Work moves to Claude Code from here; that session stops editing this repo.
   Same day, with the fix: `regtest-demo.sh` passed without the mismatch flag (Bob 12.345 CAMO, ring 16, amounts
   hidden, RingCT type 6) and `attack_block1.py` passed all 4 checks. `allocation-spend-test.sh` was not re-run (it
   needs a build made with the TEST allocation keys).
-- Free next steps, in order: (1) ~~website~~ done Nov 3, see Status; (2) ~~block explorer~~ built and tested Nov 3 (repo `camo-explorer`), needs hosting; (3) mining pool
-  with the 1% fee to the marketing wallet; (4) Windows/Mac/Linux release builds via `contrib/depends`;
+- Free next steps, in order: (1) ~~website~~ done Nov 3, see Status; (2) ~~block explorer~~ built and tested Nov 3 (repo `camo-explorer`), needs hosting; (3) ~~mining pool~~ built and tested Nov 3 (repo `camo-pool`), needs hosting; (4) Windows/Mac/Linux release builds via `contrib/depends`;
   (5) mining guide, FAQ, BitcoinTalk announcement; (6) Ghillie mockups incl. remote mining control.
 - Needs Anthony: 3 seed servers (Oracle Always Free can host 2 small ARM ones for stagenet; plan 1 paid server before
   mainnet), a security contact email for SECURITY.md, social handles, making the repo public on Nov 10.
