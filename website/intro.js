@@ -1,62 +1,21 @@
-// CAMO site: launch clock, headline decrypt, and the living camo field with its scope.
-// No dependencies, no network. Everything degrades to static content without JavaScript.
+// CAMO opening screen: a living pixel-camo field with the word CAMO hidden in it.
+// Aim the scope at the word; once it reads TARGET ACQUIRED, click to enter the site.
+// No dependencies, no network. Without JavaScript the "Enter site" link still works.
 (function () {
   'use strict';
+  var HOME = 'home.html';
   var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // ---- launch clock --------------------------------------------------------
-  var clock = document.getElementById('countdown');
-  if (clock) {
-    var launch = Date.parse(clock.getAttribute('data-launch'));
-    var cells = {};
-    ['d', 'h', 'm', 's'].forEach(function (u) { cells[u] = clock.querySelector('[data-unit="' + u + '"]'); });
-    var pad = function (n) { return (n < 10 ? '0' : '') + n; };
-    var tick = function () {
-      var ms = Math.max(0, launch - Date.now());
-      var s = Math.floor(ms / 1000);
-      cells.d.textContent = pad(Math.floor(s / 86400));
-      cells.h.textContent = pad(Math.floor(s / 3600) % 24);
-      cells.m.textContent = pad(Math.floor(s / 60) % 60);
-      cells.s.textContent = pad(s % 60);
-      if (ms === 0) clock.classList.add('live');
-      clock.setAttribute('aria-label', ms === 0 ? 'Mainnet is live'
-        : Math.floor(s / 86400) + ' days ' + (Math.floor(s / 3600) % 24) + ' hours until mainnet launch');
-    };
-    tick();
-    setInterval(tick, 1000);
-  }
-
-  // ---- headline decrypt ----------------------------------------------------
-  var GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&<>/';
-  function decrypt(el, delay) {
-    var final = el.textContent, start = null, dur = 650 + final.length * 22;
-    function frame(ts) {
-      if (start === null) start = ts;
-      var t = ts - start - delay, out = '';
-      for (var i = 0; i < final.length; i++) {
-        var c = final[i];
-        var at = (i / final.length) * dur * 0.7 + dur * 0.3;
-        out += (c === ' ' || t >= at) ? c : GLYPHS[(Math.random() * GLYPHS.length) | 0];
-      }
-      el.textContent = out;
-      if (t < dur) requestAnimationFrame(frame); else el.textContent = final;
-    }
-    requestAnimationFrame(frame);
-  }
-  if (!reduceMotion) {
-    Array.prototype.forEach.call(document.querySelectorAll('[data-decrypt]'), function (el, i) { decrypt(el, i * 140); });
-  }
-
-  // ---- living camo field ---------------------------------------------------
   var canvas = document.getElementById('camo-field');
+  var status = document.getElementById('scope-status');
   if (!canvas || !canvas.getContext) return;
-  var hero = canvas.parentNode, ctx = canvas.getContext('2d');
+  var ctx = canvas.getContext('2d');
+  var touchy = window.matchMedia && window.matchMedia('(hover: none)').matches;
 
   var BG = [11, 15, 12];
   var PAL = [[46, 71, 44], [62, 91, 58], [86, 116, 76], [111, 138, 94]]; // logo greens, dark -> light
   var AMBER = [224, 166, 58];
   function mix(a, b, k) { return 'rgb(' + a.map(function (v, i) { return Math.round(v + (b[i] - v) * k); }).join(',') + ')'; }
-  var DIM = PAL.map(function (c) { return mix(c, BG, 0.5); });
+  var DIM = PAL.map(function (c) { return mix(c, BG, 0.42); });
   var BRIGHT = PAL.map(function (c) { return mix(c, [255, 255, 255], 0.06); });
   var GLOW = [mix(AMBER, BG, 0.25), mix(AMBER, BG, 0.05)];
 
@@ -69,18 +28,17 @@
   }
 
   var W, H, dpr, C, cols, rows, mask, levels, wordBox;
-  var scope = { x: 0, y: 0, tx: 0, ty: 0, r: 120 }, lastInput = -1e9, t0 = performance.now();
+  var scope = { x: 0, y: 0, tx: 0, ty: 0, r: 120, base: 120 };
+  var t0 = performance.now(), lastInput = t0 - 1500, locked = false, entering = false, placed = false;
 
   function buildMask() {
     var off = document.createElement('canvas'); off.width = cols; off.height = rows;
-    var o = off.getContext('2d'), wide = W > 900;
-    var wordW = wide ? cols * 0.36 : cols * 0.82;
+    var o = off.getContext('2d');
+    var wordW = W > 900 ? cols * 0.46 : cols * 0.84;
     var size = Math.max(6, Math.floor(wordW / 2.9));
     o.font = '700 ' + size + 'px "Chakra Petch", system-ui, sans-serif';
     o.textBaseline = 'middle'; o.textAlign = 'center';
-    var cx = wide ? cols * 0.76 : cols * 0.5;
-    var cy = wide ? rows * 0.5 : rows - Math.max(size * 0.8, (130 / C));
-    o.fillStyle = '#fff'; o.fillText('CAMO', cx, cy);
+    o.fillStyle = '#fff'; o.fillText('CAMO', cols * 0.5, rows * 0.5);
     var d = o.getImageData(0, 0, cols, rows).data;
     mask = new Uint8Array(cols * rows);
     var minX = cols, maxX = 0, minY = rows, maxY = 0, n = 0;
@@ -90,21 +48,20 @@
       if (x < minX) minX = x; if (x > maxX) maxX = x; if (y < minY) minY = y; if (y > maxY) maxY = y;
     }
     wordBox = n ? { x: (minX + maxX + 1) / 2 * C, y: (minY + maxY + 1) / 2 * C, w: (maxX - minX + 1) * C, h: (maxY - minY + 1) * C, n: n }
-                : { x: W * 0.7, y: H * 0.5, w: 1, h: 1, n: 0 };
+                : { x: W / 2, y: H / 2, w: 1, h: 1, n: 0 };
   }
 
   function resize() {
-    var r = hero.getBoundingClientRect();
-    W = Math.max(1, Math.round(r.width)); H = Math.max(1, Math.round(r.height));
+    W = Math.max(1, window.innerWidth); H = Math.max(1, window.innerHeight);
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     C = W < 600 ? 11 : 14;
     cols = Math.ceil(W / C); rows = Math.ceil(H / C);
     levels = new Uint8Array(cols * rows);
-    scope.r = Math.max(80, Math.min(170, Math.min(W, H) * 0.17));
+    scope.base = scope.r = Math.max(80, Math.min(180, Math.min(W, H) * 0.18));
     buildMask();
-    if (lastInput < 0) { scope.x = scope.tx = wordBox.x - wordBox.w * 0.35; scope.y = scope.ty = wordBox.y; }
+    if (!placed) { placed = true; scope.x = scope.tx = W * 0.15; scope.y = scope.ty = H * 0.28; }
   }
 
   function computeLevels(t) {
@@ -112,6 +69,12 @@
       var n = 0.65 * noise(x * 0.085 + t * 0.35, y * 0.085) + 0.35 * noise(x * 0.21 - 40, y * 0.21 - t * 0.5);
       levels[y * cols + x] = n < 0.4 ? 0 : n < 0.5 ? 1 : n < 0.6 ? 2 : 3;
     }
+  }
+
+  function setStatus(isLocked) {
+    if (!status || status.getAttribute('data-locked') === String(isLocked)) return;
+    status.setAttribute('data-locked', String(isLocked));
+    document.body.classList.toggle('locked', isLocked);
   }
 
   function draw(now) {
@@ -124,7 +87,6 @@
       ctx.fillStyle = DIM[lv];
       ctx.fillRect(x * C, y * C, C, C);
     }
-    // scope: sharper colours and the hidden word lit up
     var R = scope.r, sx = scope.x, sy = scope.y, seen = 0;
     ctx.save();
     ctx.beginPath(); ctx.arc(sx, sy, R, 0, Math.PI * 2); ctx.clip();
@@ -141,14 +103,17 @@
     }
     ctx.fillStyle = 'rgba(8,11,9,0.22)';
     var scanOff = reduceMotion ? 0 : Math.floor(t * 12) % 4;
-    for (y = Math.floor(sy - R) + scanOff; y < sy + R; y += 4) ctx.fillRect(sx - R, y, R * 2, 1.5);
+    for (y = Math.max(0, Math.floor(sy - R)) + scanOff; y < Math.min(H, sy + R); y += 4) ctx.fillRect(Math.max(0, sx - R), y, Math.min(W, R * 2), 1.5);
     var g = ctx.createRadialGradient(sx, sy, R * 0.55, sx, sy, R);
     g.addColorStop(0, 'rgba(8,11,9,0)'); g.addColorStop(1, 'rgba(8,11,9,0.55)');
     ctx.fillStyle = g; ctx.fillRect(sx - R, sy - R, R * 2, R * 2);
     ctx.restore();
 
+    locked = entering || (wordBox.n > 0 && seen > wordBox.n * 0.18);
+    setStatus(locked);
+    if (entering) return;
+
     // reticle
-    var locked = wordBox.n && seen > wordBox.n * 0.18;
     var ink = locked ? 'rgba(224,166,58,0.95)' : 'rgba(201,214,184,0.8)';
     ctx.strokeStyle = ink; ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.arc(sx, sy, R, 0, Math.PI * 2); ctx.stroke();
@@ -169,34 +134,54 @@
     ctx.font = '600 11px "JetBrains Mono", ui-monospace, monospace';
     ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
     var lx = sx + R * 0.72, ly = sy - R * 0.72;
-    if (lx + 130 > W) lx = sx - R * 0.72 - 130;
+    if (lx + 150 > W) lx = sx - R * 0.72 - 150;
+    if (lx < 8) { lx = Math.max(8, sx - 60); ly = sy - R - 26; }
+    if (ly < 20) ly = sy + R + 22;
     ctx.fillText(locked ? 'TARGET ACQUIRED' : 'SCANNING…', lx, ly);
     ctx.fillStyle = 'rgba(154,165,147,0.9)';
-    ctx.fillText('X' + String(Math.round(sx)).padStart(4, '0') + ' Y' + String(Math.round(sy)).padStart(4, '0'), lx, ly + 15);
+    ctx.fillText(locked ? (touchy ? 'TAP TO ENTER' : 'CLICK TO ENTER') : 'X' + String(Math.round(sx)).padStart(4, '0') + ' Y' + String(Math.round(sy)).padStart(4, '0'), lx, ly + 15);
   }
 
-  // input: the scope follows the pointer; idle, it sweeps on its own past the hidden word
-  function aim(e) {
-    var r = hero.getBoundingClientRect();
-    var x = e.clientX - r.left, y = e.clientY - r.top;
-    if (x < 0 || y < 0 || x > r.width || y > r.height) return;
-    scope.tx = x; scope.ty = y; lastInput = performance.now();
-    if (reduceMotion) { scope.x = x; scope.y = y; request(); }
+  // enter: the scope opens out to fill the screen, then the main site loads
+  function enter() {
+    if (entering) return;
+    entering = true; document.body.classList.add('entering');
+    if (reduceMotion) { location.href = HOME; return; }
+    var start = performance.now(), from = scope.r, to = Math.hypot(W, H) * 1.05;
+    (function grow(now) {
+      var k = Math.min(1, (now - start) / 650), e = k * k * (3 - 2 * k);
+      scope.r = from + (to - from) * e;
+      draw(now);
+      if (k < 1) requestAnimationFrame(grow); else location.href = HOME;
+    })(start);
   }
-  window.addEventListener('pointermove', aim, { passive: true });
-  window.addEventListener('pointerdown', aim, { passive: true });
 
-  var running = false, visible = true, raf = 0, lastFrame = 0;
+  function aimAt(e) {
+    if (!e.clientX && !e.clientY) return; // synthetic event at the corner, not a real aim
+    scope.tx = e.clientX; scope.ty = e.clientY; lastInput = performance.now();
+    if (reduceMotion) { scope.x = scope.tx; scope.y = scope.ty; requestAnimationFrame(draw); }
+  }
+  canvas.addEventListener('pointermove', aimAt, { passive: true });
+  canvas.addEventListener('click', function (e) {
+    var dx = e.clientX - scope.x, dy = e.clientY - scope.y;
+    if (locked && dx * dx + dy * dy <= scope.r * scope.r) { enter(); return; }
+    aimAt(e); // touch: a tap moves the scope there; tap again once it locks on
+    if (!reduceMotion) { scope.x += (scope.tx - scope.x) * 0.6; scope.y += (scope.ty - scope.y) * 0.6; }
+  });
+  window.addEventListener('pageshow', function (e) { // coming back with the Back button
+    if (e.persisted) { entering = false; document.body.classList.remove('entering'); scope.r = scope.base; }
+  });
+
+  var running = false, raf = 0, lastFrame = 0;
   function step(now) {
     raf = 0;
     if (!running) return;
-    if (now - lastFrame >= 33) { // ~30 fps is plenty
+    if (!entering && now - lastFrame >= 33) { // ~30 fps is plenty
       lastFrame = now;
-      if (now - lastInput > 3500) {
+      if (now - lastInput > 3000) { // idle: sweep across the word so people see what's hiding
         var t = (now - t0) / 1000;
-        var ax = Math.min(wordBox.w * 0.5, Math.max(0, W - scope.r * 0.8 - wordBox.x));
-        scope.tx = wordBox.x + Math.sin(t * 0.45) * ax;
-        scope.ty = wordBox.y + Math.sin(t * 0.9 + 0.6) * Math.min(wordBox.h * 0.4, scope.r * 0.5);
+        scope.tx = wordBox.x + Math.sin(t * 0.4 - 1.2) * Math.max(wordBox.w * 0.55, scope.r);
+        scope.ty = wordBox.y + Math.sin(t * 0.8) * Math.min(wordBox.h * 0.45, scope.r * 0.6);
       }
       scope.x += (scope.tx - scope.x) * 0.14;
       scope.y += (scope.ty - scope.y) * 0.14;
@@ -204,19 +189,15 @@
     }
     raf = requestAnimationFrame(step);
   }
-  function request() { if (reduceMotion) { requestAnimationFrame(draw); } }
   function update() {
-    var should = visible && !document.hidden && !reduceMotion;
+    var should = !document.hidden && !reduceMotion;
     if (should && !running) { running = true; if (!raf) raf = requestAnimationFrame(step); }
     if (!should) running = false;
   }
 
   function init() {
     resize();
-    if (reduceMotion) { scope.x = wordBox.x; scope.y = wordBox.y; draw(t0); }
-    if ('IntersectionObserver' in window) {
-      new IntersectionObserver(function (es) { visible = es[0].isIntersecting; update(); }).observe(hero);
-    }
+    if (reduceMotion) { scope.x = scope.tx = wordBox.x; scope.y = scope.ty = wordBox.y; draw(t0); }
     document.addEventListener('visibilitychange', update);
     var rt = 0;
     window.addEventListener('resize', function () {

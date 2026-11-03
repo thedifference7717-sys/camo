@@ -6,9 +6,11 @@ visitors' IPs are not leaked to Google Fonts, analytics or CDNs.
 
 ```
 website/
-  index.html   page
+  index.html   opening screen: living camo field, scope, hidden CAMO; aim and click to enter
+  intro.js     the camo field and scope (canvas, no dependencies)
+  home.html    main site
+  home.js      launch clock and headline decrypt
   styles.css   all styling (night-ops palette)
-  main.js      launch countdown only
   assets/      logo, Ghillie icon, favicon, white paper PDF, fonts (SIL OFL, licenses alongside)
 ```
 
