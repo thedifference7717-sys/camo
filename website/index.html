@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CAMO: hidden in plain sight</title>
+<meta name="description" content="CAMO is digital cash that hides the sender, the receiver and the amount of every payment. Fair launch Dec 15, 2026, 18:00 UTC.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; font-src 'self'; style-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0B0F0C">
+<meta property="og:title" content="CAMO: hidden in plain sight">
+<meta property="og:description" content="Private digital cash. Something is hiding in the camo. Fair launch Dec 15, 2026, 18:00 UTC.">
+<meta property="og:image" content="assets/camo-logo-512.png">
+<link rel="icon" href="assets/favicon.ico" sizes="any">
+<link rel="icon" href="assets/camo-logo.svg" type="image/svg+xml">
+<link rel="preload" href="assets/fonts/chakra-petch-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="prefetch" href="home.html">
+<link rel="stylesheet" href="styles.css">
+<script src="intro.js" defer></script>
+</head>
+<body class="intro">
+<canvas id="camo-field" class="intro-field" aria-hidden="true"></canvas>
+<div class="intro-vignette" aria-hidden="true"></div>
+
+<header class="intro-top">
+  <span class="brand brand-sm"><img src="assets/camo-logo.svg" alt="" width="28" height="28"><span>CAMO</span></span>
+  <a class="intro-skip" href="home.html">ENTER SITE <span aria-hidden="true">→</span></a>
+</header>
+
+<main class="intro-bottom">
+  <h1 class="visually-hidden">CAMO: hidden in plain sight</h1>
+  <p class="kicker">// SOMETHING IS HIDING IN THE CAMO</p>
+  <p class="intro-cta" id="scope-status" aria-live="polite">
+    <span class="when-searching"><span class="hint-mouse">MOVE THE SCOPE TO FIND IT</span><span class="hint-touch">TAP THE CAMO TO AIM THE SCOPE</span></span>
+    <span class="when-locked"><span class="hint-mouse">TARGET ACQUIRED · CLICK TO ENTER</span><span class="hint-touch">TARGET ACQUIRED · TAP TO ENTER</span></span>
+  </p>
+  <noscript><p class="intro-cta"><a href="home.html">ENTER THE CAMO SITE</a></p></noscript>
+</main>
+</body>
+</html>
