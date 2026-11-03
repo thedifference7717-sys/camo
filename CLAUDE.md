@@ -26,14 +26,24 @@ CAMO is a privacy cryptocurrency: a rebranded fork of **Monero v0.18** (C++), ow
 
 Launch plan: mainnet **Dec 15, 2026 18:00 UTC**; public stagenet from Nov 10. Roadmap doc: https://claude.ai/artifact/Afc9iNZRfzU3dqgiZ3QsDc
 
-**Genesis allocation (disclosed, decided Nov 2):** the mainnet genesis tx creates **640,000 CAMO**:
-489,600 to Anthony's founder wallet, 54,400 to a public marketing wallet, 96,000 (15%) to the provable burn
-address (`contrib/camo/tools/make_burn_address.py`). Founder + marketing = 3.0% of main emission. Generate with
-`python3 contrib/camo/tools/make_genesis.py <founder-addr> --amount 640000 --burn-pct 15 --extra <marketing-addr>:54400`
-(needs only PUBLIC addresses — CAMO or Monero addresses from the same seeds; never ask for seed words or private
-keys) and paste the `GENESIS_TX` hex into `config::GENESIS_TX`. The official mining pool's 1% fee is paid to the
-marketing wallet (pool config, not consensus). The current mainnet genesis (hash `9b1db372…`) is a placeholder that
-burns 17.59 CAMO and must be replaced before launch. Keep the white paper and website in sync with the allocation.
+**Allocation (disclosed, decided Nov 2) lives in BLOCK 1, not genesis.** Block 1's coinbase is fixed by consensus to
+the transaction in `src/cryptonote_core/camo_allocation.h`: 489,600 CAMO to Anthony's founder wallet, 54,400 to the
+public marketing wallet, 96,000 (15%) to the provable burn address (`contrib/camo/tools/make_burn_address.py`).
+Founder + marketing = 3.0% of main emission. Whoever mines block 1 gets no reward; the block template swaps in the
+published outputs and tx key, and `Blockchain::validate_miner_transaction` rejects any other block-1 coinbase.
+Regenerate with `python3 contrib/camo/tools/make_allocation.py --founder <addr> --marketing <addr>` (PUBLIC addresses
+only, CAMO or Monero format; never ask for seed words or private keys). Genesis (block 0) stays the original
+placeholder that burns 17.59 CAMO to a nothing-up-my-sleeve key. Why block 1: wallets never scan block 0, and a v1
+genesis output can't be ring-signed. Verified end to end Nov 3 (`contrib/camo/allocation-spend-test.sh` with test keys):
+stranger-mined block 1 still pays the allocation; a founder-style wallet restored from height 0 sees and spends it
+with ring 16; marketing view-only and burn view key see their amounts.
+**Wallet restore note for Anthony:** restore founder/marketing wallets with restore height **0** or 1.
+The official pool's 1% fee goes to the marketing wallet (pool config, not consensus). `make_genesis.py` is no longer
+used for the allocation. Keep the white paper and website in sync.
+
+**One editor at a time.** On Nov 2 two sessions edited this repo at once and one overwrote the other. Before changing
+code: run `git status` and `git log -3`; if there are uncommitted changes you didn't make, stop and ask Anthony.
+Commit small, accurate commits as you go.
 
 ## Build
 Linux (Ubuntu 22.04/24.04): deps are listed in `contrib/camo/deploy-seed-node.sh`, then
@@ -62,13 +72,7 @@ to Bob, and prints Bob's balance plus what the chain reveals (ring size 16, amou
 - [ ] Rent 2–3 VPS seed nodes, add their IPs to `get_ip_seed_nodes()`
 - [ ] Public stagenet 2–4 weeks → signed reproducible binaries (`contrib/guix`) → announced fair launch
 - [x] 1-minute blocks; founder genesis tool
-- [x] Founder + marketing addresses received; real genesis committed (640,000 CAMO: 489,600 / 54,400 / 96,000 burn)
-- [x] Genesis exempted from the block-reward check (`Blockchain::validate_miner_transaction`, height 0 only)
-- [ ] **BLOCKER (next session):** genesis coins are not usable yet. (1) wallet2 never scans block 0 (it seeds
-      `m_blockchain` with the genesis hash and starts at height 1); (2) the genesis tx is version 1, so its outputs
-      are indexed by exact amount and can't form a 16-member ring. Fix: make the genesis tx version 2 with RCT type
-      null (outputs indexed under amount 0, like modern coinbases) and have wallet2 process block 0's miner tx.
-      Verify end to end: a test wallet receives a genesis output, sees it after unlock, and spends it with ring 16.
+- [x] Founder + marketing addresses received; block-1 allocation (489,600 / 54,400 / 96,000 burn) built and tested end to end
 - [ ] Explorer, pool, website
 - [ ] v1.1 (Q1 2027): **Ghillie** wallet (name locked Nov 2) — desktop + mobile, fast sync, built-in "mine while idle"
 - [ ] v1.2 (Q2 2027): built-in BTC↔CAMO atomic swaps; merchant checkout plugins

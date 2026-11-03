@@ -1,7 +1,7 @@
 # CAMO genesis allocation (public record)
 
-The mainnet genesis block (block 0) creates 640,000 CAMO, split into three outputs.
-Genesis amounts are public on chain; anyone can check them.
+Block 1 (the first mined block) pays 640,000 CAMO in three fixed outputs, enforced by consensus (src/cryptonote_core/camo_allocation.h). The genesis block (block 0) is a 17.59 CAMO placeholder sent to an unspendable key.
+Coinbase amounts are public on chain; anyone can check them.
 
 | Output | Amount | Address (CAMO mainnet) |
 |---|---|---|
@@ -15,5 +15,5 @@ Founder + marketing = 544,000 CAMO = 3.0% of the 18.13M main emission.
   Reproduce: `python3 contrib/camo/tools/make_burn_address.py`
 - Founder and marketing view keys: published at launch (Dec 15, 2026).
 - The official mining pool's 1% fee is paid to the marketing address.
-- Regenerate/verify the genesis tx: `contrib/camo/tools/make_genesis.py` (the one-time tx key is random, so the
+- Regenerate the allocation: `contrib/camo/tools/make_allocation.py` (the one-time tx key is random, so the
   hex differs on each run; what is fixed is the three amounts and the three recipients).
