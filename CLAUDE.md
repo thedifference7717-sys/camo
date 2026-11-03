@@ -86,3 +86,19 @@ to Bob, and prints Bob's balance plus what the chain reveals (ring size 16, amou
   0.25% on built-in swaps, 1% official pool fee, optional tip off by default; all to the marketing wallet.
 - Website design (tactical "night-ops" look, original, not Call of Duty branding): https://claude.ai/artifact/QB6piNbZWjL9suC5Kvfirw
 - [ ] Adopt FCMP++ after it is audited and live on Monero
+
+## Handoff (Nov 3, 2026, from the claude.ai cloud session)
+Work moves to Claude Code from here; that session stops editing this repo.
+- Docs (claude.ai artifacts, private to Anthony): white paper https://claude.ai/artifact/DWmFzRRjgYfXJ53bTX5H7d ·
+  launch roadmap https://claude.ai/artifact/Afc9iNZRfzU3dqgiZ3QsDc · logo canvas https://claude.ai/artifact/RrMKu9mj5zbZPte1fEREni ·
+  website design https://claude.ai/artifact/QB6piNbZWjL9suC5Kvfirw. Keep them in sync with code decisions.
+- Launch rehearsal: `bash contrib/camo/stagenet-rehearsal.sh` (3 local stagenet nodes, real difficulty, ~75 min). First run
+  Nov 3: nodes connected and block 1 carried the stagenet allocation; full results pending, so re-run it after building.
+- Free next steps, in order: (1) website code from the design, hosted free (Cloudflare Pages / GitHub Pages from a
+  separate public repo); (2) rebrand + test the block explorer (onion-monero-blockchain-explorer fork); (3) mining pool
+  with the 1% fee to the marketing wallet; (4) Windows/Mac/Linux release builds via `contrib/depends`;
+  (5) mining guide, FAQ, BitcoinTalk announcement; (6) Ghillie mockups incl. remote mining control.
+- Needs Anthony: 3 seed servers (Oracle Always Free can host 2 small ARM ones for stagenet; plan 1 paid server before
+  mainnet), a security contact email for SECURITY.md, social handles, making the repo public on Nov 10.
+- Building on macOS may fail with new Homebrew Boost (see Build). A Linux environment (Claude Code on the web,
+  a Linux VM or a seed server) is the reliable place to build and run the tests.
