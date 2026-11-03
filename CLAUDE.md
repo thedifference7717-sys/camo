@@ -86,7 +86,13 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       (GitHub Pages, branch `main`): https://thedifference7717-sys.github.io/camo-website/ . `index.html` is the opening
       screen (living camo field, scope, hidden word CAMO; aim + click to enter), main site is `home.html`. Static, no
       third-party requests (self-hosted fonts, strict CSP). Edit in `website/` and copy to the public repo (keep in sync).
-- [ ] Explorer, pool
+- [~] Block explorer (Nov 3): fork of onion-monero-blockchain-explorer at upstream `29593b7` (last commit by known
+      contributors; the 4 later upstream commits by "Your Name <you@example.com>" are NOT used). Builds against this
+      repo's `build/release`; binary `camo-explorer`; CAMO ports/wording; night-ops theme. Tested on the stagenet
+      rehearsal chain: block 1 allocation, ring 16 + hidden amounts, view-key decode finds exactly 5 CAMO, Monero
+      addresses rejected. **Needs its own repo** (`thedifference7717-sys/camo-explorer`, Anthony to create) and a
+      server. Operator rule: never run it with `--enable-mixin-guess`.
+- [ ] Pool
 - [ ] v1.1 (Q1 2027): **Ghillie** wallet (name locked Nov 2) — desktop + mobile, fast sync, built-in "mine while idle"
       + **remote mining control** (decided Nov 3): Ghillie mobile starts/stops and monitors mining on the user's own
       computers. Phones never mine (Apple and Google Play ban on-device mining; RandomX is weak on phones).
@@ -116,7 +122,7 @@ Work moves to Claude Code from here; that session stops editing this repo.
   Same day, with the fix: `regtest-demo.sh` passed without the mismatch flag (Bob 12.345 CAMO, ring 16, amounts
   hidden, RingCT type 6) and `attack_block1.py` passed all 4 checks. `allocation-spend-test.sh` was not re-run (it
   needs a build made with the TEST allocation keys).
-- Free next steps, in order: (1) ~~website~~ done Nov 3, see Status; (2) rebrand + test the block explorer (onion-monero-blockchain-explorer fork); (3) mining pool
+- Free next steps, in order: (1) ~~website~~ done Nov 3, see Status; (2) ~~block explorer~~ built and tested Nov 3, needs its repo + hosting; (3) mining pool
   with the 1% fee to the marketing wallet; (4) Windows/Mac/Linux release builds via `contrib/depends`;
   (5) mining guide, FAQ, BitcoinTalk announcement; (6) Ghillie mockups incl. remote mining control.
 - Needs Anthony: 3 seed servers (Oracle Always Free can host 2 small ARM ones for stagenet; plan 1 paid server before
