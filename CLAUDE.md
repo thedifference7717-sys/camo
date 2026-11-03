@@ -76,4 +76,7 @@ to Bob, and prints Bob's balance plus what the chain reveals (ring size 16, amou
 - [ ] Explorer, pool, website
 - [ ] v1.1 (Q1 2027): **Ghillie** wallet (name locked Nov 2) — desktop + mobile, fast sync, built-in "mine while idle"
 - [ ] v1.2 (Q2 2027): built-in BTC↔CAMO atomic swaps; merchant checkout plugins
+- Ghillie fee model (decided Nov 3): **no fee on sends, ever** (an extra output would fingerprint Ghillie txs);
+  0.25% on built-in swaps, 1% official pool fee, optional tip off by default; all to the marketing wallet.
+- Website design (tactical "night-ops" look, original, not Call of Duty branding): https://claude.ai/artifact/QB6piNbZWjL9suC5Kvfirw
 - [ ] Adopt FCMP++ after it is audited and live on Monero
