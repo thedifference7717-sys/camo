@@ -36,8 +36,10 @@
 using namespace boost::filesystem;
 using namespace epee::file_io_utils;
 
+// CAMO: Monero's test wallet keys, unchanged; its cache was re-saved by camo-wallet-cli (CAMO genesis) and the
+// address is the same keys with CAMO's mainnet prefix (69).
 static constexpr const char WALLET_00fd416a_PRIMARY_ADDRESS[] =
-    "45p2SngJAPSJbqSiUvYfS3BfhEdxZmv8pDt25oW1LzxrZv9Uq6ARagiFViMGUE3gJk5VPWingCXVf1p2tyAy6SUeSHPhbve";
+    "CcaL9xSTB2pJbqSiUvYfS3BfhEdxZmv8pDt25oW1LzxrZv9Uq6ARagiFViMGUE3gJk5VPWingCXVf1p2tyAy6SUeSKZiu4o";
 
 TEST(wallet_storage, store_to_file2file)
 {

@@ -68,12 +68,17 @@ crashes with "invalid opcode" on other CPUs.
 
 ## Test
 Unit tests (`-DBUILD_TESTS=ON`, `make unit_tests test_notifier`; run from the build dir): Nov 4, full suite with nothing
-excluded: 1282 run, 1248 pass, 34 fail (~10 min). The 34 are expected CAMO failures: tests with hard-coded Monero
-addresses/files (address, uri, multisig, Serialization.portability_*, wallet_storage) and DNS tests (no DNS in sandboxes).
+excluded: 1282 run, 1275 pass, 7 expected failures (~10 min): 6 DNS tests (no DNS in sandboxes) and
+`Serialization.portability_wallet` (its fixture is a real Monero testnet wallet with Monero chain history; CAMO wallets
+rightly refuse it: genesis mismatch). The address-based tests (uri, multisig, base58 address, portability tx) use the
+same keys re-encoded with CAMO prefixes (`contrib/camo/tools/make_genesis.py` helpers), and the wallet_storage fixture's
+cache was re-saved on CAMO's chain (keys file unchanged). `select_outputs.gamma` fails ~1% of runs (median just under
+1.3 days): Monero's own test does the same; a simulation of the picker gave mean medians 1.330 d (120 s) vs 1.332 d (60 s),
+1% below the bound for both, so CAMO's decoy ages match Monero's. Don't widen its bounds; just re-run.
 Fixed Nov 4: `race_condition` no longer hangs (its test chain used pre-v15 coinbase outputs, which CAMO's v16-from-block-1
 rules reject; test-only fix), and `http_server.response_soft_limit` / `ban.subnet` (new-Boost test bugs) via upstream
 cherry-picks `665316708` and `108857032`. `select_outputs.gamma` was adapted to 60 s blocks: wallet decoy selection
-matches Monero's in time terms. The wallet_storage tests leave wallet files in `tests/data/` (don't commit them).
+matches Monero's in time terms. The wallet_storage tests' scratch wallets in `tests/data/` are git-ignored.
 `bash contrib/camo/regtest-demo.sh` — starts a private regtest node, mines to wallet Alice, sends 12.345 CAMO
 to Bob, and prints Bob's balance plus what the chain reveals (ring size 16, amounts hidden). Verified working on
 2026-10-30 (Linux build).
