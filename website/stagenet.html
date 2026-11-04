@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Join the CAMO stagenet</title>
+<meta name="description" content="Run a CAMO stagenet node, make a test wallet, mine test coins and send private transactions before mainnet launches on Dec 15, 2026.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; font-src 'self'; style-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0B0F0C">
+<link rel="icon" href="assets/favicon.ico" sizes="any">
+<link rel="icon" href="assets/camo-logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#start">Skip to content</a>
+<div class="grid-bg">
+
+<header class="topbar">
+  <nav class="wrap nav" aria-label="Main">
+    <a class="brand" href="home.html">
+      <img src="assets/camo-logo.svg" alt="" width="36" height="36">
+      <span>CAMO</span>
+    </a>
+    <div class="nav-links">
+      <a href="home.html">HOME</a>
+      <a href="stagenet.html" aria-current="page">STAGENET</a>
+      <a href="mine.html">MINING GUIDE</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+    <a class="btn btn-solid btn-sm" href="mine.html">MINING GUIDE</a>
+  </nav>
+</header>
+
+<main class="wrap doc" id="start">
+  <p class="kicker">// FIELD EXERCISE · OPENS NOV 10, 2026</p>
+  <h1>Join the stagenet</h1>
+  <p class="lede">The stagenet is a full rehearsal of CAMO before mainnet: same rules, same privacy, coins with no value. Run a node, mine, send private payments, try to break things, and report what you find.</p>
+
+  <dl class="stats stats-wide doc-stats">
+    <div><dt>NETWORK</dt><dd>stagenet</dd><p>add <code>--stagenet</code> to every command</p></div>
+    <div><dt>P2P PORT</dt><dd>39740</dd><p>open it to help the network</p></div>
+    <div><dt>NODE RPC</dt><dd>39741</dd><p>local only by default</p></div>
+    <div><dt>ADDRESSES START</dt><dd>Q</dd><p>mainnet addresses start with C</p></div>
+  </dl>
+
+  <aside class="callout">
+    <p class="label">BEFORE YOU START</p>
+    <ul>
+      <li>Stagenet coins are <strong>worthless</strong> and the chain may be reset. Never buy or sell them.</li>
+      <li>Never reuse a stagenet wallet's 25 words for real money. Make a fresh wallet for mainnet.</li>
+      <li>Signed downloads arrive Dec 7. Until then you build from source (about 45 minutes, steps below).</li>
+    </ul>
+  </aside>
+
+  <section class="doc-sec">
+    <h2><span class="step">01</span> Build CAMO</h2>
+    <p>On Linux (Ubuntu 22.04 or 24.04), install the build tools, then build the node and wallet:</p>
+<pre><code>sudo apt update
+sudo apt install -y git build-essential cmake pkg-config libssl-dev libzmq3-dev \
+  libunbound-dev libsodium-dev libunwind8-dev liblzma-dev libreadline-dev \
+  libexpat1-dev libpgm-dev libhidapi-dev libusb-1.0-0-dev libprotobuf-dev \
+  protobuf-compiler libudev-dev libboost-all-dev
+
+git clone --recurse-submodules https://github.com/thedifference7717-sys/camo
+cd camo &amp;&amp; mkdir -p build/release &amp;&amp; cd build/release
+cmake -DARCH=x86-64 -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -DUSE_DEVICE_TREZOR=OFF ../..
+make -j$(nproc) daemon simplewallet
+cd bin</code></pre>
+    <p class="note">On a Mac with Homebrew: <code>brew install cmake pkg-config boost openssl zeromq unbound libsodium expat readline hidapi protobuf libusb</code>, then the same <code>git clone</code>, <code>cmake</code> and <code>make</code> (use <code>-DARCH=armv8-a</code> on Apple Silicon). If Homebrew's newest Boost breaks the build, use Linux.</p>
+  </section>
+
+  <section class="doc-sec">
+    <h2><span class="step">02</span> Start a node</h2>
+    <p>Until the seed nodes are built into the software, point your node at them by hand:</p>
+<pre><code>./camod --stagenet \
+  --add-priority-node <span class="ph">[SEED NODE 1 IP]</span>:39740 \
+  --add-priority-node <span class="ph">[SEED NODE 2 IP]</span>:39740</code></pre>
+    <p>Leave it running. It syncs the chain into <code>~/.camo/stagenet</code>. Type <code>status</code> in its window to see the height and peers, and <code>exit</code> to stop it cleanly.</p>
+  </section>
+
+  <section class="doc-sec">
+    <h2><span class="step">03</span> Make a test wallet</h2>
+    <p>In a second terminal, in the same <code>bin</code> folder:</p>
+<pre><code>./camo-wallet-cli --stagenet --generate-new-wallet stagenet-test</code></pre>
+    <p>Pick a password, then write the 25 words on paper. Your address starts with <strong>Q</strong>. Type <code>address</code> to show it again.</p>
+  </section>
+
+  <section class="doc-sec">
+    <h2><span class="step">04</span> Mine test coins</h2>
+    <p>In the wallet, start mining to yourself with two CPU threads:</p>
+<pre><code>start_mining 2</code></pre>
+    <p>Or mine with XMRig, the way you will on mainnet: see the <a href="mine.html">mining guide</a> and use port <code>39741</code> for solo mining against your stagenet node. Mined coins unlock after 60 blocks (about an hour). Type <code>stop_mining</code> to stop.</p>
+  </section>
+
+  <section class="doc-sec">
+    <h2><span class="step">05</span> Send a private payment</h2>
+    <p>Swap addresses with another tester (or make a second wallet), then:</p>
+<pre><code>transfer <span class="ph">Q…their address…</span> 5</code></pre>
+    <p>Every payment uses a ring of 16 and hides the amount. Check what the chain reveals in the stagenet block explorer: <span class="ph">[STAGENET EXPLORER LINK]</span>.</p>
+  </section>
+
+  <section class="doc-sec">
+    <h2><span class="step">06</span> Help the network</h2>
+    <ul class="ticks">
+      <li>Open TCP port <strong>39740</strong> on your router or firewall so other nodes can reach yours.</li>
+      <li>Restore a wallet from its 25 words (<code>--restore-deterministic-wallet</code>) and check the balance comes back.</li>
+      <li>Stop your node for a while, restart it and watch it catch up.</li>
+      <li>Report bugs on <a href="https://github.com/thedifference7717-sys/camo/issues" rel="noopener">GitHub issues</a>. Report security problems privately to <span class="ph">[SECURITY CONTACT EMAIL]</span>, never in public.</li>
+    </ul>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-in">
+    <div class="stack-xs">
+      <div class="brand brand-sm"><img src="assets/camo-logo.svg" alt="" width="28" height="28"><span>CAMO</span></div>
+      <p class="fine">Open-source software built on Monero. Not an offer to sell anything and not investment advice. Follow the laws where you live.</p>
+    </div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="home.html">HOME</a>
+      <a href="mine.html">MINING GUIDE</a>
+      <a href="faq.html">FAQ</a>
+      <a href="assets/CAMO-White-Paper.pdf">WHITE PAPER</a>
+      <a href="https://github.com/thedifference7717-sys/camo" rel="noopener">GITHUB</a>
+    </nav>
+  </div>
+</footer>
+
+</div>
+</body>
+</html>

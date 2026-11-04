@@ -114,7 +114,9 @@ static void add_size(MDB_env *env, uint64_t bytes)
   mdb_env_stat(env, &mst);
 
   uint64_t new_mapsize = (uint64_t)mei.me_mapsize + bytes;
-  new_mapsize += (new_mapsize % mst.ms_psize);
+  const uint64_t remainder = new_mapsize % mst.ms_psize;
+  if (remainder)
+    new_mapsize += mst.ms_psize - remainder;
 
   int result = mdb_env_set_mapsize(env, new_mapsize);
   if (result)
@@ -484,7 +486,7 @@ int main(int argc, char* argv[])
 
   if (command_line::get_arg(vm, command_line::arg_help))
   {
-    std::cout << "Monero '" << MONERO_RELEASE_NAME << "' (v" << MONERO_VERSION_FULL << ")" << ENDL << ENDL;
+    std::cout << "CAMO '" << MONERO_RELEASE_NAME << "' (v" << MONERO_VERSION_FULL << ")" << ENDL << ENDL;
     std::cout << desc_options << std::endl;
     return 1;
   }

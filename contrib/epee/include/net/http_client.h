@@ -140,6 +140,8 @@ namespace net_utils
 			reciev_machine_state m_state;
 			chunked_state m_chunked_state;
 			std::string m_chunked_cache;
+			size_t m_chunk_head_scan_pos;
+			size_t m_chunk_head_scan_digits;
 			bool m_auto_connect;
 			critical_section m_lock;
 
@@ -158,6 +160,8 @@ namespace net_utils
 				, m_state()
 				, m_chunked_state()
 				, m_chunked_cache()
+				, m_chunk_head_scan_pos(0)
+				, m_chunk_head_scan_digits(0)
 				, m_auto_connect(true)
 				, m_lock()
 			{}
@@ -411,9 +415,19 @@ namespace net_utils
           return false;
         }
 
+				const size_t old_size = m_header_cache.size();
 				m_header_cache += recv_buff;
 				recv_buff.clear();
-				std::string::size_type pos = m_header_cache.find("\r\n\r\n");
+				const std::string::size_type pos = m_header_cache.find("\r\n\r\n", old_size > 3 ? old_size - 3 : 0);
+				constexpr size_t max_header_len = 100000;
+				const size_t header_len = pos == std::string::npos ? m_header_cache.size() : pos + 4;
+				if (header_len > max_header_len)
+				{
+					LOG_ERROR("HTTP response header exceeds " << max_header_len << " bytes");
+					m_state = reciev_machine_state_error;
+					disconnect();
+					return false;
+				}
 				if(pos != std::string::npos)
 				{
 					recv_buff.assign(m_header_cache.begin()+pos+4, m_header_cache.end());
@@ -430,6 +444,14 @@ namespace net_utils
             m_state = reciev_machine_state_done;
             return false;
           }
+					if (m_state == reciev_machine_state_done &&
+						!m_response_info.m_header_info.m_content_length.empty() && !recv_buff.empty())
+					{
+						MERROR("HTTP response body exceeds Content-Length");
+						m_state = reciev_machine_state_error;
+						disconnect();
+						return false;
+					}
 					m_header_cache.clear();
 					if(!recv_buff.size() && (m_state != reciev_machine_state_error && m_state != reciev_machine_state_done))
 						need_more_data = true;
@@ -450,7 +472,13 @@ namespace net_utils
 					m_state = reciev_machine_state_done;
 					return true;
 				}
-				CHECK_AND_ASSERT_MES(m_len_in_remain >= recv_buff.size(), false, "m_len_in_remain >= recv_buff.size()");
+				if (recv_buff.size() > m_len_in_remain)
+				{
+					MERROR("HTTP response body exceeds Content-Length");
+					m_state = reciev_machine_state_error;
+					disconnect();
+					return false;
+				}
 				m_len_in_remain -= recv_buff.size();
 				if (!m_pcontent_encoding_handler->update_in(recv_buff))
 				{
@@ -506,8 +534,10 @@ namespace net_utils
 				bool get_chunk_head(std::string& buff, size_t& chunk_size, bool& is_matched)
 			{
 				is_matched = false;
-				size_t offset = 0;
-				for(std::string::iterator it = buff.begin(); it!= buff.end(); it++, offset++)
+				// resume from where the last call left off instead of rescanning from 0
+				size_t offset = m_chunk_head_scan_digits;
+				std::string::iterator it = buff.begin() + m_chunk_head_scan_pos;
+				for(; it!= buff.end(); it++, offset++)
 				{
 					if(!is_hex_symbol(*it))
 					{
@@ -519,6 +549,8 @@ namespace net_utils
 						else if(*it == '\n')
 						{	
 							std::string chunk_head = buff.substr(0, offset);
+							m_chunk_head_scan_pos = 0;
+							m_chunk_head_scan_digits = 0;
 							if(!get_len_from_chunk_head(chunk_head, chunk_size))
 								return false;
 
@@ -555,6 +587,8 @@ namespace net_utils
 					}
 				}
 
+				m_chunk_head_scan_pos = buff.size();
+				m_chunk_head_scan_digits = offset;
 				return true;
 			}
 			//---------------------------------------------------------------------------
@@ -790,6 +824,8 @@ namespace net_utils
 					}
 					m_state = reciev_machine_state_body_chunked;
 					m_chunked_state = http_chunked_state_chunk_head;
+					m_chunk_head_scan_pos = 0;
+					m_chunk_head_scan_digits = 0;
 					return true;
 				}
 				else if(!m_response_info.m_header_info.m_content_length.empty())

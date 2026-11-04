@@ -14,6 +14,11 @@ on:
       - '!contrib/**.md'
       - '.github/workflows/gitian.yml'
 
+# A newer push/PR update cancels the older run still in progress on the same branch.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-gitian:
     runs-on: ubuntu-22.04

@@ -1,7 +1,11 @@
 name: ci/gh-actions/cli
 
+# CAMO: this is the heavy workflow (5 platforms + a multi-hour test job). Run it on pull requests, on main,
+# and by hand; not on every feature-branch push, so release builds (depends.yml) don't queue behind it.
 on:
+  workflow_dispatch:
   push:
+    branches: [main]
     paths-ignore:
       - 'docs/**'
       - '**/README.md'
@@ -9,6 +13,11 @@ on:
     paths-ignore:
       - 'docs/**'
       - '**/README.md'
+
+# A newer push/PR update cancels the older run still in progress on the same branch.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 # The below variables reduce repetitions across similar targets
 env:
@@ -28,6 +37,9 @@ env:
 jobs:
   build-macos:
     name: 'macOS (brew)'
+    # CAMO: fails with Homebrew's OpenSSL 4 (Monero 0.18 net_ssl.cpp), same as before any CAMO change. Manual only
+    # until fixed; macOS release binaries come from depends.yml.
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     runs-on: macOS-latest
     env:
       CCACHE_TEMPDIR: /tmp/.ccache-temp
@@ -61,6 +73,9 @@ jobs:
 
   build-windows:
     name: 'Windows (MSYS2)'
+    # CAMO: msys2/setup-msys2 step fails, same as before any CAMO change. Manual only until fixed; Windows release
+    # binaries come from depends.yml (cross-compiled).
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     runs-on: windows-latest
     env:
       CCACHE_TEMPDIR: C:\Users\runneradmin\.ccache-temp
@@ -223,6 +238,7 @@ jobs:
   test-ubuntu:
     name: "${{ matrix.name }} (tests)"
     runs-on: ubuntu-latest
+    timeout-minutes: 120
     strategy:
       matrix:
         include:
