@@ -9,6 +9,12 @@ CAMO is a privacy cryptocurrency: a rebranded fork of **Monero v0.18** (C++), ow
   crypto or consensus change, stop and explain the risk first.
 - Keep Monero/CryptoNote copyright headers and `LICENSE` (BSD-3) intact.
 - Merge upstream Monero security fixes from the `release-v0.18` branch promptly (`git remote add upstream https://github.com/monero-project/monero.git`).
+  Check with `bash contrib/camo/tools/check_upstream.sh` (monthly and before releases). Nov 4: CAMO = v0.18.5.4 (tip of
+  release-v0.18, nothing to merge). From Monero master, 22 small fixes were cherry-picked with `-x` (original authors
+  kept; never `--reset-author` on cherry-picks): RPC/HTTP hardening, db, locking, p2p, wallet. Deliberately NOT taken
+  (wait for Monero's 0.18 release): `742bc14c5` and `fccaccbc8` (touch src/crypto, ringct), `a3ba0122c` (multisig kex),
+  `dfc246116` (block templates, next to CAMO's block-1 code), `c1f7f0bdb` (crypto/aesb.c). Master-only fixes that need
+  hand ports were not attempted (key-offset sanity check, levin data races, block template reserved offset, etc.).
 
 ## What differs from Monero (all CAMO edits)
 | File | Change |
@@ -61,6 +67,11 @@ Always pass `-DARCH=x86-64` (or `armv8-a` on Apple Silicon) for anything shared:
 crashes with "invalid opcode" on other CPUs.
 
 ## Test
+Unit tests (`-DBUILD_TESTS=ON`, `make unit_tests test_notifier`; run from the build dir): Nov 4, 1244 pass. Expected
+CAMO failures: tests with hard-coded Monero addresses/files (address, uri, multisig, Serialization.portability_*,
+wallet_storage), DNS tests (no DNS in sandboxes). `cryptonote_protocol_handler.race_condition` hangs (exclude it with
+`--gtest_filter=-cryptonote_protocol_handler.race_condition`; also why CI's test job never finished).
+`select_outputs.gamma` was adapted to 60 s blocks: wallet decoy selection matches Monero's in time terms.
 `bash contrib/camo/regtest-demo.sh` — starts a private regtest node, mines to wallet Alice, sends 12.345 CAMO
 to Bob, and prints Bob's balance plus what the chain reveals (ring size 16, amounts hidden). Verified working on
 2026-10-30 (Linux build).
@@ -107,6 +118,12 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
   0.25% on built-in swaps, 1% official pool fee, optional tip off by default; all to the marketing wallet.
 - Website design (tactical "night-ops" look, original, not Call of Duty branding): https://claude.ai/artifact/QB6piNbZWjL9suC5Kvfirw
 - [ ] Adopt FCMP++ after it is audited and live on Monero
+- GitHub Actions (Nov 4): private-repo free minutes appear exhausted (jobs fail in ~3 s with no logs) after the heavy
+  workflow's stuck test jobs ran for hours. Making the repo public (Nov 10) gives free minutes; or set a budget.
+  build.yml now runs only on PRs/main/manual with a 2 h test cap; all workflows cancel superseded runs.
+- Launch tooling: `contrib/camo/STAGENET-LAUNCH.md` (Nov 10 runbook), `tools/set_seed_nodes.py` (seed IPs into code +
+  website in one step), `ANNOUNCE-DRAFT.md` (BitcoinTalk draft, not posted), `website/faq.html` (not yet published).
+  The wallet's `donate` command is disabled (it targeted Monero's donation address) until a CAMO address is chosen.
 - Ring size (decided Nov 4): **stay at 16** (Monero's audited choice). 32/64 were considered and rejected: +50%/+170%
   tx size and fees, 2x/4x verification, modest privacy gain vs. side-channel heuristics. FCMP++ is the upgrade path.
 
