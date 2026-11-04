@@ -2,9 +2,10 @@
 # End-to-end: a wallet restored from height 0 finds its genesis allocation, waits for unlock, and spends it privately.
 set -uo pipefail
 S="${CAMO_TEST_KEYS_DIR:?set CAMO_TEST_KEYS_DIR to the folder holding test_genesis_wallets.json (only for a build made with make_allocation.py from those TEST wallets)}"
-B=/root/camo/build/release/bin; T=$(mktemp -d); DP=19990; WP=19991
+B=${CAMO_BIN:-$(cd "$(dirname "$0")/../.." && pwd)/build/release/bin}; T=$(mktemp -d); DP=19990; WP=19991
 K="$S/test_genesis_wallets.json"
 key(){ python3 -c "import json;print(json.load(open('$K'))['$1']['$2'])"; }
+exec > >(tee "$T/out.txt") 2>&1   # the checks at the end read the printed results
 $B/camod --regtest --offline --fixed-difficulty 1 --data-dir $T/n --non-interactive --detach --pidfile $T/d.pid --log-file $T/d.log --rpc-bind-port $DP --p2p-bind-port 19992 --zmq-rpc-bind-port 19993 >/dev/null
 $B/camo-wallet-rpc --wallet-dir $T --rpc-bind-port $WP --disable-rpc-login --daemon-address 127.0.0.1:$DP --trusted-daemon --non-interactive --detach --pidfile $T/w.pid --log-file $T/w.log >/dev/null
 w(){ curl -s 127.0.0.1:$WP/json_rpc -d "{\"jsonrpc\":\"2.0\",\"id\":0,\"method\":\"$1\",\"params\":$2}"; }
@@ -42,3 +43,13 @@ w generate_from_keys '{"filename":"burn","address":"Cdqd3jC3ocP6H1BX4G2Uis8qVYj6
 w refresh '{"start_height":0}' >/dev/null; w get_balance '{"account_index":0}' | j "'burn address holds', r['result']['balance']/1e12"
 
 curl -s 127.0.0.1:$DP/stop_daemon >/dev/null; kill $(cat $T/w.pid) 2>/dev/null
+
+echo "== Checks"
+F=0; chk(){ if grep -qF "$2" "$T/out.txt"; then echo "PASS: $1"; else echo "FAIL: $1 (expected: $2)"; F=1; fi; }
+chk "block 1 pays the allocation" "block 1: v16 [489600.0, 54400.0, 96000.0]"
+chk "founder wallet sees 489,600 unlocked" "balance 489600.0 unlocked 489600.0"
+chk "spend accepted" "('sent', "
+chk "ring size 16, amounts hidden, mined" "on chain: ring size [16] amounts visible [0, 0] in block"
+chk "marketing view-only wallet sees 54,400" "marketing sees 54400.0"
+chk "burn view key shows 96,000" "burn address holds 96000.0"
+exit $F
