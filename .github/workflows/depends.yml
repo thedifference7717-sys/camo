@@ -1,6 +1,7 @@
 name: ci/gh-actions/depends
 
 on:
+  workflow_dispatch:
   push:
   pull_request:
     paths-ignore:
@@ -109,10 +110,23 @@ jobs:
       with:
         path: contrib/depends/built
         key: ${{ steps.depends-restore.outputs.cache-primary-key }}
+    # CAMO: package the binaries people run (node, wallet, wallet RPC) for the five desktop/server platforms,
+    # with LICENSE and SHA256SUMS. These are unsigned CI builds for testing; signed releases come from gitian.
+    - name: package CAMO binaries
+      if: ${{ contains(fromJSON('["x86_64-unknown-linux-gnu","aarch64-linux-gnu","x86_64-w64-mingw32","x86_64-apple-darwin11","aarch64-apple-darwin11"]'), matrix.toolchain.host) }}
+      run: |
+        out="camo-${{ matrix.toolchain.host }}-$(git rev-parse --short HEAD)"
+        mkdir -p "dist/$out"
+        cp build/${{ matrix.toolchain.host }}/release/bin/camod* \
+           build/${{ matrix.toolchain.host }}/release/bin/camo-wallet-cli* \
+           build/${{ matrix.toolchain.host }}/release/bin/camo-wallet-rpc* "dist/$out/"
+        cp LICENSE "dist/$out/"
+        (cd "dist/$out" && sha256sum camo* > SHA256SUMS && cat SHA256SUMS)
+        echo "CAMO_DIST=$out" >> "$GITHUB_ENV"
     - uses: actions/upload-artifact@v7
-      if: ${{ matrix.toolchain.host == 'x86_64-w64-mingw32' || matrix.toolchain.host == 'x86_64-apple-darwin11' || matrix.toolchain.host == 'x86_64-unknown-linux-gnu' }}
+      if: ${{ env.CAMO_DIST != '' }}
       with:
-        name: ${{ matrix.toolchain.name }}
-        path: |
-          build/${{ matrix.toolchain.host }}/release/bin/monero-wallet-cli*
-          build/${{ matrix.toolchain.host }}/release/bin/monerod*
+        name: ${{ env.CAMO_DIST }}
+        path: dist/${{ env.CAMO_DIST }}
+        if-no-files-found: error
+        retention-days: 30
