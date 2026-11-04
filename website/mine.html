@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CAMO mining guide</title>
+<meta name="description" content="How to mine CAMO with an ordinary computer: solo with your own node, solo with XMRig, or with the official pool. Mining opens Dec 15, 2026, 18:00 UTC.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; font-src 'self'; style-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0B0F0C">
+<link rel="icon" href="assets/favicon.ico" sizes="any">
+<link rel="icon" href="assets/camo-logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#start">Skip to content</a>
+<div class="grid-bg">
+
+<header class="topbar">
+  <nav class="wrap nav" aria-label="Main">
+    <a class="brand" href="home.html">
+      <img src="assets/camo-logo.svg" alt="" width="36" height="36">
+      <span>CAMO</span>
+    </a>
+    <div class="nav-links">
+      <a href="home.html">HOME</a>
+      <a href="stagenet.html">STAGENET</a>
+      <a href="mine.html" aria-current="page">MINING GUIDE</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+    <a class="btn btn-solid btn-sm" href="stagenet.html">JOIN STAGENET</a>
+  </nav>
+</header>
+
+<main class="wrap doc" id="start">
+  <p class="kicker">// OPERATION: MINE · OPENS DEC 15, 2026 · 18:00 UTC</p>
+  <h1>Mining guide</h1>
+  <p class="lede">CAMO is mined with RandomX, which runs best on ordinary CPUs. No special hardware, no pre-mine for sale. Practice on the <a href="stagenet.html">stagenet</a> first: it uses the same steps.</p>
+
+  <dl class="stats stats-wide doc-stats">
+    <div><dt>ALGORITHM</dt><dd>RandomX</dd><p>XMRig: <code>-a rx/0</code></p></div>
+    <div><dt>BLOCK TIME</dt><dd>60 s</dd><p>one block a minute</p></div>
+    <div><dt>REWARD AT LAUNCH</dt><dd>~17 CAMO</dd><p>per block, falling slowly</p></div>
+    <div><dt>TAIL REWARD</dt><dd>0.3 CAMO</dd><p>per block, forever</p></div>
+  </dl>
+
+  <section class="doc-sec">
+    <h2><span class="step">01</span> Get a wallet address</h2>
+    <p>Mined coins go to your address, so make a wallet first. With the CAMO software (signed downloads from Dec 7):</p>
+<pre><code>./camo-wallet-cli --generate-new-wallet my-wallet</code></pre>
+    <p>Write the 25 words on paper and keep them offline. Mainnet addresses start with <strong>C</strong>. The Ghillie wallet (Q1 2027) will make this one tap.</p>
+  </section>
+
+  <section class="doc-sec">
+    <h2><span class="step">02</span> Choose how to mine</h2>
+    <div class="cards">
+      <article class="card">
+        <p class="tag">OPTION A · SIMPLEST</p>
+        <h3>Solo, with your node</h3>
+        <p>Your own node mines for you. You keep the whole block reward when you find one, but blocks come rarely unless you have a lot of CPU.</p>
+<pre><code>./camod --start-mining <span class="ph">C…your address…</span> \
+  --mining-threads 4</code></pre>
+      </article>
+      <article class="card">
+        <p class="tag">OPTION B · FASTER</p>
+        <h3>Solo, with XMRig</h3>
+        <p>XMRig is the standard open-source RandomX miner and is faster than the built-in one. It talks to your own synced node:</p>
+<pre><code>xmrig -a rx/0 --daemon \
+  -o 127.0.0.1:19741 \
+  -u <span class="ph">C…your address…</span></code></pre>
+      </article>
+      <article class="card">
+        <p class="tag">OPTION C · STEADY PAY</p>
+        <h3>The official pool</h3>
+        <p>Miners share work and split each block, so small miners get paid regularly. No node needed.</p>
+<pre><code>xmrig -a rx/0 \
+  -o <span class="ph">[POOL ADDRESS]</span>:4242 \
+  -u <span class="ph">C…your address…</span> -p my-rig</code></pre>
+      </article>
+    </div>
+  </section>
+
+  <section class="doc-sec">
+    <h2><span class="step">03</span> About the official pool</h2>
+    <ul class="ticks">
+      <li><strong>1% fee</strong>, paid to CAMO's public marketing wallet. That's the only fee: nothing is hidden in the software.</li>
+      <li><strong>PPLNS payouts</strong>: each block is shared by the work in recent shares, which rewards miners who stay connected.</li>
+      <li>Payouts start once a block is <strong>60 blocks deep</strong> (about an hour) and your balance passes the minimum: <span class="ph">[MIN PAYOUT]</span> CAMO.</li>
+      <li>Check your stats on the pool's page: <span class="ph">[POOL STATS LINK]</span>.</li>
+      <li>Prefer to stay independent? Options A and B never touch the pool.</li>
+    </ul>
+  </section>
+
+  <section class="doc-sec">
+    <h2><span class="step">04</span> Get XMRig safely</h2>
+    <ul class="ticks">
+      <li>Download only from <a href="https://github.com/xmrig/xmrig/releases" rel="noopener">github.com/xmrig/xmrig/releases</a> and check the SHA-256 hash listed there.</li>
+      <li>Antivirus tools often flag miners as "potentially unwanted". That's expected for XMRig from the official page; anything from elsewhere could be malware.</li>
+      <li>Official XMRig builds give 1% of mining time to the XMRig developers by default (<code>--donate-level</code>, minimum 1). That goes to them, not to CAMO.</li>
+      <li>Run it once as administrator (Windows) or with <code>sudo</code> (Linux) so it can turn on huge pages, which makes RandomX noticeably faster.</li>
+    </ul>
+  </section>
+
+  <section class="doc-sec">
+    <h2><span class="step">05</span> Good to know</h2>
+    <dl class="faq">
+      <dt>When can I spend mined coins?</dt>
+      <dd>After 60 more blocks, about an hour. Until then your wallet shows them as locked.</dd>
+      <dt>Why did block 1 pay its miner nothing?</dt>
+      <dd>Block 1 carries CAMO's disclosed allocation (founder 489,600, marketing 54,400, and 96,000 provably burned). The rules fix its payout, so whoever mines it gets no reward. Every block after it pays the miner as normal.</dd>
+      <dt>Can I mine on my phone?</dt>
+      <dd>No. Phones are slow at RandomX and app stores ban mining apps. Ghillie for phones will start, stop and watch mining on your own computers instead.</dd>
+      <dt>Can I mine on a work or school computer?</dt>
+      <dd>Only computers you own or have permission to use. Mining on someone else's machine without permission is theft of their electricity, and often illegal.</dd>
+      <dt>Does mining hurt my computer?</dt>
+      <dd>It runs the CPU at full load, so it gets warm and uses more power. Keep it ventilated, and use fewer threads (<code>-t 2</code>) if you want to keep using it.</dd>
+    </dl>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-in">
+    <div class="stack-xs">
+      <div class="brand brand-sm"><img src="assets/camo-logo.svg" alt="" width="28" height="28"><span>CAMO</span></div>
+      <p class="fine">Open-source software built on Monero. Not an offer to sell anything and not investment advice. Follow the laws where you live.</p>
+    </div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="home.html">HOME</a>
+      <a href="stagenet.html">STAGENET</a>
+      <a href="faq.html">FAQ</a>
+      <a href="assets/CAMO-White-Paper.pdf">WHITE PAPER</a>
+      <a href="https://github.com/thedifference7717-sys/camo" rel="noopener">GITHUB</a>
+    </nav>
+  </div>
+</footer>
+
+</div>
+</body>
+</html>

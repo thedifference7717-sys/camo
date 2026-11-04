@@ -32,6 +32,7 @@
 #include "syncobj.h"
 #include "net/http_protocol_handler.h"
 
+#include <algorithm>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/fusion/adapted/std_pair.hpp>
@@ -94,32 +95,40 @@ public:
 class dummy_client
 {
 public:
-  bool connect(const std::string&, int, std::chrono::milliseconds, bool = false, const std::string& = "0.0.0.0") { return true; }
-  bool connect(const std::string&, const std::string&, std::chrono::milliseconds, bool = false, const std::string& = "0.0.0.0") { return true; }
-  bool disconnect() { return true; }
+  bool connect(const std::string&, int, std::chrono::milliseconds, bool = false, const std::string& = "0.0.0.0") { connected = true; return true; }
+  bool connect(const std::string&, const std::string&, std::chrono::milliseconds, bool = false, const std::string& = "0.0.0.0") { connected = true; return true; }
+  bool disconnect() { connected = false; return true; }
   bool shutdown() { return true; }
   bool send(const boost::string_ref, std::chrono::milliseconds) { return true; }
   bool send(const void*, size_t) { return true; }
   bool recv(std::string& buff, std::chrono::milliseconds)
   {
-    buff = data;
-    data.clear();
+    const std::size_t size = std::min<std::size_t>(data.size(), 16384);
+    buff.assign(data, 0, size);
+    data.erase(0, size);
     return true;
   }
   void set_ssl(epee::net_utils::ssl_options_t) { }
-  bool is_connected(bool *ssl = NULL) { return true; }
+  bool is_connected(bool *ssl = NULL) { return connected; }
   uint64_t get_bytes_sent() const { return 1; }
   uint64_t get_bytes_received() const { return 1; }
 
   void set_test_data(const std::string& s) { data = s; }
 
 private:
+  bool connected = true;
   std::string data;
 };
 
 class test_http_client final : public http::http_simple_client_template<dummy_client>
 {
 public:
+  bool disconnect() override
+  {
+    disconnected = true;
+    return http::http_simple_client_template<dummy_client>::disconnect();
+  }
+
   bool on_header(const http::http_response_info& headers) override
   {
     ++headers_seen;
@@ -129,6 +138,7 @@ public:
 
   http::http_response_info last_headers;
   unsigned headers_seen = 0;
+  bool disconnected = false;
 };
 
 class capturing_http_handler final : public http::i_http_server_handler<epee::net_utils::connection_context_base>
@@ -1029,6 +1039,115 @@ TEST(HTTP, Client_Rejects_Malformed_Response_Header)
 
   EXPECT_FALSE(result);
   EXPECT_EQ(0u, client.headers_seen);
+}
+
+TEST(HTTP, Client_Rejects_Oversized_Response_Header)
+{
+  test_http_client client;
+  std::string response = "HTTP/1.1 200 OK\r\nX-Test: ";
+  response.append(100000, 'a');
+  response += "\r\nContent-Length: 0\r\n\r\n";
+
+  EXPECT_FALSE(client.test(response, std::chrono::milliseconds(1000)));
+  EXPECT_EQ(0u, client.headers_seen);
+  EXPECT_TRUE(client.disconnected);
+}
+
+TEST(HTTP, Client_Accepts_Fragmented_Response_Header)
+{
+  test_http_client client;
+  std::string response = "HTTP/1.1 200 OK\r\nContent-Length: 0\r\nX-Test: ";
+  response.append(16384 - response.size() - 2, 'a');
+  response += "\r\n\r\n";
+
+  EXPECT_TRUE(client.test(response, std::chrono::milliseconds(1000)));
+  EXPECT_EQ(1u, client.headers_seen);
+  EXPECT_FALSE(client.disconnected);
+}
+
+TEST(HTTP, Client_Accepts_Max_Response_Header)
+{
+  test_http_client client;
+  std::string response = "HTTP/1.1 200 OK\r\nX-Test: ";
+  const std::string suffix = "\r\nContent-Length: 0\r\n\r\n";
+  response.append(100000 - response.size() - suffix.size(), 'a');
+  response += suffix;
+  ASSERT_EQ(100000u, response.size());
+
+  EXPECT_TRUE(client.test(response, std::chrono::milliseconds(1000)));
+  EXPECT_EQ(1u, client.headers_seen);
+  EXPECT_FALSE(client.disconnected);
+}
+
+TEST(HTTP, Client_Rejects_Completed_Oversized_Response_Header)
+{
+  test_http_client client;
+  std::string response = "HTTP/1.1 200 OK\r\nX-Test: ";
+  const std::string suffix = "\r\nContent-Length: 0\r\n\r\n";
+  response.append(100001 - response.size() - suffix.size(), 'a');
+  response += suffix;
+  ASSERT_EQ(100001u, response.size());
+
+  EXPECT_FALSE(client.test(response, std::chrono::milliseconds(1000)));
+  EXPECT_EQ(0u, client.headers_seen);
+  EXPECT_TRUE(client.disconnected);
+}
+
+TEST(HTTP, Client_Accepts_Large_Response_Body)
+{
+  test_http_client client;
+  const std::string body(100001, 'a');
+  const std::string response = "HTTP/1.1 200 OK\r\nContent-Length: 100001\r\n\r\n" + body;
+
+  EXPECT_TRUE(client.test(response, std::chrono::milliseconds(1000)));
+  EXPECT_EQ(1u, client.headers_seen);
+  EXPECT_FALSE(client.disconnected);
+}
+
+TEST(HTTP, Client_Rejects_Body_Exceeding_Content_Length)
+{
+  test_http_client valid_client;
+  EXPECT_TRUE(valid_client.test(
+    "HTTP/1.1 200 OK\r\n"
+    "Content-Length: 3\r\n"
+    "\r\n"
+    "abc",
+    std::chrono::milliseconds(1000)
+  ));
+  EXPECT_TRUE(valid_client.is_connected());
+
+  test_http_client empty_valid_client;
+  EXPECT_TRUE(empty_valid_client.test(
+    "HTTP/1.1 200 OK\r\n"
+    "Content-Length: 0\r\n"
+    "\r\n",
+    std::chrono::milliseconds(1000)
+  ));
+  EXPECT_TRUE(empty_valid_client.is_connected());
+
+  test_http_client client;
+  const bool result = client.test(
+    "HTTP/1.1 200 OK\r\n"
+    "Content-Length: 3\r\n"
+    "\r\n"
+    "abcd",
+    std::chrono::milliseconds(1000)
+  );
+
+  EXPECT_FALSE(result);
+  EXPECT_FALSE(client.is_connected());
+
+  test_http_client empty_client;
+  const bool empty_result = empty_client.test(
+    "HTTP/1.1 200 OK\r\n"
+    "Content-Length: 0\r\n"
+    "\r\n"
+    "x",
+    std::chrono::milliseconds(1000)
+  );
+
+  EXPECT_FALSE(empty_result);
+  EXPECT_FALSE(empty_client.is_connected());
 }
 
 TEST(HTTP, Add_Field)

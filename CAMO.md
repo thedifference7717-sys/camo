@@ -36,7 +36,7 @@ cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF ../.. && make -j$(nproc) daem
 - [ ] Add their IPs to `get_ip_seed_nodes()` in `src/p2p/net_node.inl` (`full_addrs.insert("IP:19740");`), commit and tag the release.
 
 ### 3. Release binaries
-- [ ] Build reproducibly with `contrib/guix` so anyone can verify the binaries match the source.
+- [ ] Build reproducibly with `contrib/gitian` so anyone can verify the binaries match the source.
 - [ ] Publish signed Linux, macOS and Windows builds on GitHub Releases, with SHA256 hashes and a GPG signature.
 
 ### 4. Fair launch

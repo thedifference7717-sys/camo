@@ -9,6 +9,12 @@ CAMO is a privacy cryptocurrency: a rebranded fork of **Monero v0.18** (C++), ow
   crypto or consensus change, stop and explain the risk first.
 - Keep Monero/CryptoNote copyright headers and `LICENSE` (BSD-3) intact.
 - Merge upstream Monero security fixes from the `release-v0.18` branch promptly (`git remote add upstream https://github.com/monero-project/monero.git`).
+  Check with `bash contrib/camo/tools/check_upstream.sh` (monthly and before releases). Nov 4: CAMO = v0.18.5.4 (tip of
+  release-v0.18, nothing to merge). From Monero master, 22 small fixes were cherry-picked with `-x` (original authors
+  kept; never `--reset-author` on cherry-picks): RPC/HTTP hardening, db, locking, p2p, wallet. Deliberately NOT taken
+  (wait for Monero's 0.18 release): `742bc14c5` and `fccaccbc8` (touch src/crypto, ringct), `a3ba0122c` (multisig kex),
+  `dfc246116` (block templates, next to CAMO's block-1 code), `c1f7f0bdb` (crypto/aesb.c). Master-only fixes that need
+  hand ports were not attempted (key-offset sanity check, levin data races, block template reserved offset, etc.).
 
 ## What differs from Monero (all CAMO edits)
 | File | Change |
@@ -61,6 +67,14 @@ Always pass `-DARCH=x86-64` (or `armv8-a` on Apple Silicon) for anything shared:
 crashes with "invalid opcode" on other CPUs.
 
 ## Test
+Unit tests (`-DBUILD_TESTS=ON`, `make unit_tests test_notifier`; run from the build dir): Nov 4, 1244 pass. Expected
+CAMO failures: tests with hard-coded Monero addresses/files (address, uri, multisig, Serialization.portability_*,
+wallet_storage), DNS tests (no DNS in sandboxes). `cryptonote_protocol_handler.race_condition` hangs (exclude it with
+`--gtest_filter=-cryptonote_protocol_handler.race_condition`; also why CI's test job never finished).
+`select_outputs.gamma` was adapted to 60 s blocks: wallet decoy selection matches Monero's in time terms.
+Baseline comparison Nov 4: `main` before the upstream fixes fails the same 37 tests (now 36), so no regressions;
+the fixes add 8 passing tests. `ban.subnet` is a test bug with newer system Boost (parse_command_line(0, nullptr)
+throws length_error), not a node issue; `http_server.response_soft_limit` also fails on `main` (not yet investigated).
 `bash contrib/camo/regtest-demo.sh` — starts a private regtest node, mines to wallet Alice, sends 12.345 CAMO
 to Bob, and prints Bob's balance plus what the chain reveals (ring size 16, amounts hidden). Verified working on
 2026-10-30 (Linux build).
@@ -79,14 +93,26 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
 - [x] Pushed to GitHub `thedifference7717-sys/camo` (PRIVATE, Nov 3; make public when stagenet opens Nov 10). Branch `main`;
       Monero's repo is remote `upstream`. Seed servers can't clone a private repo: copy built binaries to them instead.
 - [ ] Rent 2–3 VPS seed nodes, add their IPs to `get_ip_seed_nodes()`
-- [ ] Public stagenet 2–4 weeks → signed reproducible binaries (`contrib/guix`) → announced fair launch
+- [ ] Public stagenet 2–4 weeks → signed reproducible binaries (`contrib/gitian`; Monero 0.18 has no guix) → announced fair launch
 - [x] 1-minute blocks; founder genesis tool
 - [x] Founder + marketing addresses received; block-1 allocation (489,600 / 54,400 / 96,000 burn) built and tested end to end
 - [x] Website (Nov 3): `website/` here, published from the PUBLIC repo `thedifference7717-sys/camo-website`
       (GitHub Pages, branch `main`): https://thedifference7717-sys.github.io/camo-website/ . `index.html` is the opening
       screen (living camo field, scope, hidden word CAMO; aim + click to enter), main site is `home.html`. Static, no
       third-party requests (self-hosted fonts, strict CSP). Edit in `website/` and copy to the public repo (keep in sync).
-- [ ] Explorer, pool
+- [~] Block explorer (Nov 3): fork of onion-monero-blockchain-explorer at upstream `29593b7` (last commit by known
+      contributors; the 4 later upstream commits by "Your Name <you@example.com>" are NOT used). Builds against this
+      repo's `build/release`; binary `camo-explorer`; CAMO ports/wording; night-ops theme. Tested on the stagenet
+      rehearsal chain: block 1 allocation, ring 16 + hidden amounts, view-key decode finds exactly 5 CAMO, Monero
+      addresses rejected. Code: PRIVATE repo `thedifference7717-sys/camo-explorer` (branch `main`, full upstream
+      history kept for BSD-3 attribution; see its README). Still needs a server. Operator rule: never run it with `--enable-mixin-guess`.
+- [~] Mining pool (Nov 3): jtgrassie/monero-pool at `db16e73` in PRIVATE repo `thedifference7717-sys/camo-pool`
+      (see its `camo/README.md`). **CAMO fix: never pay out block 1** (camod reports its 640,000 CAMO allocation as
+      the block reward; unpatched, the pool would credit it to block 1's miner). 1% fee via `pool-fee-wallet` =
+      marketing wallet; the pool wallet needs a small CAMO float for payout network fees; run camod with
+      `--block-notify`; XMRig needs `-a rx/0`. `camo/pool-test.sh` (regtest + XMRig) PASSES: block 1 mined through the
+      pool with the allocation, miner paid 99%, fee wallet 1.00%, payouts = exactly what the pool earned.
+      Still needs a server, the real wallets, and a minimum payout decision.
 - [ ] v1.1 (Q1 2027): **Ghillie** wallet (name locked Nov 2) — desktop + mobile, fast sync, built-in "mine while idle"
       + **remote mining control** (decided Nov 3): Ghillie mobile starts/stops and monitors mining on the user's own
       computers. Phones never mine (Apple and Google Play ban on-device mining; RandomX is weak on phones).
@@ -95,6 +121,14 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
   0.25% on built-in swaps, 1% official pool fee, optional tip off by default; all to the marketing wallet.
 - Website design (tactical "night-ops" look, original, not Call of Duty branding): https://claude.ai/artifact/QB6piNbZWjL9suC5Kvfirw
 - [ ] Adopt FCMP++ after it is audited and live on Monero
+- GitHub Actions (Nov 4): private-repo free minutes appear exhausted (jobs fail in ~3 s with no logs) after the heavy
+  workflow's stuck test jobs ran for hours. Making the repo public (Nov 10) gives free minutes; or set a budget.
+  build.yml now runs only on PRs/main/manual with a 2 h test cap; all workflows cancel superseded runs.
+- Launch tooling: `contrib/camo/STAGENET-LAUNCH.md` (Nov 10 runbook), `tools/set_seed_nodes.py` (seed IPs into code +
+  website in one step), `ANNOUNCE-DRAFT.md` (BitcoinTalk draft, not posted), `website/faq.html` (not yet published).
+  The wallet's `donate` command is disabled (it targeted Monero's donation address) until a CAMO address is chosen.
+- Ring size (decided Nov 4): **stay at 16** (Monero's audited choice). 32/64 were considered and rejected: +50%/+170%
+  tx size and fees, 2x/4x verification, modest privacy gain vs. side-channel heuristics. FCMP++ is the upgrade path.
 
 ## Handoff (Nov 3, 2026, from the claude.ai cloud session)
 Work moves to Claude Code from here; that session stops editing this repo.
@@ -113,11 +147,12 @@ Work moves to Claude Code from here; that session stops editing this repo.
     Watch this on the public stagenet.
   - miner wallet synced and saw 1,239.63 CAMO (237.74 unlocked); 5 CAMO spend sent; friend received exactly 5.0 CAMO
   - no ERROR/EXCEPTION lines in the node logs
+  **Nov 4 run 3 (with the 22 upstream fixes): PASS.** Block 1 allocation on a non-mining node; 3 nodes in sync at 20/35/86;
+  node 2 caught up in ~1 s; block times first 20 avg 28 s, last 20 avg 65 s; miner saw 1,239.63 CAMO; 5 CAMO arrived.
   Same day, with the fix: `regtest-demo.sh` passed without the mismatch flag (Bob 12.345 CAMO, ring 16, amounts
   hidden, RingCT type 6) and `attack_block1.py` passed all 4 checks. `allocation-spend-test.sh` was not re-run (it
   needs a build made with the TEST allocation keys).
-- Free next steps, in order: (1) ~~website~~ done Nov 3, see Status; (2) rebrand + test the block explorer (onion-monero-blockchain-explorer fork); (3) mining pool
-  with the 1% fee to the marketing wallet; (4) Windows/Mac/Linux release builds via `contrib/depends`;
+- Free next steps, in order: (1) ~~website~~ done Nov 3, see Status; (2) ~~block explorer~~ built and tested Nov 3 (repo `camo-explorer`), needs hosting; (3) ~~mining pool~~ built and tested Nov 3 (repo `camo-pool`), needs hosting; (4) Windows/Mac/Linux release builds via `contrib/depends`: GitHub Actions workflow `ci/gh-actions/depends` (Run workflow, or any push) uploads `camo-<platform>-<commit>` artifacts (camod, camo-wallet-cli, camo-wallet-rpc, LICENSE, SHA256SUMS) for x86_64/aarch64 Linux, Win64, Intel/Apple-Silicon Mac. Unsigned test builds; signed releases need gitian + Anthony's GPG key. (Cloud sessions can't run depends locally: the source hosts are blocked, only GitHub is reachable.);
   (5) mining guide, FAQ, BitcoinTalk announcement; (6) Ghillie mockups incl. remote mining control.
 - Needs Anthony: 3 seed servers (Oracle Always Free can host 2 small ARM ones for stagenet; plan 1 paid server before
   mainnet), a security contact email for SECURITY.md, social handles, making the repo public on Nov 10.

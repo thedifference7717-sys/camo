@@ -378,7 +378,7 @@ namespace tools
           string_encoding::base64_encode(rand_128bit.data(), rand_128bit.size())
         );
 
-        std::string temp = "monero-wallet-rpc." + bind_port + ".login";
+        std::string temp = "camo-wallet-rpc." + bind_port + ".login";
         rpc_login_file = tools::private_file::drop_and_recreate(temp);
         if (!rpc_login_file.handle())
         {
@@ -450,7 +450,7 @@ namespace tools
     tools::wallet2::BackgroundMiningSetupType setup = m_wallet->setup_background_mining();
     if (setup == tools::wallet2::BackgroundMiningNo)
     {
-      MLOG_RED(el::Level::Warning, "Background mining not enabled. Run \"set setup-background-mining 1\" in monero-wallet-cli to change.");
+      MLOG_RED(el::Level::Warning, "Background mining not enabled. Run \"set setup-background-mining 1\" in camo-wallet-cli to change.");
       return;
     }
 
@@ -476,7 +476,7 @@ namespace tools
       MINFO("The daemon is not set up to background mine.");
       MINFO("With background mining enabled, the daemon will mine when idle and not on battery.");
       MINFO("Enabling this supports the network you are using, and makes you eligible for receiving new monero");
-      MINFO("Set setup-background-mining to 1 in monero-wallet-cli to change.");
+      MINFO("Set setup-background-mining to 1 in camo-wallet-cli to change.");
       return;
     }
 
@@ -1074,7 +1074,7 @@ namespace tools
           }
           if (addresses.empty())
           {
-            er.message = std::string("No Monero address found at ") + url;
+            er.message = std::string("No CAMO address found at ") + url;
             return {};
           }
           return addresses[0];
@@ -1650,8 +1650,7 @@ namespace tools
 
         if (desc.change_amount > 0)
         {
-          const tools::wallet2::tx_construction_data &cd0 = tx_constructions[0];
-          desc.change_address = get_account_address_as_str(m_wallet->nettype(), cd0.subaddr_account > 0, cd0.change_dts.addr);
+          desc.change_address = get_account_address_as_str(m_wallet->nettype(), cd.subaddr_account > 0, cd.change_dts.addr);
           res.summary.change_address = desc.change_address;
         }
 
@@ -2492,7 +2491,7 @@ namespace tools
         }
         if (addresses.empty())
         {
-          er.message = std::string("No Monero address found at ") + url;
+          er.message = std::string("No CAMO address found at ") + url;
           return {};
         }
         return addresses[0];
@@ -3299,7 +3298,7 @@ namespace tools
         }
         if (addresses.empty())
         {
-          er.message = std::string("No Monero address found at ") + url;
+          er.message = std::string("No CAMO address found at ") + url;
           return {};
         }
         return addresses[0];
@@ -3347,7 +3346,7 @@ namespace tools
           }
           if (addresses.empty())
           {
-            er.message = std::string("No Monero address found at ") + url;
+            er.message = std::string("No CAMO address found at ") + url;
             return {};
           }
           return addresses[0];
@@ -4674,7 +4673,7 @@ namespace tools
             }
             if (addresses.empty())
             {
-              er.message = std::string("No Monero address found at ") + url;
+              er.message = std::string("No CAMO address found at ") + url;
               return {};
             }
             address = addresses[0];
@@ -5114,7 +5113,7 @@ int main(int argc, char** argv) {
     desc_params,
     po::positional_options_description(),
     [](const std::string &s, bool emphasis){ tools::scoped_message_writer(emphasis ? epee::console_color_white : epee::console_color_default, true) << s; },
-    "monero-wallet-rpc.log",
+    "camo-wallet-rpc.log",
     true
   );
   if (!vm)

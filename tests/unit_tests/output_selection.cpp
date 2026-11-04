@@ -113,10 +113,10 @@ TEST(select_outputs, gamma)
 {
   std::vector<uint64_t> offsets;
 
-  MKOFFSETS(300000, 1);
+  MKOFFSETS(300000 * 120 / DIFFICULTY_TARGET_V2, 1); // CAMO: same 416 days of history as Monero's test, at CAMO's block time
   tools::gamma_picker picker(offsets);
   std::vector<double> ages(100000);
-  double age_scale = 120. * (offsets.size() / (double)n_outs);
+  double age_scale = DIFFICULTY_TARGET_V2 * (offsets.size() / (double)n_outs); // CAMO: real block time (60 s), not Monero's 120 s
   for (size_t i = 0; i < ages.size(); )
   {
     uint64_t o = picker.pick();
@@ -124,7 +124,7 @@ TEST(select_outputs, gamma)
       continue;
     ages[i] = (n_outs - 1 - o) * age_scale;
     ASSERT_GE(ages[i], 0);
-    ASSERT_LE(ages[i], offsets.size() * 120);
+    ASSERT_LE(ages[i], offsets.size() * DIFFICULTY_TARGET_V2);
     ++i;
   }
   double median = epee::misc_utils::median(ages);

@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CAMO FAQ</title>
+<meta name="description" content="Answers about CAMO: what it is, how it differs from Monero, the disclosed allocation, mining, wallets, privacy limits and safe downloads.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; font-src 'self'; style-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0B0F0C">
+<link rel="icon" href="assets/favicon.ico" sizes="any">
+<link rel="icon" href="assets/camo-logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#start">Skip to content</a>
+<div class="grid-bg">
+
+<header class="topbar">
+  <nav class="wrap nav" aria-label="Main">
+    <a class="brand" href="home.html">
+      <img src="assets/camo-logo.svg" alt="" width="36" height="36">
+      <span>CAMO</span>
+    </a>
+    <div class="nav-links">
+      <a href="home.html">HOME</a>
+      <a href="stagenet.html">STAGENET</a>
+      <a href="mine.html">MINING GUIDE</a>
+      <a href="faq.html" aria-current="page">FAQ</a>
+    </div>
+    <a class="btn btn-solid btn-sm" href="stagenet.html">JOIN STAGENET</a>
+  </nav>
+</header>
+
+<main class="wrap doc" id="start">
+  <p class="kicker">// DEBRIEF</p>
+  <h1>Questions</h1>
+  <p class="lede">Straight answers, including the uncomfortable ones. If something here is unclear or wrong, tell us.</p>
+
+  <section class="doc-sec">
+    <h2><span class="step">01</span> The basics</h2>
+    <dl class="faq">
+      <dt>What is CAMO?</dt>
+      <dd>Digital cash that hides the sender, the receiver and the amount of every payment. Privacy is always on: there is no "transparent" mode to forget to switch off.</dd>
+      <dt>Is it a fork of Monero?</dt>
+      <dd>Yes, of Monero v0.18, and we say so plainly. CAMO keeps Monero's audited cryptography and consensus code unchanged and only changes parameters: its name, network ports, address format, genesis, 1-minute blocks and launch. We also merge Monero's bug and security fixes. The Monero and CryptoNote copyright notices and BSD-3 license are kept in full.</dd>
+      <dt>Then why not just use Monero?</dt>
+      <dd>Monero is excellent, and if it does what you need, use it. CAMO is a fresh start with a public stagenet and a fair launch where ordinary CPUs can mine from block 1, one disclosed allocation, and a wallet (Ghillie) designed around mining on the computers you already own.</dd>
+      <dt>When does it launch?</dt>
+      <dd>The public test network (stagenet) opens Nov 10, 2026. Mainnet starts Dec 15, 2026 at 18:00 UTC. Signed downloads are planned for Dec 7.</dd>
+    </dl>
+  </section>
+
+  <section class="doc-sec">
+    <h2><span class="step">02</span> Money and fairness</h2>
+    <dl class="faq">
+      <dt>Was there a pre-mine or pre-sale?</dt>
+      <dd>No sale of any kind. There is one disclosed allocation, fixed into block 1 by the consensus rules so it can't be changed or added to: 489,600 CAMO to the founder and 54,400 CAMO to a public marketing wallet (together 3.0% of the 18.13M main emission), plus 96,000 CAMO sent to a provably unspendable burn address. Everything else is mined.</dd>
+      <dt>How can I check that?</dt>
+      <dd>Coinbase amounts are public on chain, so anyone can read block 1. The burn address and its public view key are on the <a href="home.html#supply">home page</a>, and the founder and marketing view keys are published at launch.</dd>
+      <dt>How many CAMO will there be?</dt>
+      <dd>18.13 million over the first ~8 years (about 17 CAMO per block at launch, falling smoothly), then a permanent tail of 0.3 CAMO per block so miners are always paid to secure the network.</dd>
+      <dt>Where can I buy CAMO?</dt>
+      <dd>Nowhere yet, and be wary of anyone selling it before launch: there is nothing to sell. After launch the honest way to get CAMO is to mine it. Built-in BTC to CAMO swaps are planned in Ghillie (Q2 2027).</dd>
+      <dt>Is CAMO an investment?</dt>
+      <dd>No. It's open-source software. It may be worth nothing. Don't put in money you can't afford to lose.</dd>
+    </dl>
+  </section>
+
+  <section class="doc-sec">
+    <h2><span class="step">03</span> Privacy: what it hides, and its limits</h2>
+    <dl class="faq">
+      <dt>What exactly is hidden?</dt>
+      <dd>The sender (each spend hides among 16 possible senders), the receiver (every payment goes to a fresh one-time address) and the amount (sealed with RingCT and Bulletproofs+). Dandelion++ and optional Tor or I2P make it harder to link a transaction to your IP address.</dd>
+      <dt>So it's perfectly untraceable?</dt>
+      <dd>No system is. Ring signatures hide the real sender among 16 decoys, and careful analysis of timing and spending habits can sometimes narrow that down. Good habits help: keep your own node, don't reuse outputs in obvious patterns, and use Tor where it matters. The long-term fix is FCMP++, where every spend hides among every coin on the chain; CAMO will adopt it once it's audited and live on Monero.</dd>
+      <dt>Why ring size 16 and not bigger?</dt>
+      <dd>16 is the size Monero's researchers chose and years of real-world use have tested. Bigger rings make every transaction larger, slower to verify and more expensive, for a modest gain. We'd rather move to FCMP++ than invent an untested middle step.</dd>
+      <dt>Is using CAMO legal?</dt>
+      <dd>In most places, using private money is legal, but laws differ and change. Follow the laws where you live.</dd>
+    </dl>
+  </section>
+
+  <section class="doc-sec">
+    <h2><span class="step">04</span> Mining and wallets</h2>
+    <dl class="faq">
+      <dt>What do I need to mine?</dt>
+      <dd>Any modern computer. CAMO uses RandomX, which favors ordinary CPUs over special hardware. See the <a href="mine.html">mining guide</a>.</dd>
+      <dt>Can I mine on my phone?</dt>
+      <dd>No. Phones are slow at RandomX and app stores ban mining apps. Ghillie for phones will start, stop and watch mining on your own computers instead.</dd>
+      <dt>Which wallet should I use?</dt>
+      <dd>For now, the command-line wallet that ships with CAMO (<code>camo-wallet-cli</code>). Ghillie, CAMO's own desktop and mobile wallet, is planned for Q1 2027. Write down your 25 recovery words on paper; they are the only way back into your wallet.</dd>
+      <dt>Does Ghillie take a cut of my payments?</dt>
+      <dd>No, never on sends. An extra fee output would make Ghillie transactions recognizable, which defeats the point. The only fees are 0.25% on built-in swaps and the 1% official pool fee, both disclosed, plus an optional tip that is off by default.</dd>
+      <dt>Do hardware wallets work?</dt>
+      <dd>Not yet. Ledger and Trezor apps are built for Monero's network, not CAMO's.</dd>
+    </dl>
+  </section>
+
+  <section class="doc-sec">
+    <h2><span class="step">05</span> Safety</h2>
+    <dl class="faq">
+      <dt>How do I know a download is genuine?</dt>
+      <dd>Download only from the links on this site and CAMO's GitHub releases, and check the SHA-256 hash against the signed hash list. Anyone can rebuild the release from source and compare. Nobody from CAMO will ever DM you a download or ask for your 25 words.</dd>
+      <dt>I found a security problem.</dt>
+      <dd>Please report it privately to <span class="ph">[SECURITY CONTACT EMAIL]</span>, not in public, so it can be fixed before anyone is harmed.</dd>
+    </dl>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-in">
+    <div class="stack-xs">
+      <div class="brand brand-sm"><img src="assets/camo-logo.svg" alt="" width="28" height="28"><span>CAMO</span></div>
+      <p class="fine">Open-source software built on Monero. Not an offer to sell anything and not investment advice. Follow the laws where you live.</p>
+    </div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="home.html">HOME</a>
+      <a href="stagenet.html">STAGENET</a>
+      <a href="mine.html">MINING GUIDE</a>
+      <a href="assets/CAMO-White-Paper.pdf">WHITE PAPER</a>
+    </nav>
+  </div>
+</footer>
+
+</div>
+</body>
+</html>

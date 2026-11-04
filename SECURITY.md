@@ -18,7 +18,7 @@ wallet is planned once CAMO has value.
 | Upstream Monero bugs | A Monero bug is also a CAMO bug | Track `upstream/release-v0.18`; merge security fixes within days. Checked Nov 3, 2026: no new commits since the fork base. |
 | 51% attack in the first months | Recent payments reversed with rented RandomX hashrate | Checkpoints compiled into each point release, exchanges and merchants wait 60+ confirmations (~1 hour), monitor hashrate and reorg depth, grow miners before any listing. |
 | Seed nodes | Servers taken over or knocked offline | `contrib/camo/deploy-seed-node.sh`: default-deny firewall, RPC on localhost only, SSH key-only, fail2ban, automatic security updates, sandboxed unprivileged service. 3 nodes on different providers/regions. |
-| Fake downloads | Users install malware posing as CAMO | Reproducible builds (`contrib/guix`), GPG-signed SHA256 hashes, downloads only from the official site and GitHub releases. |
+| Fake downloads | Users install malware posing as CAMO | Reproducible builds (`contrib/gitian`), GPG-signed SHA256 hashes, downloads only from the official site and GitHub releases. |
 | Founder and marketing keys | Theft of the allocation | See below. |
 | Users' own devices | Malware, phishing, seed words photographed | Ghillie rules below, plus user education on the website. |
 
