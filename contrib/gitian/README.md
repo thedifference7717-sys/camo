@@ -1,7 +1,7 @@
 Gitian building
 ================
 
-*Setup instructions for a Gitian build of Monero.*
+*Setup instructions for a Gitian build (inherited from Monero; CAMO uses the same tooling). For CAMO's release checklist see [CAMO-RELEASE.md](CAMO-RELEASE.md); the quickest route is [DOCKRUN.md](DOCKRUN.md).*
 
 Gitian is the deterministic build process that is used to build the Monero CLI
 executables. It provides a way to be reasonably sure that the

@@ -75,5 +75,6 @@ Post the stagenet thread (draft: `contrib/camo/ANNOUNCE-DRAFT.md`), linking the 
 - `bash contrib/camo/tools/check_upstream.sh` weekly; merge Monero `release-v0.18` fixes promptly.
 
 ## Before mainnet (Dec 15)
-Mainnet seed IPs (`set_seed_nodes.py --mainnet ...`), signed reproducible builds (gitian + GPG key) by Dec 7,
+Mainnet seed IPs (`set_seed_nodes.py --mainnet ...`), signed reproducible builds by Dec 7 (`contrib/gitian/CAMO-RELEASE.md`;
+run the `ci/gh-actions/gitian` workflow by hand once the repo is public, well before then),
 explorer and pool hosted, checkpoints after launch (`src/checkpoints/checkpoints.cpp`).
