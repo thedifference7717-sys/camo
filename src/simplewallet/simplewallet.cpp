@@ -2374,7 +2374,7 @@ bool simple_wallet::welcome(const std::vector<std::string> &args)
   message_writer() << tr("Flaws in CAMO may be discovered in the future, and attacks may be developed to peek under some");
   message_writer() << tr("of the layers of privacy CAMO provides. Be safe and practice defense in depth.");
   message_writer() << "";
-  message_writer() << tr("Welcome to CAMO and financial privacy. For more information see https://GetMonero.org");
+  message_writer() << tr("Welcome to CAMO and financial privacy.");
   return true;
 }
 
@@ -3275,7 +3275,7 @@ bool simple_wallet::help(const std::vector<std::string> &args/* = std::vector<st
     message_writer() << tr("\"balance\" - Show balance.");
     message_writer() << tr("\"address all\" - Show all addresses.");
     message_writer() << tr("\"address new\" - Create new subaddress.");
-    message_writer() << tr("\"transfer <address> <amount>\" - Send XMR to an address.");
+    message_writer() << tr("\"transfer <address> <amount>\" - Send CAMO to an address.");
     message_writer() << tr("\"show_transfers [in|out|pending|failed|pool]\" - Show transactions.");
     message_writer() << tr("\"sweep_all <address>\" - Send whole balance to another wallet.");
     message_writer() << tr("\"seed\" - Show secret 25 words that can be used to recover this wallet.");
@@ -3284,7 +3284,7 @@ bool simple_wallet::help(const std::vector<std::string> &args/* = std::vector<st
     message_writer() << tr("\"version\" - Check software version.");
     message_writer() << tr("\"exit\" - Exit wallet.");
     message_writer() << "";
-    message_writer() << tr("\"donate <amount>\" - Donate XMR to the development team.");
+    message_writer() << tr("\"donate <amount>\" - Not available in CAMO yet.");
     message_writer() << "";
   }
   else if ((args.size() == 1) && (args.front() == "all"))
@@ -3446,7 +3446,7 @@ simple_wallet::simple_wallet()
   m_cmd_binder.set_handler("donate",
                            boost::bind(&simple_wallet::on_command, this, &simple_wallet::donate, _1),
                            tr(USAGE_DONATE),
-                           tr("Donate <amount> to the development team (donate.getmonero.org)."));
+                           tr("Not available in CAMO yet."));
   m_cmd_binder.set_handler("sign_transfer",
                            boost::bind(&simple_wallet::on_command, this, &simple_wallet::sign_transfer, _1),
                            tr(USAGE_SIGN_TRANSFER),
@@ -5100,7 +5100,7 @@ boost::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::pr
     "Use the \"help\" command to see a simplified list of available commands.\n"
     "Use \"help all\" command to see the list of all available commands.\n"
     "Use \"help <command>\" to see a command's documentation.\n"
-    "Always use the \"exit\" command when closing monero-wallet-cli to save \n"
+    "Always use the \"exit\" command when closing camo-wallet-cli to save \n"
     "your current session's state. Otherwise, you might need to synchronize \n"
     "your wallet again (your wallet keys are NOT at risk in any case).\n")
   ;
@@ -7842,6 +7842,10 @@ bool simple_wallet::sweep_below(const std::vector<std::string> &args_)
 bool simple_wallet::donate(const std::vector<std::string> &args_)
 {
   CHECK_IF_BACKGROUND_SYNCING("cannot donate");
+  // CAMO: the inherited command pays Monero's donation address (MONERO_DONATION_ADDR / donate.getmonero.org),
+  // which a CAMO wallet cannot parse, so it always failed. Disabled until CAMO picks a donation address.
+  fail_msg_writer() << tr("The donate command is not available in CAMO yet.");
+  return true;
   std::vector<std::string> local_args = args_;
   if(local_args.empty() || local_args.size() > 5)
   {
@@ -10815,12 +10819,12 @@ int main(int argc, char* argv[])
   bool should_terminate = false;
   std::tie(vm, should_terminate) = wallet_args::main(
    argc, argv,
-   "monero-wallet-cli [--wallet-file=<filename>|--generate-new-wallet=<filename>] [<COMMAND>]",
+   "camo-wallet-cli [--wallet-file=<filename>|--generate-new-wallet=<filename>] [<COMMAND>]",
     sw::tr("This is the command line monero wallet. It needs to connect to a monero\ndaemon to work correctly.\nWARNING: Do not reuse your CAMO keys on another fork, UNLESS this fork has key reuse mitigations built in. Doing so will harm your privacy."),
     desc_params,
     positional_options,
     [](const std::string &s, bool emphasis){ tools::scoped_message_writer(emphasis ? epee::console_color_white : epee::console_color_default, true) << s; },
-    "monero-wallet-cli.log"
+    "camo-wallet-cli.log"
   );
 
   if (!vm)
