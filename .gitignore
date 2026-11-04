@@ -118,3 +118,9 @@ nbproject
 __pycache__/
 *.pyc
 *.log
+
+# CAMO: wallets the wallet_storage unit tests write next to their fixtures on every run
+tests/data/wallet_00fd416a_copy_*
+tests/data/wallet_00fd416a_new_*
+tests/data/wallet_mem2file*
+tests/data/wallet_change_password_mem2file*
