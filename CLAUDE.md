@@ -94,6 +94,10 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       Monero's repo is remote `upstream`. Seed servers can't clone a private repo: copy built binaries to them instead.
 - [ ] Rent 2–3 VPS seed nodes, add their IPs to `get_ip_seed_nodes()`
 - [ ] Public stagenet 2–4 weeks → signed reproducible binaries (`contrib/gitian`; Monero 0.18 has no guix) → announced fair launch
+      Gitian is set up for CAMO (Nov 4): recipes and scripts build `camo-<host>-<tag>` from this repo, sigs repo
+      `thedifference7717-sys/camo-gitian.sigs` (Anthony to create), workflow `ci/gh-actions/gitian` on `v*` tags + manual
+      (Linux/Win/Mac). Checklist: `contrib/gitian/CAMO-RELEASE.md`. Not yet run end to end (no Docker daemon or depends
+      hosts in cloud sessions; Actions minutes). Open: release tag/version number (binaries say v0.18.5.4).
 - [x] 1-minute blocks; founder genesis tool
 - [x] Founder + marketing addresses received; block-1 allocation (489,600 / 54,400 / 96,000 burn) built and tested end to end
 - [x] Website (Nov 3): `website/` here, published from the PUBLIC repo `thedifference7717-sys/camo-website`
