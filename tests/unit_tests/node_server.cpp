@@ -677,7 +677,13 @@ TEST(cryptonote_protocol_handler, race_condition)
       reward,
       hardfork
     );
-    block.miner_tx.vout.push_back(cryptonote::tx_out{reward, cryptonote::txout_to_key{}});
+    // CAMO: v16 rules apply from block 1, and since v15 coinbase outputs must carry a view tag. Monero's version of
+    // this test only ever ran at v1 heights, so it used txout_to_key, which CAMO nodes rightly reject (and the test
+    // then waited forever for the sync to finish).
+    if (hardfork >= HF_VERSION_VIEW_TAGS)
+      block.miner_tx.vout.push_back(cryptonote::tx_out{reward, cryptonote::txout_to_tagged_key{}});
+    else
+      block.miner_tx.vout.push_back(cryptonote::tx_out{reward, cryptonote::txout_to_key{}});
     diff = storage.get_difficulty_for_next_block();
   };
   struct stat {
