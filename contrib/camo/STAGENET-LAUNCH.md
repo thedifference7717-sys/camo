@@ -69,8 +69,16 @@ reviewed, or publish them too (both are BSD-3 forks; licenses already kept).
 Post the stagenet thread (draft: `contrib/camo/ANNOUNCE-DRAFT.md`), linking the stagenet page and mining guide.
 
 ## 8. Watch (daily, 2-4 weeks)
+One command checks the points below for all seeds at once (over SSH; RPC stays local on the servers):
+```bash
+python3 contrib/camo/tools/camo_health.py --stagenet seed1=ssh://root@<IP1> seed2=ssh://root@<IP2> seed3=ssh://root@<IP3>
+```
+It checks that every node answers and has peers, is on CAMO's stagenet (genesis, block 1 = 640,000 allocation), that all
+agree on the chain, block times, stalls, competing chains and reorgs. Exit code 0/1/2 = OK/WARN/CRIT. To be alerted on
+your phone, keep it running with `--watch 300 --alert-cmd 'curl -s -d @- https://ntfy.sh/<long-random-topic>'`
+(the ntfy app subscribes to that topic; alerts only when something changes). Self-test: `tools/test_camo_health.sh`.
 - Block times trend toward 60 s (difficulty window is 720 blocks, about 12 hours of stagenet blocks).
-- Seed nodes stay in sync (`curl -s 127.0.0.1:39741/get_info` on each: same height and top hash).
+- Seed nodes stay in sync (same height and top hash; the health check compares them).
 - Testers' wallets sync and send (the hard-fork-table wallet bug fixed Nov 3 would show up here).
 - `bash contrib/camo/tools/check_upstream.sh` weekly; merge Monero `release-v0.18` fixes promptly.
 

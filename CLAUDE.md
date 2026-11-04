@@ -81,6 +81,10 @@ to Bob, and prints Bob's balance plus what the chain reveals (ring size 16, amou
 The test scripts must NOT pass `--allow-mismatched-daemon-version`: it skips the wallet's hard-fork checks and hid
 the sparse-fork-table bug below until Nov 3.
 `python3 contrib/camo/tools/attack_block1.py <rpc_port> <address>` against a fresh regtest node (block-1 attack test).
+`python3 contrib/camo/tools/camo_health.py --stagenet ssh://root@<IP> ...` — network health check (Nov 4): nodes up, peers,
+right genesis + block-1 allocation, all on one chain, block times, stalls, competing chains, reorgs; exit 0/1/2;
+`--watch N --alert-cmd CMD` for phone alerts. `bash contrib/camo/tools/test_camo_health.sh` (3 regtest nodes; forced split,
+reorg, stall, wrong network, dead node, ssh transport) passes 12/12. Regtest nodes need `--keep-fakechain` to survive restarts.
 `bash contrib/camo/stagenet-rehearsal.sh` — launch rehearsal (3 local stagenet nodes, real difficulty, ~80 min);
 exits non-zero if the miner sees no rewards, the spend fails, or the friend doesn't receive exactly 5 CAMO.
 
