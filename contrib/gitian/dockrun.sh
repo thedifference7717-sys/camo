@@ -47,10 +47,10 @@ RUN useradd -ms /bin/bash -U ubuntu -G docker
 USER ubuntu:docker
 WORKDIR $WORKDIR
 
-RUN	git clone https://github.com/monero-project/gitian.sigs.git sigs; \
+RUN	git clone https://github.com/thedifference7717-sys/camo-gitian.sigs.git sigs; \
   git clone https://github.com/devrandom/gitian-builder.git builder; \
   cd builder; git checkout c0f77ca018cb5332bfd595e0aff0468f77542c23; mkdir -p inputs var; cd inputs; \
-  git clone https://github.com/monero-project/monero
+  git clone https://github.com/thedifference7717-sys/camo camo
 
 CMD ["sleep", "infinity"]
 EOF
@@ -115,9 +115,9 @@ if [ "$check" != "sign" ]; then
 fi
 
 if [ ! -d sigs ]; then
-	git clone https://github.com/monero-project/gitian.sigs.git sigs
+	git clone https://github.com/thedifference7717-sys/camo-gitian.sigs.git sigs
 	cd sigs
-	git remote add $GH_USER git@github.com:$GH_USER/gitian.sigs.git
+	git remote add $GH_USER git@github.com:$GH_USER/camo-gitian.sigs.git
 	cd ..
 fi
 
