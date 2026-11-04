@@ -123,6 +123,16 @@ jobs:
         cp LICENSE "dist/$out/"
         (cd "dist/$out" && sha256sum camo* > SHA256SUMS && cat SHA256SUMS)
         echo "CAMO_DIST=$out" >> "$GITHUB_ENV"
+    # Smoke test the packaged Linux x86_64 binaries: private regtest chain, mine, send 12.345 CAMO, check it arrived
+    # with ring size 16 and hidden amounts. (Other platforms can't run in this container.)
+    - name: smoke test (regtest transfer with the packaged binaries)
+      if: ${{ matrix.toolchain.host == 'x86_64-unknown-linux-gnu' }}
+      run: |
+        ldd "dist/$CAMO_DIST/camod" || true
+        "dist/$CAMO_DIST/camod" --version
+        bash contrib/camo/regtest-demo.sh "$PWD/dist/$CAMO_DIST" | tee regtest.out
+        grep -q "Bob balance: 12.345 CAMO" regtest.out
+        grep -q "ring size per input \[16, 16\]" regtest.out
     - uses: actions/upload-artifact@v7
       if: ${{ env.CAMO_DIST != '' }}
       with:
