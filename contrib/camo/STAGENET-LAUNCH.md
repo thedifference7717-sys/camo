@@ -85,4 +85,6 @@ your phone, keep it running with `--watch 300 --alert-cmd 'curl -s -d @- https:/
 ## Before mainnet (Dec 15)
 Mainnet seed IPs (`set_seed_nodes.py --mainnet ...`), signed reproducible builds by Dec 7 (`contrib/gitian/CAMO-RELEASE.md`;
 run the `ci/gh-actions/gitian` workflow by hand once the repo is public, well before then),
-explorer and pool hosted, checkpoints after launch (`src/checkpoints/checkpoints.cpp`).
+explorer and pool hosted. After launch: checkpoints in v1.0.1 (Day 7) and each point release for 3 months:
+`python3 contrib/camo/tools/make_checkpoints.py --write seed1=ssh://root@<IP1> seed2=ssh://root@<IP2> seed3=ssh://root@<IP3>`
+(all seeds must agree; only blocks 720+ deep; existing lines are re-verified and never changed), then rebuild and release.
