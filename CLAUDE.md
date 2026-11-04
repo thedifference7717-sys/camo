@@ -106,6 +106,11 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
 - [x] Pushed to GitHub `thedifference7717-sys/camo` (PRIVATE, Nov 3; make public when stagenet opens Nov 10). Branch `main`;
       Monero's repo is remote `upstream`. Seed servers can't clone a private repo: copy built binaries to them instead.
 - [ ] Rent 2–3 VPS seed nodes, add their IPs to `get_ip_seed_nodes()`
+      Server setup guide for Anthony (Nov 4): https://claude.ai/artifact/Bo8C3gMDsscMF5ETi9d3Cb (SSH key, Oracle free ARM or
+      Hetzner, port 39740/19740, send IPs only). **Cloud sessions cannot SSH to servers** (outbound SSH blocked): Anthony runs
+      the commands from his Mac and pastes output back. On Nov 10, after the repo is public, each server installs with
+      `deploy-seed-node.sh --repo https://github.com/thedifference7717-sys/camo.git --stagenet` (builds on the server;
+      picks armv8-a on ARM; opens Oracle's own iptables REJECT rule for the P2P port; Oracle logs in as `ubuntu` + sudo).
 - [ ] Public stagenet 2–4 weeks → signed reproducible binaries (`contrib/gitian`; Monero 0.18 has no guix) → announced fair launch
       Gitian is set up for CAMO (Nov 4): recipes and scripts build `camo-<host>-<tag>` from this repo, sigs repo
       `thedifference7717-sys/camo-gitian.sigs` (Anthony to create), workflow `ci/gh-actions/gitian` on `v*` tags + manual
