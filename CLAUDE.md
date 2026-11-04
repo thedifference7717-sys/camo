@@ -72,6 +72,9 @@ CAMO failures: tests with hard-coded Monero addresses/files (address, uri, multi
 wallet_storage), DNS tests (no DNS in sandboxes). `cryptonote_protocol_handler.race_condition` hangs (exclude it with
 `--gtest_filter=-cryptonote_protocol_handler.race_condition`; also why CI's test job never finished).
 `select_outputs.gamma` was adapted to 60 s blocks: wallet decoy selection matches Monero's in time terms.
+Baseline comparison Nov 4: `main` before the upstream fixes fails the same 37 tests (now 36), so no regressions;
+the fixes add 8 passing tests. `ban.subnet` is a test bug with newer system Boost (parse_command_line(0, nullptr)
+throws length_error), not a node issue; `http_server.response_soft_limit` also fails on `main` (not yet investigated).
 `bash contrib/camo/regtest-demo.sh` — starts a private regtest node, mines to wallet Alice, sends 12.345 CAMO
 to Bob, and prints Bob's balance plus what the chain reveals (ring size 16, amounts hidden). Verified working on
 2026-10-30 (Linux build).
