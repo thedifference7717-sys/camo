@@ -5,7 +5,8 @@ import os
 import subprocess
 import sys
 
-gsigs = 'https://github.com/monero-project/gitian.sigs.git'
+# CAMO: signatures live in CAMO's own repo (Monero's sigs are for Monero's binaries)
+gsigs = 'https://github.com/thedifference7717-sys/camo-gitian.sigs.git'
 gbrepo = 'https://github.com/devrandom/gitian-builder.git'
 
 platforms = {'l': ['Linux', 'linux', 'tar.bz2'],
@@ -24,17 +25,20 @@ def setup():
     if not args.no_apt:
         subprocess.check_call(['sudo', 'apt-get', 'install', '-qq'] + programs)
     if not os.path.isdir('sigs'):
-        subprocess.check_call(['git', 'clone', gsigs, 'sigs'])
+        # CAMO: the sigs repo may not exist yet (or may be unreachable); the build itself doesn't need it
+        if subprocess.call(['git', 'clone', gsigs, 'sigs']) != 0:
+            print('note: could not clone ' + gsigs + '; using an empty sigs directory')
+            os.makedirs('sigs', exist_ok=True)
     if not os.path.isdir('builder'):
         subprocess.check_call(['git', 'clone', gbrepo, 'builder'])
     os.chdir('builder')
     subprocess.check_call(['git', 'checkout', 'c0f77ca018cb5332bfd595e0aff0468f77542c23'])
     os.makedirs('inputs', exist_ok=True)
     os.chdir('inputs')
-    if os.path.isdir('monero'):
-        # Remove the potentially stale monero dir. Otherwise you might face submodule mismatches.
-        subprocess.check_call(['rm', 'monero', '-fR'])
-    subprocess.check_call(['git', 'clone', args.url, 'monero'])
+    if os.path.isdir('camo'):
+        # Remove the potentially stale camo dir. Otherwise you might face submodule mismatches.
+        subprocess.check_call(['rm', 'camo', '-fR'])
+    subprocess.check_call(['git', 'clone', args.url, 'camo'])
     os.chdir('..')
     make_image_prog = ['bin/make-base-vm', '--suite', 'bionic', '--arch', 'amd64']
     if args.docker:
@@ -66,10 +70,10 @@ def rebuild():
         suffix = platforms[i][2]
 
         print('\nCompiling ' + args.version + ' ' + os_name)
-        infile = 'inputs/monero/contrib/gitian/gitian-' + tag_name + '.yml'
-        subprocess.check_call(['bin/gbuild', '-j', args.jobs, '-m', args.memory, '--commit', 'monero='+args.commit, '--url', 'monero='+args.url, infile])
+        infile = 'inputs/camo/contrib/gitian/gitian-' + tag_name + '.yml'
+        subprocess.check_call(['bin/gbuild', '-j', args.jobs, '-m', args.memory, '--commit', 'camo='+args.commit, '--url', 'camo='+args.url, infile])
         subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-'+tag_name, '--destination', '../sigs/', infile])
-        subprocess.check_call('mv build/out/monero-*.' + suffix + ' ../out/'+args.version, shell=True)
+        subprocess.check_call('mv build/out/camo-*.' + suffix + ' ../out/'+args.version, shell=True)
         print('Moving var/install.log to var/install-' + tag_name + '.log')
         subprocess.check_call('mv var/install.log var/install-' + tag_name + '.log', shell=True)
         print('Moving var/build.log to var/build-' + tag_name + '.log')
@@ -80,8 +84,8 @@ def rebuild():
     if args.commit_files:
         print('\nCommitting '+args.version+' Unsigned Sigs\n')
         os.chdir('sigs')
-        for i, v in platforms:
-            subprocess.check_call(['git', 'add', args.version+'-'+v[1]+'/'+args.signer])
+        for i in args.os:
+            subprocess.check_call(['git', 'add', args.version+'-'+platforms[i][1]+'/'+args.signer])
         subprocess.check_call(['git', 'commit', '-m', 'Add '+args.version+' unsigned sigs for '+args.signer])
         os.chdir(workdir)
 
@@ -93,7 +97,7 @@ def build():
     os.chdir('builder')
     os.makedirs('inputs', exist_ok=True)
 
-    subprocess.check_call(['make', '-C', 'inputs/monero/contrib/depends', 'download', 'SOURCES_PATH=' + os.getcwd() + '/cache/common'])
+    subprocess.check_call(['make', '-C', 'inputs/camo/contrib/depends', 'download', 'SOURCES_PATH=' + os.getcwd() + '/cache/common'])
 
     rebuild()
 
@@ -102,9 +106,10 @@ def verify():
     global args, workdir
     os.chdir('builder')
 
-    for i, v in platforms:
-        print('\nVerifying v'+args.version+' '+v[0]+'\n')
-        subprocess.check_call(['bin/gverify', '-v', '-d', '../sigs/', '-r', args.version+'-'+v[1], 'inputs/monero/contrib/gitian/gitian-'+v[1]+'.yml'])
+    for i in args.os:
+        v = platforms[i]
+        print('\nVerifying '+args.version+' '+v[0]+'\n')
+        subprocess.check_call(['bin/gverify', '-v', '-d', '../sigs/', '-r', args.version+'-'+v[1], 'inputs/camo/contrib/gitian/gitian-'+v[1]+'.yml'])
     os.chdir(workdir)
 
 def main():
@@ -113,11 +118,11 @@ def main():
     parser = argparse.ArgumentParser(description='Script for running full Gitian builds.', usage='%(prog)s [options] signer version')
     parser.add_argument('-c', '--commit', action='store_true', dest='commit', help='Indicate that the version argument is for a commit or branch')
     parser.add_argument('-p', '--pull', action='store_true', dest='pull', help='Indicate that the version argument is the number of a github repository pull request')
-    parser.add_argument('-u', '--url', dest='url', default='https://github.com/monero-project/monero', help='Specify the URL of the repository. Default is %(default)s')
+    parser.add_argument('-u', '--url', dest='url', default='https://github.com/thedifference7717-sys/camo', help='Specify the URL of the repository. Default is %(default)s')
     parser.add_argument('-v', '--verify', action='store_true', dest='verify', help='Verify the Gitian build')
     parser.add_argument('-b', '--build', action='store_true', dest='build', help='Do a Gitian build')
     parser.add_argument('-B', '--buildsign', action='store_true', dest='buildsign', help='Build both signed and unsigned binaries')
-    parser.add_argument('-o', '--os', dest='os', default='lafwm', help='Specify which Operating Systems the build is for. Default is %(default)s. l for Linux, a for Android, f for FreeBSD, w for Windows, m for MacOS')
+    parser.add_argument('-o', '--os', dest='os', default='lwm', help='Specify which Operating Systems the build is for. Default is %(default)s. l for Linux, a for Android, f for FreeBSD, w for Windows, m for MacOS')
     parser.add_argument('-r', '--rebuild', action='store_true', dest='rebuild', help='Redo a Gitian build')
     parser.add_argument('-R', '--rebuildsign', action='store_true', dest='rebuildsign', help='Redo and sign a Gitian build')
     parser.add_argument('-j', '--jobs', dest='jobs', default='2', help='Number of processes to use. Default %(default)s')
@@ -170,16 +175,17 @@ def main():
         print('Try '+script_name+' --help for more information')
         sys.exit(1)
 
-    # Add leading 'v' for tags
     if args.commit and args.pull:
         raise Exception('Cannot have both commit and pull')
-    args.commit = args.commit if args.commit else args.version
+    # The version argument is what gets checked out: a tag (e.g. v1.0.0), a branch or a commit hash.
+    # (Upstream set args.commit to True here when -c was given, which made `git checkout True` fail.)
+    args.commit = args.version
 
     if args.setup:
         setup()
 
-    os.makedirs('builder/inputs/monero', exist_ok=True)
-    os.chdir('builder/inputs/monero')
+    os.makedirs('builder/inputs/camo', exist_ok=True)
+    os.chdir('builder/inputs/camo')
     if args.pull:
         subprocess.check_call(['git', 'fetch', args.url, 'refs/pull/'+args.version+'/merge'])
         args.commit = subprocess.check_output(['git', 'show', '-s', '--format=%H', 'FETCH_HEAD'], universal_newlines=True).strip()
