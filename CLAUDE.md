@@ -105,14 +105,18 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       repo's `build/release`; binary `camo-explorer`; CAMO ports/wording; night-ops theme. Tested on the stagenet
       rehearsal chain: block 1 allocation, ring 16 + hidden amounts, view-key decode finds exactly 5 CAMO, Monero
       addresses rejected. Code: PRIVATE repo `thedifference7717-sys/camo-explorer` (branch `main`, full upstream
-      history kept for BSD-3 attribution; see its README). Still needs a server. Operator rule: never run it with `--enable-mixin-guess`.
+      history kept for BSD-3 attribution; see its README). Still needs a server: deploy with
+      `contrib/camo/deploy-services.sh --explorer [--tor] [--explorer-domain D]` (bundle from `tools/make_source_bundle.sh`). Operator rule: never run it with `--enable-mixin-guess`.
 - [~] Mining pool (Nov 3): jtgrassie/monero-pool at `db16e73` in PRIVATE repo `thedifference7717-sys/camo-pool`
       (see its `camo/README.md`). **CAMO fix: never pay out block 1** (camod reports its 640,000 CAMO allocation as
       the block reward; unpatched, the pool would credit it to block 1's miner). 1% fee via `pool-fee-wallet` =
       marketing wallet; the pool wallet needs a small CAMO float for payout network fees; run camod with
       `--block-notify`; XMRig needs `-a rx/0`. `camo/pool-test.sh` (regtest + XMRig) PASSES: block 1 mined through the
       pool with the allocation, miner paid 99%, fee wallet 1.00%, payouts = exactly what the pool earned.
-      Still needs a server, the real wallets, and a minimum payout decision.
+      Still needs a server, the real wallets, and a minimum payout decision. Deploy with `deploy-services.sh --pool
+      --pool-fee-wallet <addr> --pool-min-payout <x>` (STAGENET-LAUNCH.md step 3b). Stagenet fee wallet = the marketing
+      wallet's stagenet address `QRF1BeCD...` (same keys). Note: stagenet addresses are 97 chars (prefix 140 is a 2-byte
+      varint); mainnet addresses are 95. The pool silently ignores an invalid fee wallet (fee then stays in the pool wallet).
 - [ ] v1.1 (Q1 2027): **Ghillie** wallet (name locked Nov 2) — desktop + mobile, fast sync, built-in "mine while idle"
       + **remote mining control** (decided Nov 3): Ghillie mobile starts/stops and monitors mining on the user's own
       computers. Phones never mine (Apple and Google Play ban on-device mining; RandomX is weak on phones).
