@@ -983,7 +983,7 @@ TEST(boosted_tcp_server, slow_reader_is_not_dropped_mid_response)
   in_socket.set_option(boost::asio::socket_base::receive_buffer_size(4 * 1024), ec);
 
   const auto shared = std::make_shared<shared_t>();
-  const auto out_connection = std::make_shared<connection_t>(
+  const auto out_connection = boost::make_shared<connection_t>( // CAMO/0.18: connection uses boost::enable_shared_from_this
     context,
     std::move(out_socket),
     shared,
