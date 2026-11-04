@@ -29,8 +29,9 @@
 #include "gtest/gtest.h"
 #include "wallet/wallet2.h"
 
-#define TEST_ADDRESS "9tTLtauaEKSj7xoVXytVH32R1pLZBk4VV4mZFGEh4wkXhDWqw1soPyf3fGixf1kni31VznEZkWNEza9d5TvjWwq5PaohYHC"
-#define TEST_INTEGRATED_ADDRESS "A4A1uPj4qaxj7xoVXytVH32R1pLZBk4VV4mZFGEh4wkXhDWqw1soPyf3fGixf1kni31VznEZkWNEza9d5TvjWwq5acaPMJfMbn3ReTsBpp"
+// CAMO: the same keys as Monero's test addresses, re-encoded with CAMO's testnet prefixes (112 standard, 113 integrated).
+#define TEST_ADDRESS "Kkq2iDDg76xj7xoVXytVH32R1pLZBk4VV4mZFGEh4wkXhDWqw1soPyf3fGixf1kni31VznEZkWNEza9d5TvjWwq5Pf6U4Rn"
+#define TEST_INTEGRATED_ADDRESS "KvXhj23AiNUj7xoVXytVH32R1pLZBk4VV4mZFGEh4wkXhDWqw1soPyf3fGixf1kni31VznEZkWNEza9d5TvjWwq5acaPMJfMbn3RfzU8As"
 // included payment id: <f612cac0b6cb1cda>
 
 #define PARSE_URI(uri, expected) \
