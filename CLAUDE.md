@@ -137,6 +137,16 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
 - [ ] v1.1 (Q1 2027): **Ghillie** wallet (name locked Nov 2) — desktop + mobile, fast sync, built-in "mine while idle"
       + **remote mining control** (decided Nov 3): Ghillie mobile starts/stops and monitors mining on the user's own
       computers. Phones never mine (Apple and Google Play ban on-device mining; RandomX is weak on phones).
+      **Mockups (Nov 4):** https://claude.ai/artifact/RfFeusuAaxrHQnLayoFgVM (design canvas; opens on the phone home
+      screen, tap-through prototype). Screens: mobile wallet home, send, receive, remote mining (start/stop per rig),
+      pair a computer; desktop wallet + "mine while idle". Look decided by Anthony: **retro but very readable**. VT323
+      pixel font (smoothing off) for headings, labels, big numbers, addresses and pixel buttons; Inter for body text;
+      **notched 4 px corners** on cards/buttons/inputs (no drop shadows); dark pixel-camo texture on key cards; colors
+      from the website. **The Ghillie logo stays clean and smooth** (`website/assets/ghillie-icon-512.png`, never
+      pixelated). Rejected Nov 4: pixel icons + pixel body text (less readable), Pixelify/Silkscreen/Press Start 2P.
+      UX decisions in the mockups: "Ghillie fee: 0 · never" shown on send; fresh address per payer; `camo:` payment
+      links; pairing by QR or pairing words, end to end encrypted, phone can start/stop/cap CPU/watch but never spend,
+      see keys or change payout; mine-while-idle defaults: 5 min idle, 75% CPU cap, never on battery; no fiat prices.
 - [ ] v1.2 (Q2 2027): built-in BTC↔CAMO atomic swaps; merchant checkout plugins
 - Ghillie fee model (decided Nov 3): **no fee on sends, ever** (an extra output would fingerprint Ghillie txs);
   0.25% on built-in swaps, 1% official pool fee, optional tip off by default; all to the marketing wallet.
