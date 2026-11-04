@@ -171,8 +171,12 @@ Work moves to Claude Code from here; that session stops editing this repo.
   **Nov 4 run 3 (with the 22 upstream fixes): PASS.** Block 1 allocation on a non-mining node; 3 nodes in sync at 20/35/86;
   node 2 caught up in ~1 s; block times first 20 avg 28 s, last 20 avg 65 s; miner saw 1,239.63 CAMO; 5 CAMO arrived.
   Same day, with the fix: `regtest-demo.sh` passed without the mismatch flag (Bob 12.345 CAMO, ring 16, amounts
-  hidden, RingCT type 6) and `attack_block1.py` passed all 4 checks. `allocation-spend-test.sh` was not re-run (it
-  needs a build made with the TEST allocation keys).
+  hidden, RingCT type 6) and `attack_block1.py` passed all 4 checks. **Nov 4, `allocation-spend-test.sh` re-run on current
+  `main` (after the upstream fixes, camo: URIs): PASS 6/6** (block 1 allocation, founder wallet sees 489,600 unlocked, 1,000
+  CAMO spent with ring 16 and hidden amounts, marketing view-only 54,400, burn view key 96,000). How: fresh throwaway test
+  wallets, `make_allocation.py` into the header temporarily, rebuild (~30 s), run with `CAMO_TEST_KEYS_DIR`, then
+  `git checkout` the header and rebuild; the script now exits non-zero on any failed check (against the real build it
+  correctly fails the wallet checks). Never commit a test allocation header.
 - Free next steps, in order: (1) ~~website~~ done Nov 3, see Status; (2) ~~block explorer~~ built and tested Nov 3 (repo `camo-explorer`), needs hosting; (3) ~~mining pool~~ built and tested Nov 3 (repo `camo-pool`), needs hosting; (4) Windows/Mac/Linux release builds via `contrib/depends`: GitHub Actions workflow `ci/gh-actions/depends` (Run workflow, or any push) uploads `camo-<platform>-<commit>` artifacts (camod, camo-wallet-cli, camo-wallet-rpc, LICENSE, SHA256SUMS) for x86_64/aarch64 Linux, Win64, Intel/Apple-Silicon Mac. Unsigned test builds; signed releases need gitian + Anthony's GPG key. (Cloud sessions can't run depends locally: the source hosts are blocked, only GitHub is reachable.);
   (5) mining guide, FAQ, BitcoinTalk announcement; (6) Ghillie mockups incl. remote mining control.
 - Needs Anthony: 3 seed servers (Oracle Always Free can host 2 small ARM ones for stagenet; plan 1 paid server before
