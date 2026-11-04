@@ -107,6 +107,8 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
   0.25% on built-in swaps, 1% official pool fee, optional tip off by default; all to the marketing wallet.
 - Website design (tactical "night-ops" look, original, not Call of Duty branding): https://claude.ai/artifact/QB6piNbZWjL9suC5Kvfirw
 - [ ] Adopt FCMP++ after it is audited and live on Monero
+- Ring size (decided Nov 4): **stay at 16** (Monero's audited choice). 32/64 were considered and rejected: +50%/+170%
+  tx size and fees, 2x/4x verification, modest privacy gain vs. side-channel heuristics. FCMP++ is the upgrade path.
 
 ## Handoff (Nov 3, 2026, from the claude.ai cloud session)
 Work moves to Claude Code from here; that session stops editing this repo.
