@@ -1,7 +1,12 @@
 name: ci/gh-actions/gitian
 
+# CAMO: reproducible release builds. Runs on release tags (v*), by hand (Actions -> Run workflow), and on PRs that
+# touch the build recipes. The repo is cloned from the runner's own checkout, so this works while the repo is private.
 on:
+  workflow_dispatch:
   push:
+    tags:
+      - 'v*'
     paths:
       - 'contrib/depends/**'
       - 'contrib/gitian/**'
@@ -22,6 +27,7 @@ concurrency:
 jobs:
   build-gitian:
     runs-on: ubuntu-22.04
+    timeout-minutes: 330
     strategy:
       fail-fast: false
       matrix:
@@ -30,10 +36,6 @@ jobs:
             option: "l"
           - name: "Windows"
             option: "w"
-          - name: "Android"
-            option: "a"
-          - name: "FreeBSD"
-            option: "f"
           - name: "macOS"
             option: "m"
     name: ${{ matrix.operating-system.name }}
@@ -41,6 +43,7 @@ jobs:
     - uses: actions/checkout@v5
       with:
         submodules: recursive
+        fetch-depth: 0
     - name: prepare
       run: |
         sudo apt update
@@ -48,20 +51,21 @@ jobs:
         chmod +x gitian-build.py
     - name: set env
       run: |
-        if [ "${{ github.event_name }}" = "pull_request" ]; then
-          echo "GITIAN_VERSION=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
-          echo "GITIAN_OUTDIR=pull-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
-          echo "GITIAN_EXTRA_FLAGS=--pull" >> $GITHUB_ENV
+        if [ "${{ github.ref_type }}" != "tag" ]; then
+          # build exactly the commit this run checked out (for a PR: the merge commit)
+          echo "GITIAN_VERSION=$(git rev-parse HEAD)" >> $GITHUB_ENV
+          echo "GITIAN_OUTDIR=$(git rev-parse HEAD)" >> $GITHUB_ENV
+          echo "GITIAN_EXTRA_FLAGS=--commit" >> $GITHUB_ENV
         else
           echo "GITIAN_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
           echo "GITIAN_OUTDIR=${{ github.ref_name }}" >> $GITHUB_ENV
         fi
     - name: setup
       run: |
-        ./gitian-build.py --setup --docker --url https://github.com/${{ github.repository }} ${{ env.GITIAN_EXTRA_FLAGS }} github-actions ${{ env.GITIAN_VERSION }}
+        ./gitian-build.py --setup --docker --url ${{ github.workspace }} ${{ env.GITIAN_EXTRA_FLAGS }} github-actions ${{ env.GITIAN_VERSION }}
     - name: build
       run: |
-        ./gitian-build.py --docker --url https://github.com/${{ github.repository }} --detach-sign --no-commit --build -j 3 -o ${{ matrix.operating-system.option }} ${{ env.GITIAN_EXTRA_FLAGS }} github-actions ${{ env.GITIAN_VERSION }}
+        ./gitian-build.py --docker --url ${{ github.workspace }} --detach-sign --no-commit --build -j 4 -o ${{ matrix.operating-system.option }} ${{ env.GITIAN_EXTRA_FLAGS }} github-actions ${{ env.GITIAN_VERSION }}
     - name: post build
       run: |
         cd out/${{ env.GITIAN_OUTDIR }}
@@ -71,6 +75,6 @@ jobs:
         echo \`\`\` >> $GITHUB_STEP_SUMMARY
     - uses: actions/upload-artifact@v7
       with:
-        name: ${{ matrix.operating-system.name }}
+        name: camo-gitian-${{ matrix.operating-system.name }}-${{ env.GITIAN_OUTDIR }}
         path: |
           out/${{ env.GITIAN_OUTDIR }}/*
