@@ -31,6 +31,22 @@ ssh root@<IP> 'bash /root/deploy-seed-node.sh --binary /root/camod --stagenet'
 Make sure your SSH key is in `/root/.ssh/authorized_keys` first (the script then disables password logins).
 Check: `ssh root@<IP> journalctl -u camod -f` shows peers and, once someone mines, new blocks.
 
+## 3b. Explorer and pool (on one of the seed nodes; 1-1.5 h, mostly the build)
+While the repos are private, bundle the sources on a machine that has all three repos checked out:
+```bash
+bash contrib/camo/tools/make_source_bundle.sh --explorer ../camo-explorer --pool ../camo-pool
+scp camo-bundle-*.tar.gz contrib/camo/deploy-services.sh root@<IP>:/root/
+ssh root@<IP> 'bash /root/deploy-services.sh --bundle /root/camo-bundle-*.tar.gz --stagenet --explorer --tor \
+  --pool --pool-fee-wallet QRF1BeCDpUdPvpDqSpe97KKWEphrXL7zadjcaYVD2hcb4ELRHabLjPi2QbxE1Hqignia4B5sW7D8kUkRUXKVBWF62QG274FjV \
+  --pool-min-payout <decided amount>'
+```
+`QRF1BeCD...` is the public marketing wallet's stagenet address (same keys as `Cfbe7EfJ...`; derived with
+`make_genesis.py`'s `parse_address` / `camo_address`). To see these stagenet funds, restore the marketing seed in a wallet started with `--stagenet`.
+Add `--explorer-domain` / `--pool-domain` once DNS points at the server (Caddy gets HTTPS certificates; no access logs).
+The first run stops after the build and prints one command to create the pool's hot wallet: run it on the server,
+write the 25 words down offline, then re-run the same deploy command. Send a few CAMO to the pool wallet as a float
+for payout network fees. `--stage DIR` builds and writes everything into DIR without touching the system (dry run).
+
 ## 4. First blocks (whoever goes first)
 Stagenet has its own genesis and block 1 (stagenet allocation, same amounts as mainnet, test coins).
 Mine from any machine: `./camod --stagenet` then `start_mining <stagenet address> 2` in a stagenet wallet, or
