@@ -85,6 +85,10 @@ the sparse-fork-table bug below until Nov 3.
 right genesis + block-1 allocation, all on one chain, block times, stalls, competing chains, reorgs; exit 0/1/2;
 `--watch N --alert-cmd CMD` for phone alerts. `bash contrib/camo/tools/test_camo_health.sh` (3 regtest nodes; forced split,
 reorg, stall, wrong network, dead node, ssh transport) passes 12/12. Regtest nodes need `--keep-fakechain` to survive restarts.
+`python3 contrib/camo/tools/make_checkpoints.py [--write] NODES...` — compiled-in checkpoints for the Day 7/weekly releases
+(Nov 4): all nodes must agree, 720+ blocks deep, existing lines re-verified and append-only. camod enforces compiled-in
+checkpoints on MAINNET only (as Monero; stagenet/testnet sections are wallet-only). Tested on a local mainnet-mode chain:
+syncing node "CHECKPOINT PASSED" at each height; a node mining its own chain refused at block 1. Never commit test checkpoints.
 `bash contrib/camo/stagenet-rehearsal.sh` — launch rehearsal (3 local stagenet nodes, real difficulty, ~80 min);
 exits non-zero if the miner sees no rewards, the spend fails, or the friend doesn't receive exactly 5 CAMO.
 
