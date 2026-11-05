@@ -52,8 +52,9 @@
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.simplewallet"
-// Hardcode Monero's donation address (see #1447)
-constexpr const char MONERO_DONATION_ADDR[] = "888tNkZrPN6JsEgekjMnABU4TBzc2Dt29EPAvkRxbANsAnjyPbb3iQ1YBRk1UXcdRsiKc9dhwMVgN5S9cQUiyoogDavup3H";
+// CAMO: the donate command pays the public marketing wallet (decided Nov 5; the same wallet that receives the
+// block-1 marketing allocation and the official pool's fee). On testnet/stagenet the same keys are used.
+constexpr const char MONERO_DONATION_ADDR[] = "Cfbe7EfJzZW4H6Li6bvsmfTvjdQE5gsGvTf1PhS9MvnnEHpQUwgxVvFJd79u6KsgibPht4u2PRyj2fU7awZCoaPc6FaAtK4";
 
 /*!
  * \namespace cryptonote
