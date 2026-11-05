@@ -23,6 +23,10 @@ Download from the workflow run's Artifacts: `camo-x86_64-unknown-linux-gnu-<comm
 from libc, so they run on any current Linux.
 
 ## 3. Seed nodes (15 min each)
+Step-by-step for Anthony (SSH key, Oracle/Hetzner, ports, commands): https://claude.ai/artifact/Bo8C3gMDsscMF5ETi9d3Cb .
+Once the repo is public, the simplest install builds on the server (works on ARM too):
+`ssh ubuntu@<IP> 'curl -fsSL https://raw.githubusercontent.com/thedifference7717-sys/camo/main/contrib/camo/deploy-seed-node.sh -o deploy-seed-node.sh && sudo bash deploy-seed-node.sh --repo https://github.com/thedifference7717-sys/camo.git --stagenet'`
+(Oracle logs in as `ubuntu`, Hetzner as `root`). While the repo is still private, use a prebuilt binary instead:
 Copy `camod` and the installer to each server, then as root:
 ```bash
 scp camod contrib/camo/deploy-seed-node.sh root@<IP>:/root/
