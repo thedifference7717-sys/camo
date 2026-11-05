@@ -137,7 +137,7 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       marketing wallet; the pool wallet needs a small CAMO float for payout network fees; run camod with
       `--block-notify`; XMRig needs `-a rx/0`. `camo/pool-test.sh` (regtest + XMRig) PASSES: block 1 mined through the
       pool with the allocation, miner paid 99%, fee wallet 1.00%, payouts = exactly what the pool earned.
-      Still needs a server, the real wallets, and a minimum payout decision. Deploy with `deploy-services.sh --pool
+      Still needs a server and the real wallets. Minimum payout: **0.25 CAMO** (decided Nov 5). Deploy with `deploy-services.sh --pool
       --pool-fee-wallet <addr> --pool-min-payout <x>` (STAGENET-LAUNCH.md step 3b). Stagenet fee wallet = the marketing
       wallet's stagenet address `QRF1BeCD...` (same keys). Note: stagenet addresses are 97 chars (prefix 140 is a 2-byte
       varint); mainnet addresses are 95. The pool silently ignores an invalid fee wallet (fee then stays in the pool wallet).
