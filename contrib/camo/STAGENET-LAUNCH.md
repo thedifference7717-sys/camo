@@ -36,6 +36,10 @@ Make sure your SSH key is in `/root/.ssh/authorized_keys` first (the script then
 Check: `ssh root@<IP> journalctl -u camod -f` shows peers and, once someone mines, new blocks.
 
 ## 3b. Explorer and pool (on one of the seed nodes; 1-1.5 h, mostly the build)
+Nov 10 options, since `camo-explorer` and `camo-pool` are separate PRIVATE repos (Anthony's Mac has no checkout):
+(a) make both public too (BSD-3 forks, licenses kept) and pass `--camo-src/--explorer-src/--pool-src` GitHub URLs, or
+(b) Claude builds the bundle in its session (`make_source_bundle.sh`, ~17 MB, checked Nov 5) and sends it as a file;
+Anthony copies it to the server with `scp`. Commands below are for (b).
 While the repos are private, bundle the sources on a machine that has all three repos checked out:
 ```bash
 bash contrib/camo/tools/make_source_bundle.sh --explorer ../camo-explorer --pool ../camo-pool
