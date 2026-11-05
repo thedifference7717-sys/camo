@@ -6,7 +6,7 @@ Times are rough. Commands run from the `camo` repo root unless noted.
 ## 0. Decide (Anthony)
 - [ ] Servers: 2-3 Ubuntu 22.04/24.04 VPSes (Oracle Always Free ARM is fine for stagenet). Note each public IPv4.
 - [ ] Security contact email (SECURITY.md, website stagenet page).
-- [ ] Pool minimum payout (suggested 0.1-0.5 CAMO) if the pool runs on stagenet.
+- [x] Pool minimum payout: **0.25 CAMO** (decided Nov 5).
 - [ ] Merge the open PR into `main` (release builds + upstream fixes).
 
 ## 1. Seed IPs into the code (10 min)
@@ -42,7 +42,7 @@ bash contrib/camo/tools/make_source_bundle.sh --explorer ../camo-explorer --pool
 scp camo-bundle-*.tar.gz contrib/camo/deploy-services.sh root@<IP>:/root/
 ssh root@<IP> 'bash /root/deploy-services.sh --bundle /root/camo-bundle-*.tar.gz --stagenet --explorer --tor \
   --pool --pool-fee-wallet QRF1BeCDpUdPvpDqSpe97KKWEphrXL7zadjcaYVD2hcb4ELRHabLjPi2QbxE1Hqignia4B5sW7D8kUkRUXKVBWF62QG274FjV \
-  --pool-min-payout <decided amount>'
+  --pool-min-payout 0.25'
 ```
 `QRF1BeCD...` is the public marketing wallet's stagenet address (same keys as `Cfbe7EfJ...`; derived with
 `make_genesis.py`'s `parse_address` / `camo_address`). To see these stagenet funds, restore the marketing seed in a wallet started with `--stagenet`.
@@ -62,7 +62,7 @@ block 2 onward pays normally.
 cp website/* ../camo-website/   # plus any changed assets
 cd ../camo-website && git add -A && git commit -m "Stagenet open: seed nodes" && git push
 ```
-Remaining placeholders to fill: stagenet explorer link, pool address/stats link, min payout, security email.
+Remaining placeholders to fill: stagenet explorer link, pool address/stats link, security email.
 
 ## 6. Make the code public
 GitHub -> camo -> Settings -> General -> Danger zone -> Change visibility -> Public. The website's GitHub link and

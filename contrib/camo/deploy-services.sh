@@ -5,7 +5,7 @@
 # Usage (as root, on the server):
 #   bash deploy-services.sh --bundle /root/camo-bundle-<rev>.tar.gz --explorer [--tor] [--explorer-domain explorer.example.org]
 #   bash deploy-services.sh --bundle /root/camo-bundle-<rev>.tar.gz --pool --pool-fee-wallet <marketing address> \
-#        [--pool-min-payout 0.2] [--pool-domain pool.example.org]
+#        [--pool-min-payout 0.25] [--pool-domain pool.example.org]
 #   add --stagenet for the stagenet node. Both --explorer and --pool can be given at once. Safe to re-run.
 #   The bundle comes from contrib/camo/tools/make_source_bundle.sh (repos private); once the repos are public you can
 #   pass --camo-src/--explorer-src/--pool-src git URLs instead. --camo-build DIR reuses an existing CAMO build.
@@ -19,7 +19,7 @@
 # --stage DIR: build and write every file under DIR without touching the system (no apt, users, systemd, firewall).
 set -euo pipefail
 
-NET=mainnet; DO_EXPLORER=0; DO_POOL=0; TOR=0; EXPLORER_DOMAIN=""; POOL_DOMAIN=""; FEE_WALLET=""; MIN_PAYOUT=0.2
+NET=mainnet; DO_EXPLORER=0; DO_POOL=0; TOR=0; EXPLORER_DOMAIN=""; POOL_DOMAIN=""; FEE_WALLET=""; MIN_PAYOUT=0.25
 BUNDLE=""; CAMO_SRC=""; EXPLORER_SRC=""; POOL_SRC=""; CAMO_BUILD=""; ROOT=""; STAGE=0; JOBS=$(nproc)
 while [ $# -gt 0 ]; do
   case "$1" in
