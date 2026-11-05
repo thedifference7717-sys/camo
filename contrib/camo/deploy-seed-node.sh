@@ -43,7 +43,9 @@ if [ -n "$REPO" ]; then
   rm -rf /opt/camo-src
   git clone --recurse-submodules --branch "$BRANCH" "$REPO" /opt/camo-src
   cd /opt/camo-src && mkdir -p build/release && cd build/release
-  cmake -DARCH=x86-64 -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -DUSE_DEVICE_TREZOR=OFF ../.. >/dev/null
+  # portable CPU target for this machine's architecture (Oracle Always Free servers are ARM)
+  case "$(uname -m)" in aarch64|arm64) CPU_ARCH=armv8-a ;; *) CPU_ARCH=x86-64 ;; esac
+  cmake -DARCH="$CPU_ARCH" -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -DUSE_DEVICE_TREZOR=OFF ../.. >/dev/null
   make -j"$(nproc)" daemon
   BINARY=/opt/camo-src/build/release/bin/camod
 else
@@ -105,9 +107,20 @@ ufw allow OpenSSH >/dev/null
 ufw limit OpenSSH >/dev/null
 ufw allow "$P2P"/tcp >/dev/null
 ufw --force enable >/dev/null
+# Oracle Cloud's Ubuntu images ship their own iptables rules that REJECT everything but SSH before ufw's chains are
+# reached, so the P2P port would stay closed. Open it there too, ahead of that REJECT, and keep it across reboots.
+if iptables -C INPUT -j REJECT --reject-with icmp-host-prohibited 2>/dev/null; then
+  iptables -C INPUT -p tcp --dport "$P2P" -m state --state NEW -j ACCEPT 2>/dev/null || \
+    iptables -I INPUT "$(iptables -L INPUT --line-numbers | awk '/REJECT/ {print $1; exit}')" -p tcp --dport "$P2P" -m state --state NEW -j ACCEPT
+  command -v netfilter-persistent >/dev/null && netfilter-persistent save >/dev/null 2>&1 || true
+  echo "    Oracle Cloud firewall rules found: opened $P2P there as well (also open it in the cloud console's security list)"
+fi
 
 echo "==> SSH hardening"
-if [ -s /root/.ssh/authorized_keys ]; then
+# a key counts if root has one or the account that ran sudo has one (Oracle and many clouds log in as "ubuntu")
+KEYFILE_USER=""
+[ -n "${SUDO_USER:-}" ] && KEYFILE_USER="$(getent passwd "$SUDO_USER" | cut -d: -f6)/.ssh/authorized_keys"
+if [ -s /root/.ssh/authorized_keys ] || { [ -n "$KEYFILE_USER" ] && [ -s "$KEYFILE_USER" ]; }; then
   mkdir -p /etc/ssh/sshd_config.d
   cat > /etc/ssh/sshd_config.d/99-camo-hardening.conf <<'EOF'
 PasswordAuthentication no
@@ -118,8 +131,8 @@ EOF
   systemctl reload ssh 2>/dev/null || systemctl reload sshd
   echo "    password logins disabled (SSH key only)"
 else
-  echo "    WARNING: no SSH key installed for root, so password login was left ON to avoid locking you out."
-  echo "    Add your key to /root/.ssh/authorized_keys and re-run this script to finish hardening."
+  echo "    WARNING: no SSH key installed (for root or ${SUDO_USER:-the sudo user}), so password login was left ON to avoid"
+  echo "    locking you out. Add your key to ~/.ssh/authorized_keys and re-run this script to finish hardening."
 fi
 
 echo
