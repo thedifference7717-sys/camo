@@ -67,13 +67,11 @@ Monero's own release tags (`v0.18.x`) are still in this repo. **Never build or s
 5. **Anyone can verify.** They run `gpg --verify SHA256SUMS.asc`, then `sha256sum -c SHA256SUMS`. To check the
    build itself, they run `dockrun.sh v1.0.0` and compare the hashes with yours.
 
-## Open decision: the version number
+## Version number (decided Nov 5)
 
-Binaries currently report `CAMO 'CAMO Genesis' (v0.18.5.4-<commit>)` because they carry Monero's code version.
-Before tagging, decide whether the first release is tagged `v1.0.0` (the archive names follow the tag) and
-whether `src/version.cpp.in` should say 1.0.0 to match. Keeping 0.18.5.4 in the binary makes the Monero
-code base obvious. Changing it avoids confusion with Monero's own 0.18.5.4. Either way it's a name change
-only.
+The first release is **v1.0.0**: tag `v1.0.0`, and binaries report `CAMO 'CAMO Genesis' (v1.0.0-<commit>)`
+(`src/version.cpp.in`). The code base is Monero v0.18.5.4 plus later fixes; say so in release notes. When merging a
+Monero "build: prepare v0.18.x" commit, keep CAMO's own version line.
 
 ## Notes
 
