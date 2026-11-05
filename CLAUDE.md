@@ -27,7 +27,7 @@ CAMO is a privacy cryptocurrency: a rebranded fork of **Monero v0.18** (C++), ow
 | `src/blocks/checkpoints.dat` | emptied |
 | CMake `OUTPUT_NAME`s | binaries `camod`, `camo-wallet-cli`, `camo-wallet-rpc`, `camo-blockchain-*` |
 | `src/daemon/*`, `src/simplewallet/simplewallet.cpp` | user-facing "Monero" → "CAMO" |
-| `src/version.cpp.in` | release name "CAMO Genesis" |
+| `src/version.cpp.in` | release name "CAMO Genesis"; version **1.0.0** (Nov 5; code base Monero 0.18.5.4). Keep it when merging Monero version bumps |
 | `src/wallet/wallet2.cpp`, `src/simplewallet/simplewallet.cpp` | payment URI scheme `camo:` (Nov 4); `monero:` links are rejected |
 | `src/cryptonote_config.h` `DIFFICULTY_TARGET_V2` | **1-minute blocks** (60 s). Emission per minute is unchanged: the reward formula scales by block time, so blocks pay ~17.25 CAMO at start and the tail is 0.3 CAMO/block |
 
@@ -117,7 +117,7 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       Gitian is set up for CAMO (Nov 4): recipes and scripts build `camo-<host>-<tag>` from this repo, sigs repo
       `thedifference7717-sys/camo-gitian.sigs` (Anthony to create), workflow `ci/gh-actions/gitian` on `v*` tags + manual
       (Linux/Win/Mac). Checklist: `contrib/gitian/CAMO-RELEASE.md`. Not yet run end to end (no Docker daemon or depends
-      hosts in cloud sessions; Actions minutes). Open: release tag/version number (binaries say v0.18.5.4).
+      hosts in cloud sessions; Actions minutes). Version decided Nov 5: **v1.0.0** (tag `v1.0.0`; binaries say v1.0.0).
 - [x] 1-minute blocks; founder genesis tool
 - [x] Founder + marketing addresses received; block-1 allocation (489,600 / 54,400 / 96,000 burn) built and tested end to end
 - [x] Website (Nov 3): `website/` here, published from the PUBLIC repo `thedifference7717-sys/camo-website`
@@ -163,8 +163,9 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
   workflow's stuck test jobs ran for hours. Making the repo public (Nov 10) gives free minutes; or set a budget.
   build.yml now runs only on PRs/main/manual with a 2 h test cap; all workflows cancel superseded runs.
 - Launch tooling: `contrib/camo/STAGENET-LAUNCH.md` (Nov 10 runbook), `tools/set_seed_nodes.py` (seed IPs into code +
-  website in one step), `ANNOUNCE-DRAFT.md` (BitcoinTalk draft, not posted), `website/faq.html` (not yet published).
-  The wallet's `donate` command is disabled (it targeted Monero's donation address) until a CAMO address is chosen.
+  website in one step), `ANNOUNCE-DRAFT.md` (BitcoinTalk draft, not posted), `website/faq.html` (published Nov 5).
+  The wallet's `donate` command pays the public marketing wallet (`Cfbe7EfJ...aAtK4`, decided Nov 5). Wallet units are
+  camo / millicamo / microcamo / nanocamo / picocamo (were Monero's names; display only).
 - Ring size (decided Nov 4): **stay at 16** (Monero's audited choice). 32/64 were considered and rejected: +50%/+170%
   tx size and fees, 2x/4x verification, modest privacy gain vs. side-channel heuristics. FCMP++ is the upgrade path.
 
