@@ -163,8 +163,9 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
   workflow's stuck test jobs ran for hours. Making the repo public (Nov 10) gives free minutes; or set a budget.
   build.yml now runs only on PRs/main/manual with a 2 h test cap; all workflows cancel superseded runs.
 - Launch tooling: `contrib/camo/STAGENET-LAUNCH.md` (Nov 10 runbook), `tools/set_seed_nodes.py` (seed IPs into code +
-  website in one step), `ANNOUNCE-DRAFT.md` (BitcoinTalk draft, not posted), `website/faq.html` (not yet published).
-  The wallet's `donate` command is disabled (it targeted Monero's donation address) until a CAMO address is chosen.
+  website in one step), `ANNOUNCE-DRAFT.md` (BitcoinTalk draft, not posted), `website/faq.html` (published Nov 5).
+  The wallet's `donate` command pays the public marketing wallet (`Cfbe7EfJ...aAtK4`, decided Nov 5). Wallet units are
+  camo / millicamo / microcamo / nanocamo / picocamo (were Monero's names; display only).
 - Ring size (decided Nov 4): **stay at 16** (Monero's audited choice). 32/64 were considered and rejected: +50%/+170%
   tx size and fees, 2x/4x verification, modest privacy gain vs. side-channel heuristics. FCMP++ is the upgrade path.
 
