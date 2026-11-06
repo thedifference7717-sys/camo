@@ -185,6 +185,7 @@ namespace epee
     template<class type_name>
     storage_entry throwable_buffer_reader::read_ae()
     {
+      static_assert(!std::is_same_v<type_name, array_entry>);
       RECURSION_LIMITATION();
       //for pod types
       array_entry_t<type_name> sa;
@@ -227,7 +228,6 @@ namespace epee
       case SERIALIZE_TYPE_BOOL:   return read_ae<bool>();
       case SERIALIZE_TYPE_STRING: return read_ae<std::string>();
       case SERIALIZE_TYPE_OBJECT: return read_ae<section>();
-      case SERIALIZE_TYPE_ARRAY:  return read_ae<array_entry>();
       default: 
         CHECK_AND_ASSERT_THROW_MES(false, "unknown entry_type code = " << type);
       }
