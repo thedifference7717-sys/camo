@@ -5,7 +5,7 @@ achievable: be as hard to attack as the best privacy coins, and close the gaps t
 
 ## Reporting a vulnerability
 
-Do not open a public issue. Email **[SECURITY EMAIL]** with steps to reproduce. You will get a reply within 72 hours.
+Do not open a public issue. Email **camocoin@proton.me** with steps to reproduce. You will get a reply within 72 hours.
 Fixes ship as a point release; the reporter is credited unless they ask not to be. A bug bounty paid from the marketing
 wallet is planned once CAMO has value.
 

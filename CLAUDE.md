@@ -162,6 +162,7 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
 - GitHub Actions (Nov 4): private-repo free minutes appear exhausted (jobs fail in ~3 s with no logs) after the heavy
   workflow's stuck test jobs ran for hours. Making the repo public (Nov 10) gives free minutes; or set a budget.
   build.yml now runs only on PRs/main/manual with a 2 h test cap; all workflows cancel superseded runs.
+- Project email (Nov 9): **camocoin@proton.me** (Proton Mail, 2FA on; security contact on the site and in SECURITY.md).
 - Launch tooling: `contrib/camo/STAGENET-LAUNCH.md` (Nov 10 runbook), `tools/set_seed_nodes.py` (seed IPs into code +
   website in one step), `ANNOUNCE-DRAFT.md` (BitcoinTalk draft, not posted), `website/faq.html` (published Nov 5).
   The wallet's `donate` command pays the public marketing wallet (`Cfbe7EfJ...aAtK4`, decided Nov 5). Wallet units are
@@ -198,6 +199,6 @@ Work moves to Claude Code from here; that session stops editing this repo.
 - Free next steps, in order: (1) ~~website~~ done Nov 3, see Status; (2) ~~block explorer~~ built and tested Nov 3 (repo `camo-explorer`), needs hosting; (3) ~~mining pool~~ built and tested Nov 3 (repo `camo-pool`), needs hosting; (4) Windows/Mac/Linux release builds via `contrib/depends`: GitHub Actions workflow `ci/gh-actions/depends` (Run workflow, or any push) uploads `camo-<platform>-<commit>` artifacts (camod, camo-wallet-cli, camo-wallet-rpc, LICENSE, SHA256SUMS) for x86_64/aarch64 Linux, Win64, Intel/Apple-Silicon Mac. Unsigned test builds; signed releases need gitian + Anthony's GPG key. (Cloud sessions can't run depends locally: the source hosts are blocked, only GitHub is reachable.);
   (5) mining guide, FAQ, BitcoinTalk announcement; (6) Ghillie mockups incl. remote mining control.
 - Needs Anthony: 3 seed servers (Oracle Always Free can host 2 small ARM ones for stagenet; plan 1 paid server before
-  mainnet), a security contact email for SECURITY.md, social handles, making the repo public on Nov 10.
+  mainnet), social handles, making the repo public on Nov 10.
 - Building on macOS may fail with new Homebrew Boost (see Build). A Linux environment (Claude Code on the web,
   a Linux VM or a seed server) is the reliable place to build and run the tests.
