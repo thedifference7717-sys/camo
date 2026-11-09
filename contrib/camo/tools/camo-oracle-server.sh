@@ -6,7 +6,7 @@
 # (VCN camo-vcn 10.0.0.0/16, internet gateway, default route, subnet camo-public 10.0.0.0/24) and opens TCP 22 (SSH),
 # 39740 (stagenet P2P) and 19740 (mainnet P2P) in its security list. All of that is free.
 set -u
-NAME=${1:-camo-seed-1}; OCPUS=${2:-2}; MEM=${3:-12}; WAIT=${WAIT:-90}
+NAME=${1:-camo-seed-1}; OCPUS=${2:-2}; MEM=${3:-12}; WAIT=${WAIT:-180}
 KEY="$HOME/.ssh/id_ed25519.pub"
 command -v oci >/dev/null || { echo "oci CLI not found (install it first)"; exit 1; }
 [ -f "$KEY" ] || { echo "no SSH public key at $KEY"; exit 1; }
@@ -60,6 +60,8 @@ while true; do
     fi
     if echo "$OUT" | grep -qi 'capacity'; then
       echo "$(date '+%H:%M') try $n: $AD out of capacity"
+    elif echo "$OUT" | grep -qE '"status": 429|TooManyRequests'; then
+      echo "$(date '+%H:%M') try $n: Oracle says slow down; pausing 5 minutes"; sleep 300
     else
       echo "$(date '+%H:%M') try $n: unexpected error, stopping:"; echo "$OUT" | tail -5; exit 1
     fi
