@@ -5,7 +5,7 @@ Times are rough. Commands run from the `camo` repo root unless noted.
 
 ## 0. Decide (Anthony)
 - [ ] Servers: 2-3 Ubuntu 22.04/24.04 VPSes (Oracle Always Free ARM is fine for stagenet). Note each public IPv4.
-- [ ] Security contact email (SECURITY.md, website stagenet page).
+- [x] Security contact email: camocoin@proton.me (Nov 9; Proton Mail, 2FA on).
 - [x] Pool minimum payout: **0.25 CAMO** (decided Nov 5).
 - [ ] Merge the open PR into `main` (release builds + upstream fixes).
 
@@ -66,7 +66,7 @@ block 2 onward pays normally.
 cp website/* ../camo-website/   # plus any changed assets
 cd ../camo-website && git add -A && git commit -m "Stagenet open: seed nodes" && git push
 ```
-Remaining placeholders to fill: stagenet explorer link, pool address/stats link, security email.
+Remaining placeholders to fill: stagenet explorer link, pool address/stats link.
 
 ## 6. Make the code public
 GitHub -> camo -> Settings -> General -> Danger zone -> Change visibility -> Public. The website's GitHub link and
