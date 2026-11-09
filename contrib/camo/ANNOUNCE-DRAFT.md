@@ -63,7 +63,7 @@ Seed nodes: [SEED NODE IPs]
 - Block explorer: [EXPLORER LINK]
 - Pool: [POOL LINK]
 - Community: [SOCIAL HANDLES]
-- Security reports (private): [SECURITY CONTACT EMAIL]
+- Security reports (private): camocoin@proton.me
 
 ## Credits
 CAMO is built on the work of the Monero Project and the CryptoNote developers. Their copyright notices and

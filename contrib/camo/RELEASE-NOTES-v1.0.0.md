@@ -72,4 +72,4 @@ Founder plus marketing are 3.0% of the main emission. View keys to verify the am
 
 ## Security
 
-Report vulnerabilities privately to `[SECURITY CONTACT EMAIL]` (see `SECURITY.md`), not in public issues.
+Report vulnerabilities privately to `camocoin@proton.me` (see `SECURITY.md`), not in public issues.
