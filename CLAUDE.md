@@ -165,6 +165,8 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
 - Nov 10: history of `camo` and `camo-website` rewritten (git filter-repo, files unchanged) so commits show
   `Anthony <camocoin@proton.me>` instead of the personal Gmail; old commit IDs in older notes are gone. GitHub: keep email
   private + block pushes exposing it, 2FA (authenticator + passkey). Never commit with a personal email.
+- Release signing key (Nov 10): `CAMO release signing <camocoin@proton.me>`, ed25519, fingerprint
+  `5F1A 8350 C748 BC43 AD19  2472 AF13 7B28 E11A 0857`, on keys.openpgp.org (verified). Secret key only on Anthony's Mac (backup file in his home folder; USB backup still to do).
 - Project email (Nov 9): **camocoin@proton.me** (Proton Mail, 2FA on; security contact on the site and in SECURITY.md).
 - X account (Nov 10): **@CAMO_Coin** (https://x.com/CAMO_Coin), signed up with the project email, 2FA by authenticator app,
   launch post pinned. Profile photo = app icon crop, header 1500x500 (camo field, wordmark, mainnet date). Linked in the
