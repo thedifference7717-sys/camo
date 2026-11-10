@@ -163,6 +163,9 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
   workflow's stuck test jobs ran for hours. Making the repo public (Nov 10) gives free minutes; or set a budget.
   build.yml now runs only on PRs/main/manual with a 2 h test cap; all workflows cancel superseded runs.
 - Project email (Nov 9): **camocoin@proton.me** (Proton Mail, 2FA on; security contact on the site and in SECURITY.md).
+- X account (Nov 10): **@CAMO_coin** (https://x.com/CAMO_coin), signed up with the project email, 2FA by authenticator app,
+  launch post pinned. Profile photo = app icon crop, header 1500x500 (camo field, wordmark, mainnet date). Linked in the
+  website footers and the FAQ "official accounts" list.
 - Launch tooling: `contrib/camo/STAGENET-LAUNCH.md` (Nov 10 runbook), `tools/set_seed_nodes.py` (seed IPs into code +
   website in one step), `ANNOUNCE-DRAFT.md` (BitcoinTalk draft, not posted), `website/faq.html` (published Nov 5).
   The wallet's `donate` command pays the public marketing wallet (`Cfbe7EfJ...aAtK4`, decided Nov 5). Wallet units are
