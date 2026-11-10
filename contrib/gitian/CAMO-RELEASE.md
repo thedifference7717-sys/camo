@@ -18,7 +18,7 @@ Monero's own release tags (`v0.18.x`) are still in this repo. **Never build or s
 ## One-time setup (Anthony)
 
 **Done Nov 10:** release key `CAMO release signing <camocoin@proton.me>`, ed25519, fingerprint
-`5F1A 8350 C748 BC43 AD19  2472 AF13 7B28 E11A 0857`, expires 2030-11-10, published on keys.openpgp.org (email verified). Created with GPG Suite on Anthony's Mac.
+`5F1A 8350 C748 BC43 AD19  2472 AF13 7B28 E11A 0857`, expires 2030-11-10, published on keys.openpgp.org (email verified), in `gitian-pubkeys/camo-release.asc` and on the website (`assets/camo-release.asc`). Created with GPG Suite on Anthony's Mac.
 Still to do: offline backup of the secret key on a USB stick (before Dec 7), and the signatures repo (step 2).
 
 1. **GPG key** (on your own computer; the private key never leaves it and is never shared with anyone,
