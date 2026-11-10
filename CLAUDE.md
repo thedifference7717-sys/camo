@@ -103,7 +103,7 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       `--binary` for the private repo, `--stagenet`; firewall, SSH key-only, fail2ban, auto-updates, sandboxed service)
 - [x] Security: `SECURITY.md` (threat model, key handling, Ghillie requirements, release checklist);
       `contrib/camo/tools/attack_block1.py` adversarial test passes (Nov 3)
-- [x] Pushed to GitHub `thedifference7717-sys/camo` (PRIVATE, Nov 3; make public when stagenet opens Nov 10). Branch `main`;
+- [x] Pushed to GitHub `thedifference7717-sys/camo` (PUBLIC since Nov 10; secrets scan of all CAMO commits clean first). Branch `main`;
       Monero's repo is remote `upstream`. Seed servers can't clone a private repo: copy built binaries to them instead.
 - [ ] Rent 2–3 VPS seed nodes, add their IPs to `get_ip_seed_nodes()`
       Server setup guide for Anthony (Nov 4): https://claude.ai/artifact/Bo8C3gMDsscMF5ETi9d3Cb (SSH key, Oracle free ARM or
@@ -162,6 +162,9 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
 - GitHub Actions (Nov 4): private-repo free minutes appear exhausted (jobs fail in ~3 s with no logs) after the heavy
   workflow's stuck test jobs ran for hours. Making the repo public (Nov 10) gives free minutes; or set a budget.
   build.yml now runs only on PRs/main/manual with a 2 h test cap; all workflows cancel superseded runs.
+- Nov 10: history of `camo` and `camo-website` rewritten (git filter-repo, files unchanged) so commits show
+  `Anthony <camocoin@proton.me>` instead of the personal Gmail; old commit IDs in older notes are gone. GitHub: keep email
+  private + block pushes exposing it, 2FA (authenticator + passkey). Never commit with a personal email.
 - Project email (Nov 9): **camocoin@proton.me** (Proton Mail, 2FA on; security contact on the site and in SECURITY.md).
 - X account (Nov 10): **@CAMO_Coin** (https://x.com/CAMO_Coin), signed up with the project email, 2FA by authenticator app,
   launch post pinned. Profile photo = app icon crop, header 1500x500 (camo field, wordmark, mainnet date). Linked in the
