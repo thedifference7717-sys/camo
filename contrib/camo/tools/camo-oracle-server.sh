@@ -2,11 +2,19 @@
 # Keep asking Oracle Cloud for an Always Free ARM server until it has capacity, then print its public IP.
 # Run on your Mac after `oci setup config` works:   bash camo-oracle-server.sh [name] [ocpus] [memory_gb]
 # Defaults: camo-seed-1, 2 OCPUs, 12 GB (two such servers = the whole free allowance of 4 OCPUs / 24 GB).
-# Only ever creates the free VM.Standard.A1.Flex shape. If the account has no public subnet yet, it first creates one
+# Backup when ARM capacity never frees up:          bash camo-oracle-server.sh camo-seed-1 micro
+#   asks for the Always Free AMD VM.Standard.E2.1.Micro (1 GB RAM, x86-64; 2 per account) instead. Too small to build
+#   CAMO on: install it with deploy-seed-node.sh --binary and the prebuilt x86_64 Linux camod.
+# Only ever creates these two free shapes. If the account has no public subnet yet, it first creates one
 # (VCN camo-vcn 10.0.0.0/16, internet gateway, default route, subnet camo-public 10.0.0.0/24) and opens TCP 22 (SSH),
 # 39740 (stagenet P2P) and 19740 (mainnet P2P) in its security list. All of that is free.
 set -u
 NAME=${1:-camo-seed-1}; OCPUS=${2:-2}; MEM=${3:-12}; WAIT=${WAIT:-180}
+if [ "$OCPUS" = "micro" ]; then
+  SHAPE=VM.Standard.E2.1.Micro; SHAPECFG=""; DESC="free AMD micro server, 1 GB"
+else
+  SHAPE=VM.Standard.A1.Flex; SHAPECFG="{\"ocpus\":$OCPUS,\"memoryInGBs\":$MEM}"; DESC="$OCPUS OCPU, $MEM GB"
+fi
 KEY="$HOME/.ssh/id_ed25519.pub"
 command -v oci >/dev/null || { echo "oci CLI not found (install it first)"; exit 1; }
 [ -f "$KEY" ] || { echo "no SSH public key at $KEY"; exit 1; }
@@ -17,9 +25,9 @@ if [ -n "$(oci compute instance list --compartment-id "$T" --display-name "$NAME
   echo "$NAME is already running; not creating another."; exit 0
 fi
 ADS=$(oci iam availability-domain list --compartment-id "$T" --query 'data[].name' --raw-output | tr -d '[]",' | xargs)
-IMG=$(oci compute image list --compartment-id "$T" --operating-system "Canonical Ubuntu" --shape VM.Standard.A1.Flex \
+IMG=$(oci compute image list --compartment-id "$T" --operating-system "Canonical Ubuntu" --shape "$SHAPE" \
       --sort-by TIMECREATED --sort-order DESC --all --query "data[?contains(\"display-name\",'24.04')] | [0].id" --raw-output)
-[ -n "$IMG" ] && [ "$IMG" != "null" ] || { echo "no Ubuntu 24.04 ARM image found"; exit 1; }
+[ -n "$IMG" ] && [ "$IMG" != "null" ] || { echo "no Ubuntu 24.04 image found for $SHAPE"; exit 1; }
 SUB=$(oci network subnet list --compartment-id "$T" --query "data[?\"prohibit-public-ip-on-vnic\"==\`false\`] | [0].id" --raw-output)
 if [ -z "$SUB" ] || [ "$SUB" = "null" ]; then
   echo "Creating the network (one time): VCN, internet gateway, public subnet, firewall rules for SSH and CAMO..."
@@ -43,14 +51,16 @@ if [ -z "$SUB" ] || [ "$SUB" = "null" ]; then
         --dns-label public --wait-for-state AVAILABLE --query 'data.id' --raw-output) || { echo "subnet create failed"; exit 1; }
   echo "Network ready."
 fi
-echo "Asking for $NAME ($OCPUS OCPU, $MEM GB) in: $ADS. Retrying every ${WAIT}s; leave this window open (Ctrl-C to stop)."
+echo "Asking for $NAME ($DESC) in: $ADS. Retrying every ${WAIT}s; leave this window open (Ctrl-C to stop)."
 
-n=0
+n=0; NOSHAPE=""
 while true; do
+  tried=0; skipped=0
   for AD in $ADS; do
-    n=$((n+1))
-    OUT=$(oci compute instance launch --compartment-id "$T" --availability-domain "$AD" --display-name "$NAME" \
-          --shape VM.Standard.A1.Flex --shape-config "{\"ocpus\":$OCPUS,\"memoryInGBs\":$MEM}" \
+    case " $NOSHAPE " in *" $AD "*) continue ;; esac
+    n=$((n+1)); tried=$((tried+1))
+    set -- --shape "$SHAPE"; [ -n "$SHAPECFG" ] && set -- "$@" --shape-config "$SHAPECFG"
+    OUT=$(oci compute instance launch --compartment-id "$T" --availability-domain "$AD" --display-name "$NAME" "$@" \
           --image-id "$IMG" --subnet-id "$SUB" --assign-public-ip true --ssh-authorized-keys-file "$KEY" \
           --wait-for-state RUNNING --query 'data.id' --raw-output 2>&1)
     if echo "$OUT" | grep -q '^ocid1.instance'; then
@@ -60,11 +70,15 @@ while true; do
     fi
     if echo "$OUT" | grep -qi 'capacity'; then
       echo "$(date '+%H:%M') try $n: $AD out of capacity"
+    elif [ "$SHAPE" = VM.Standard.E2.1.Micro ] && echo "$OUT" | grep -qiE 'shape .*not (available|supported|found)|InvalidParameter.*shape'; then
+      echo "$(date '+%H:%M') try $n: $AD does not offer the micro server; skipping it from now on"
+      NOSHAPE="$NOSHAPE $AD"; skipped=$((skipped+1))
     elif echo "$OUT" | grep -qE '"status": 429|TooManyRequests'; then
       echo "$(date '+%H:%M') try $n: Oracle says slow down; pausing 5 minutes"; sleep 300
     else
       echo "$(date '+%H:%M') try $n: unexpected error, stopping:"; echo "$OUT" | tail -5; exit 1
     fi
   done
+  [ "$tried" -eq "$skipped" ] && { echo "No availability domain offers $SHAPE here."; exit 1; }
   sleep "$WAIT"
 done
