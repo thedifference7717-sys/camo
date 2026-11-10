@@ -11,9 +11,10 @@
 set -u
 NAME=${1:-camo-seed-1}; OCPUS=${2:-2}; MEM=${3:-12}; WAIT=${WAIT:-180}
 if [ "$OCPUS" = "micro" ]; then
-  SHAPE=VM.Standard.E2.1.Micro; SHAPECFG=""; DESC="free AMD micro server, 1 GB"
+  # Oracle recommends Ubuntu Minimal for the 1 GB micro server (the full image was refused with NotAuthorizedOrNotFound)
+  SHAPE=VM.Standard.E2.1.Micro; SHAPECFG=""; DESC="free AMD micro server, 1 GB"; IMGMATCH="24.04-Minimal"
 else
-  SHAPE=VM.Standard.A1.Flex; SHAPECFG="{\"ocpus\":$OCPUS,\"memoryInGBs\":$MEM}"; DESC="$OCPUS OCPU, $MEM GB"
+  SHAPE=VM.Standard.A1.Flex; SHAPECFG="{\"ocpus\":$OCPUS,\"memoryInGBs\":$MEM}"; DESC="$OCPUS OCPU, $MEM GB"; IMGMATCH="24.04"
 fi
 KEY="$HOME/.ssh/id_ed25519.pub"
 command -v oci >/dev/null || { echo "oci CLI not found (install it first)"; exit 1; }
@@ -26,7 +27,7 @@ if [ -n "$(oci compute instance list --compartment-id "$T" --display-name "$NAME
 fi
 ADS=$(oci iam availability-domain list --compartment-id "$T" --query 'data[].name' --raw-output | tr -d '[]",' | xargs)
 IMG=$(oci compute image list --compartment-id "$T" --operating-system "Canonical Ubuntu" --shape "$SHAPE" \
-      --sort-by TIMECREATED --sort-order DESC --all --query "data[?contains(\"display-name\",'24.04')] | [0].id" --raw-output)
+      --sort-by TIMECREATED --sort-order DESC --all --query "data[?contains(\"display-name\",'$IMGMATCH')] | [0].id" --raw-output)
 [ -n "$IMG" ] && [ "$IMG" != "null" ] || { echo "no Ubuntu 24.04 image found for $SHAPE"; exit 1; }
 SUB=$(oci network subnet list --compartment-id "$T" --query "data[?\"prohibit-public-ip-on-vnic\"==\`false\`] | [0].id" --raw-output)
 if [ -z "$SUB" ] || [ "$SUB" = "null" ]; then
@@ -51,6 +52,7 @@ if [ -z "$SUB" ] || [ "$SUB" = "null" ]; then
         --dns-label public --wait-for-state AVAILABLE --query 'data.id' --raw-output) || { echo "subnet create failed"; exit 1; }
   echo "Network ready."
 fi
+echo "Image: $(oci compute image get --image-id "$IMG" --query 'data."display-name"' --raw-output 2>/dev/null)"
 echo "Asking for $NAME ($DESC) in: $ADS. Retrying every ${WAIT}s; leave this window open (Ctrl-C to stop)."
 
 n=0; NOSHAPE=""
