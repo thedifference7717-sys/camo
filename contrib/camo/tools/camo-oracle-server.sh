@@ -70,13 +70,15 @@ while true; do
     fi
     if echo "$OUT" | grep -qi 'capacity'; then
       echo "$(date '+%H:%M') try $n: $AD out of capacity"
-    elif [ "$SHAPE" = VM.Standard.E2.1.Micro ] && echo "$OUT" | grep -qiE 'shape .*not (available|supported|found)|InvalidParameter.*shape'; then
-      echo "$(date '+%H:%M') try $n: $AD does not offer the micro server; skipping it from now on"
+    elif [ "$SHAPE" = VM.Standard.E2.1.Micro ] && echo "$OUT" | grep -q '"status": 400'; then
+      echo "$(date '+%H:%M') try $n: $AD refused the micro server; skipping it from now on. Oracle said:"
+      echo "$OUT" | grep -E '"(code|message)"' | sed 's/^ */    /'
       NOSHAPE="$NOSHAPE $AD"; skipped=$((skipped+1))
     elif echo "$OUT" | grep -qE '"status": 429|TooManyRequests'; then
       echo "$(date '+%H:%M') try $n: Oracle says slow down; pausing 5 minutes"; sleep 300
     else
-      echo "$(date '+%H:%M') try $n: unexpected error, stopping:"; echo "$OUT" | tail -5; exit 1
+      echo "$(date '+%H:%M') try $n: unexpected error, stopping. Oracle said:"
+      echo "$OUT" | grep -E '"(code|message|status)"' | sed 's/^ */    /'; exit 1
     fi
   done
   [ "$tried" -eq "$skipped" ] && { echo "No availability domain offers $SHAPE here."; exit 1; }
