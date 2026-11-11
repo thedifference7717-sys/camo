@@ -178,6 +178,9 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
   (run on Anthony's Mac). The free AMD micro is NOT obtainable on his account: CLI gave LimitExceeded (AD-1/2) and
   NotAuthorizedOrNotFound (AD-3, any image) and the console lists no E2.1.Micro in any AD. Anthony will not pay
   (no Pay As You Go upgrade). Free fallback if ARM never frees: Google Cloud always-free e2-micro.
+  **Nov 11 decision: stay 100% free** (no paid servers, incl. no $5-7 Hetzner box); keep the Oracle ARM script running.
+  Consequence: explorer + pool + 2nd/3rd seed wait for an Oracle ARM server (or a community-run seed node).
+  camocoin.org HTTPS enforced Nov 11.
 - Google Cloud (Nov 11): free-tier VM **camo-seed-1**, e2-micro, us-central1-f, Ubuntu 24.04 amd64, 30 GB standard disk,
   no snapshots, **static** external IP **34.171.218.2** (`camo-seed-1-ip`), firewall rule `camo-p2p` (tcp 39740,19740). Billing:
   free trial ($300/90 d), budget alert camo-1-dollar-alert ($0.50/$0.90/$1). Unclear if the in-use external IPv4 is
