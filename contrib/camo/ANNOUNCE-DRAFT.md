@@ -62,7 +62,7 @@ Seed nodes: [SEED NODE IPs]
 - White paper: [WEBSITE]/assets/CAMO-White-Paper.pdf
 - Block explorer: [EXPLORER LINK]
 - Pool: [POOL LINK]
-- Community: X https://x.com/CAMO_Coin (@CAMO_Coin); more channels to follow
+- Community: X https://x.com/CAMO_Coin (@CAMO_Coin), BitcoinTalk CAMO_Coin; more channels to follow
 - Security reports (private): camocoin@proton.me
 
 ## Credits

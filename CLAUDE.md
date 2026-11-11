@@ -180,6 +180,8 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
 - X account (Nov 10): **@CAMO_Coin** (https://x.com/CAMO_Coin), signed up with the project email, 2FA by authenticator app,
   launch post pinned. Profile photo = app icon crop, header 1500x500 (camo field, wordmark, mainnet date). Linked in the
   website footers and the FAQ "official accounts" list.
+- BitcoinTalk (Nov 11): account **CAMO_Coin** registered with the project email (email hidden). Newbie rank: activity grows
+  per 14-day period with posts, so post a few genuine replies each period before the [ANN] thread (~Dec 1).
 - Launch tooling: `contrib/camo/STAGENET-LAUNCH.md` (Nov 10 runbook), `tools/set_seed_nodes.py` (seed IPs into code +
   website in one step), `ANNOUNCE-DRAFT.md` (BitcoinTalk draft, not posted), `website/faq.html` (published Nov 5).
   The wallet's `donate` command pays the public marketing wallet (`Cfbe7EfJ...aAtK4`, decided Nov 5). Wallet units are
