@@ -4,19 +4,21 @@
 # Usage (as root):
 #   bash deploy-seed-node.sh --binary /root/camod [--stagenet]          # copy a prebuilt camod first (private repo)
 #   bash deploy-seed-node.sh --repo https://github.com/<you>/camo.git [--branch main] [--stagenet]   # build from source
+#   --limit-up KB   cap camod's upload rate in kB/s (e.g. 16 on a free-tier VM with a small monthly egress allowance)
 #
 # Security defaults: firewall (only SSH + CAMO P2P open), RPC bound to localhost, SSH key-only login (only if a key
 # is already installed, so you can't lock yourself out), fail2ban, automatic security updates, camod runs as an
 # unprivileged sandboxed user.
 set -euo pipefail
 
-BINARY=""; REPO=""; BRANCH="main"; NET="mainnet"
+BINARY=""; REPO=""; BRANCH="main"; NET="mainnet"; LIMIT_UP=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --binary) BINARY="$2"; shift 2 ;;
     --repo) REPO="$2"; shift 2 ;;
     --branch) BRANCH="$2"; shift 2 ;;
     --stagenet) NET="stagenet"; shift ;;
+    --limit-up) LIMIT_UP="$2"; shift 2 ;;
     *) echo "unknown option $1"; exit 1 ;;
   esac
 done
@@ -30,16 +32,21 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y -qq ufw fail2ban unattended-up
 dpkg-reconfigure -f noninteractive unattended-upgrades
 systemctl enable --now fail2ban
 
+# small machines (e.g. 1 GB free-tier VMs) need swap; building from source needs it in any case
+if [ -n "$REPO" ] || [ "$(awk '/MemTotal/ {print $2}' /proc/meminfo)" -lt 3000000 ]; then
+  if ! swapon --show | grep -q /swapfile; then
+    echo "==> Adding a 4 GB swap file"
+    fallocate -l 4G /swapfile && chmod 600 /swapfile && mkswap /swapfile >/dev/null && swapon /swapfile
+    grep -q '^/swapfile ' /etc/fstab || echo '/swapfile none swap sw 0 0' >> /etc/fstab
+  fi
+fi
+
 if [ -n "$REPO" ]; then
   echo "==> Building CAMO from $REPO ($BRANCH)"
   DEBIAN_FRONTEND=noninteractive apt-get install -y -qq git build-essential cmake pkg-config \
     libssl-dev libzmq3-dev libunbound-dev libsodium-dev libunwind8-dev liblzma-dev \
     libreadline6-dev libexpat1-dev libpgm-dev libhidapi-dev libusb-1.0-0-dev \
     libprotobuf-dev protobuf-compiler libudev-dev libboost-all-dev
-  if ! swapon --show | grep -q /swapfile; then
-    fallocate -l 4G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile
-    echo '/swapfile none swap sw 0 0' >> /etc/fstab
-  fi
   rm -rf /opt/camo-src
   git clone --recurse-submodules --branch "$BRANCH" "$REPO" /opt/camo-src
   cd /opt/camo-src && mkdir -p build/release && cd build/release
@@ -63,7 +70,7 @@ echo "==> Service user and data dir"
 id camo &>/dev/null || useradd --system --home /var/lib/camo --shell /usr/sbin/nologin camo
 mkdir -p /var/lib/camo && chown camo:camo /var/lib/camo && chmod 700 /var/lib/camo
 cat > /etc/default/camod <<EOF
-CAMOD_ARGS="$NETFLAG --p2p-bind-port $P2P --rpc-bind-ip 127.0.0.1 --rpc-bind-port $RPC"
+CAMOD_ARGS="$NETFLAG --p2p-bind-port $P2P --rpc-bind-ip 127.0.0.1 --rpc-bind-port $RPC${LIMIT_UP:+ --limit-rate-up $LIMIT_UP}"
 EOF
 cat > /etc/systemd/system/camod.service <<'EOF'
 [Unit]
