@@ -19,7 +19,7 @@ moment: no pre-sale, one disclosed allocation (below).
 
 Other Linux builds (ARMv7, i686, RISC-V) and 32-bit Windows are in the same release.
 
-1. Import the release key: fingerprint `[FINGERPRINT]`, also published on the website and at keys.openpgp.org.
+1. Import the release key: `CAMO release signing <camocoin@proton.me>`, fingerprint `5F1A 8350 C748 BC43 AD19  2472 AF13 7B28 E11A 0857`, also published on the website and at keys.openpgp.org.
 2. `gpg --verify SHA256SUMS.asc` must say "Good signature" from that key.
 3. `sha256sum -c SHA256SUMS --ignore-missing` must say "OK" for the file you downloaded.
 

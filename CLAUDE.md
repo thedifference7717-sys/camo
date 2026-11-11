@@ -116,8 +116,9 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
 - [ ] Public stagenet 2–4 weeks → signed reproducible binaries (`contrib/gitian`; Monero 0.18 has no guix) → announced fair launch
       Gitian is set up for CAMO (Nov 4): recipes and scripts build `camo-<host>-<tag>` from this repo, sigs repo
       `thedifference7717-sys/camo-gitian.sigs` (Anthony to create), workflow `ci/gh-actions/gitian` on `v*` tags + manual
-      (Linux/Win/Mac). Checklist: `contrib/gitian/CAMO-RELEASE.md`. Not yet run end to end (no Docker daemon or depends
-      hosts in cloud sessions; Actions minutes). Version decided Nov 5: **v1.0.0** (tag `v1.0.0`; binaries say v1.0.0).
+      (Linux/Win/Mac). Checklist: `contrib/gitian/CAMO-RELEASE.md`. **First full run PASSED Nov 10** (workflow on branch,
+      commit 4d156bee4: Linux 1h35, Win 43 min, Mac 47 min) after the recipes got `git describe --always` (repo has no tags
+      before v1.0.0). Still to do: a second, independent builder compares hashes; signing with the release key. Version decided Nov 5: **v1.0.0** (tag `v1.0.0`; binaries say v1.0.0).
 - [x] 1-minute blocks; founder genesis tool
 - [x] Founder + marketing addresses received; block-1 allocation (489,600 / 54,400 / 96,000 burn) built and tested end to end
 - [x] Website (Nov 3): `website/` here, published from the PUBLIC repo `thedifference7717-sys/camo-website`
@@ -165,6 +166,12 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
 - Nov 10: history of `camo` and `camo-website` rewritten (git filter-repo, files unchanged) so commits show
   `Anthony <camocoin@proton.me>` instead of the personal Gmail; old commit IDs in older notes are gone. GitHub: keep email
   private + block pushes exposing it, 2FA (authenticator + passkey). Never commit with a personal email.
+- Oracle (Nov 10): free ARM (A1) servers out of capacity in Chicago for 24 h+; `tools/camo-oracle-server.sh` keeps retrying
+  (run on Anthony's Mac). The free AMD micro is NOT obtainable on his account: CLI gave LimitExceeded (AD-1/2) and
+  NotAuthorizedOrNotFound (AD-3, any image) and the console lists no E2.1.Micro in any AD. Anthony will not pay
+  (no Pay As You Go upgrade). Free fallback if ARM never frees: Google Cloud always-free e2-micro.
+- Release signing key (Nov 10): `CAMO release signing <camocoin@proton.me>`, ed25519, fingerprint
+  `5F1A 8350 C748 BC43 AD19  2472 AF13 7B28 E11A 0857`, on keys.openpgp.org (verified). Secret key only on Anthony's Mac (backup file in his home folder; USB backup still to do).
 - Project email (Nov 9): **camocoin@proton.me** (Proton Mail, 2FA on; security contact on the site and in SECURITY.md).
 - X account (Nov 10): **@CAMO_Coin** (https://x.com/CAMO_Coin), signed up with the project email, 2FA by authenticator app,
   launch post pinned. Profile photo = app icon crop, header 1500x500 (camo field, wordmark, mainnet date). Linked in the

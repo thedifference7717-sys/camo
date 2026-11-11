@@ -93,7 +93,7 @@ script: |
   git config --global core.abbrev 9
   cd camo
   # Set the version string that gets added to the tar archive name
-  version="`git describe`"
+  version="`git describe --always`"
   if [[ $version == *"-"*"-"* ]]; then
     version="`git rev-parse --short=9 HEAD`"
     version="`echo $version | head -c 9`"
