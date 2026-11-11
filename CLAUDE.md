@@ -182,6 +182,9 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
   **Nov 11: stagenet seed node RUNNING** (`deploy-seed-node.sh --binary ~/camod --stagenet --limit-up 16`, camod
   v1.0.0-845a54633 from the depends CI artifact, copied via scp from Anthony's Mac). Login: `ssh camo-servers@34.171.218.2`
   (key camo-servers, passphrase). Port 39740 reachable from the internet (nc test). Seed IP in `get_ip_seed_nodes()`.
+  **Nov 11 ~20:05 UTC: public stagenet chain STARTED.** Anthony mines from his Intel iMac (`~/camo`, Mac depends build
+  845a54633, `camod --stagenet --add-priority-node 34.171.218.2:39740 --start-mining <Q...> --mining-threads 2`, wallet
+  `~/camo/miner-stagenet`, empty password, stagenet only). Height 7 after 3 min, ~944 H/s, 1 outbound peer (the seed).
 - Release signing key (Nov 10): `CAMO release signing <camocoin@proton.me>`, ed25519, fingerprint
   `5F1A 8350 C748 BC43 AD19  2472 AF13 7B28 E11A 0857`, on keys.openpgp.org (verified). Secret key only on Anthony's Mac (backup file in his home folder; USB backup still to do).
 - Project email (Nov 9): **camocoin@proton.me** (Proton Mail, 2FA on; security contact on the site and in SECURITY.md).
