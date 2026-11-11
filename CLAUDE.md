@@ -175,10 +175,13 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
   NotAuthorizedOrNotFound (AD-3, any image) and the console lists no E2.1.Micro in any AD. Anthony will not pay
   (no Pay As You Go upgrade). Free fallback if ARM never frees: Google Cloud always-free e2-micro.
 - Google Cloud (Nov 11): free-tier VM **camo-seed-1**, e2-micro, us-central1-f, Ubuntu 24.04 amd64, 30 GB standard disk,
-  no snapshots, external IP **34.171.218.2** (ephemeral; promote to static before baking it into seed lists). Billing:
+  no snapshots, **static** external IP **34.171.218.2** (`camo-seed-1-ip`), firewall rule `camo-p2p` (tcp 39740,19740). Billing:
   free trial ($300/90 d), budget alert camo-1-dollar-alert ($0.50/$0.90/$1). Unclear if the in-use external IPv4 is
   billed (~$3.65/mo list): check the billing report ~Nov 13. 1 GB/mo free egress: cap camod upload. 1 GB RAM: install
   the prebuilt binary (deploy-seed-node.sh --binary), don't build on it.
+  **Nov 11: stagenet seed node RUNNING** (`deploy-seed-node.sh --binary ~/camod --stagenet --limit-up 16`, camod
+  v1.0.0-845a54633 from the depends CI artifact, copied via scp from Anthony's Mac). Login: `ssh camo-servers@34.171.218.2`
+  (key camo-servers, passphrase). Port 39740 reachable from the internet (nc test). Seed IP in `get_ip_seed_nodes()`.
 - Release signing key (Nov 10): `CAMO release signing <camocoin@proton.me>`, ed25519, fingerprint
   `5F1A 8350 C748 BC43 AD19  2472 AF13 7B28 E11A 0857`, on keys.openpgp.org (verified). Secret key only on Anthony's Mac (backup file in his home folder; USB backup still to do).
 - Project email (Nov 9): **camocoin@proton.me** (Proton Mail, 2FA on; security contact on the site and in SECURITY.md).
