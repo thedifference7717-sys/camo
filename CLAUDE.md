@@ -4,6 +4,9 @@ CAMO is a privacy cryptocurrency: a rebranded fork of **Monero v0.18** (C++), ow
 (GitHub: thedifference7717-sys). Overview and launch checklist: `CAMO.md`. White paper: `docs/CAMO-White-Paper.pdf`.
 
 ## Ground rules
+- **Working with Anthony (Nov 11): ONE step at a time, for everything** (not just servers): one small action per
+  message, then wait for his screenshot or "k". He doesn't want to type "done". Routine merges of our own PRs: go ahead
+  (he asked for "auto"); still ask before anything that costs money, can't be undone, or posts publicly as him.
 - **Never change cryptography.** CAMO's safety comes from reusing Monero's audited code unchanged.
   Changes are parameters only (names, ports, prefixes, genesis, schedule, seeds). If a task seems to need a
   crypto or consensus change, stop and explain the risk first.
