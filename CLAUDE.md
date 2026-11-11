@@ -185,6 +185,9 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
   **Nov 11 ~20:05 UTC: public stagenet chain STARTED.** Anthony mines from his Intel iMac (`~/camo`, Mac depends build
   845a54633, `camod --stagenet --add-priority-node 34.171.218.2:39740 --start-mining <Q...> --mining-threads 2`, wallet
   `~/camo/miner-stagenet`, empty password, stagenet only). Height 7 after 3 min, ~944 H/s, 1 outbound peer (the seed).
+  Live checks Nov 11: block 1 vout = 489,600 / 54,400 / 96,000 CAMO, unlock_time 61 (`print_block 1`); blocks ~1/min by
+  height 20 (difficulty ~33k-45k); miner 2,207.50 CAMO at height 131 (1,205.67 unlocked, ~16.98/block); **first public
+  stagenet transaction**: 5 CAMO miner -> `~/camo/friend-stagenet`, fee 0.0012 CAMO, received exactly 5.0.
 - Release signing key (Nov 10): `CAMO release signing <camocoin@proton.me>`, ed25519, fingerprint
   `5F1A 8350 C748 BC43 AD19  2472 AF13 7B28 E11A 0857`, on keys.openpgp.org (verified). Secret key only on Anthony's Mac (backup file in his home folder; USB backup still to do).
 - Project email (Nov 9): **camocoin@proton.me** (Proton Mail, 2FA on; security contact on the site and in SECURITY.md).
