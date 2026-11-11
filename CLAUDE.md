@@ -159,6 +159,10 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       UX decisions in the mockups: "Ghillie fee: 0 · never" shown on send; fresh address per payer; `camo:` payment
       links; pairing by QR or pairing words, end to end encrypted, phone can start/stop/cap CPU/watch but never spend,
       see keys or change payout; mine-while-idle defaults: 5 min idle, 75% CPU cap, never on battery; no fiat prices.
+- [~] **Ghillie desktop v0.9 for launch (decided Nov 11)**: PUBLIC repo `thedifference7717-sys/ghillie` = fork of Monero's
+      desktop wallet monero-gui `v0.18.5.4` (full history kept), rebranded/restyled; wallet logic untouched (libwallet
+      from this repo). Plan + status: `GHILLIE.md` in that repo. Nov 11: CAMO text/ports/URIs, no price lookups, no
+      update checks, no P2Pool (not compiled yet). Next: submodule -> camo, first build, Ghillie look.
 - [ ] v1.2 (Q2 2027): built-in BTC↔CAMO atomic swaps; merchant checkout plugins
 - Ghillie fee model (decided Nov 3): **no fee on sends, ever** (an extra output would fingerprint Ghillie txs);
   0.25% on built-in swaps, 1% official pool fee, optional tip off by default; all to the marketing wallet.
