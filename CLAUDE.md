@@ -126,7 +126,7 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
 - [x] 1-minute blocks; founder genesis tool
 - [x] Founder + marketing addresses received; block-1 allocation (489,600 / 54,400 / 96,000 burn) built and tested end to end
 - [x] Website (Nov 3): `website/` here, published from the PUBLIC repo `thedifference7717-sys/camo-website`
-      (GitHub Pages, branch `main`): https://thedifference7717-sys.github.io/camo-website/ . `index.html` is the opening
+      (GitHub Pages, branch `main`): **https://camocoin.org** (custom domain since Nov 11; old URL redirects). `index.html` is the opening
       screen (living camo field, scope, hidden word CAMO; aim + click to enter), main site is `home.html`. Static, no
       third-party requests (self-hosted fonts, strict CSP). Edit in `website/` and copy to the public repo (keep in sync).
 - [~] Block explorer (Nov 3): fork of onion-monero-blockchain-explorer at upstream `29593b7` (last commit by known
@@ -180,6 +180,9 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
 - X account (Nov 10): **@CAMO_Coin** (https://x.com/CAMO_Coin), signed up with the project email, 2FA by authenticator app,
   launch post pinned. Profile photo = app icon crop, header 1500x500 (camo field, wordmark, mainnet date). Linked in the
   website footers and the FAQ "official accounts" list.
+- Domain (Nov 11): **camocoin.org** at Porkbun (account `camocoin`, passkey login, project email; WHOIS privacy, transfer
+  lock, auto-renew $11.84/yr; expires 2027-11-11). DNS: 4 A records 185.199.108-111.153 (GitHub Pages) + CNAME www ->
+  thedifference7717-sys.github.io. `CNAME` file in camo-website (and website/). camocoin.com is taken by someone else.
 - BitcoinTalk (Nov 11): account **CAMO_Coin** registered with the project email (email hidden). Newbie rank: activity grows
   per 14-day period with posts, so post a few genuine replies each period before the [ANN] thread (~Dec 1).
 - Launch tooling: `contrib/camo/STAGENET-LAUNCH.md` (Nov 10 runbook), `tools/set_seed_nodes.py` (seed IPs into code +
