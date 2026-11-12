@@ -163,11 +163,16 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       desktop wallet monero-gui `v0.18.5.4` (full history kept), rebranded/restyled; wallet logic untouched (libwallet
       from this repo). Plan + status: `GHILLIE.md` in that repo. Nov 11: CAMO text/ports/URIs, no price lookups, no
       update checks, no P2Pool (not compiled yet). Nov 12: plumbing done (submodule -> camo, starts camod, CI builds incl.
-      Intel Mac); **first test PASSED on Anthony's Intel Mac**: opened `friend-stagenet` on stagenet via his local node,
-      showed 5.0 CAMO, synced. Bug fixed (ghillie `bea1e67f`): network was guessed from Monero address letters (5/7 =
-      stagenet); now Q = stagenet, K/L = testnet. Workaround used: renamed `friend-stagenet.address.txt` to `.bak`.
-      Still to do: QML tests in CI, Apple-silicon build, binary name `ghillie`, Monero logo/title, "CAMO" overlapping the
-      balance, Windows installer monerod refs, Ghillie look.
+      Intel Mac); **first test PASSED on Anthony's Intel Mac** (friend-stagenet, 5.0 CAMO). Network-from-address bug fixed
+      (Q = stagenet, K/L = testnet). **Nov 12 later: v0.9.0 feature-complete** (see GHILLIE.md): name Ghillie
+      (Ghillie.app / ghillie / ghillie.exe), Ghillie icons, mockup look (website palette, amber, Inter/JetBrains Mono,
+      VT323 headings + balance, pixel-camo card), "Ghillie fee: 0 · never", Monero text -> CAMO, Donate -> marketing
+      wallet, Windows installer (Ghillie.iss: Ghillie + camod, camo:/camoseed:), Ghillie recovery-sheet PDF. Hidden: Simple
+      mode (needs public CAMO wallet RPC nodes; our seed has none) and hardware wallets. Mac CI pins OpenSSL 3 (Monero
+      0.18 net_ssl.cpp fails with Homebrew's OpenSSL 4). Tested on Linux/regtest: 15/15 QML tests; sent 5 CAMO from
+      Ghillie, received exactly 5.0. **Caution (same as Monero GUI):** a wallet made by camo-wallet-cli and never synced
+      is treated as new when first opened in Ghillie and skips existing blocks; fix: Settings > Info > restore height 0.
+      Applies to the founder/marketing wallets. Still to do: signed builds, translations, Apple-silicon build check.
 - [ ] v1.2 (Q2 2027): built-in BTC↔CAMO atomic swaps; merchant checkout plugins
 - Ghillie fee model (decided Nov 3): **no fee on sends, ever** (an extra output would fingerprint Ghillie txs);
   0.25% on built-in swaps, 1% official pool fee, optional tip off by default; all to the marketing wallet.

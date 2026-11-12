@@ -48,7 +48,7 @@
     <h2><span class="step">01</span> Get a wallet address</h2>
     <p>Mined coins go to your address, so make a wallet first. With the CAMO software (signed downloads from Dec 7):</p>
 <pre><code>./camo-wallet-cli --generate-new-wallet my-wallet</code></pre>
-    <p>Write the 25 words on paper and keep them offline. Mainnet addresses start with <strong>C</strong>. The Ghillie wallet (Q1 2027) will make this one tap.</p>
+    <p>Write the 25 words on paper and keep them offline. Mainnet addresses start with <strong>C</strong>. The Ghillie desktop wallet, coming with the launch downloads, does the same in a few clicks.</p>
   </section>
 
   <section class="doc-sec">
@@ -112,6 +112,8 @@
       <dd>No. Phones are slow at RandomX and app stores ban mining apps. Ghillie for phones will start, stop and watch mining on your own computers instead.</dd>
       <dt>Can I mine on a work or school computer?</dt>
       <dd>Only computers you own or have permission to use. Mining on someone else's machine without permission is theft of their electricity, and often illegal.</dd>
+      <dt>My miner says "0 H/s" or no blocks come in. Why?</dt>
+      <dd>Usually the computer is out of memory: RandomX needs free RAM, and dozens of open browser tabs can starve it. Type <code>status</code> in the camod window to see your hash rate. If it's 0, close apps or restart the computer, then start mining again. A sleeping computer doesn't mine either.</dd>
       <dt>Does mining hurt my computer?</dt>
       <dd>It runs the CPU at full load, so it gets warm and uses more power. Keep it ventilated, and use fewer threads (<code>-t 2</code>) if you want to keep using it.</dd>
     </dl>
