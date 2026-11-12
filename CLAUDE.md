@@ -159,6 +159,15 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       UX decisions in the mockups: "Ghillie fee: 0 · never" shown on send; fresh address per payer; `camo:` payment
       links; pairing by QR or pairing words, end to end encrypted, phone can start/stop/cap CPU/watch but never spend,
       see keys or change payout; mine-while-idle defaults: 5 min idle, 75% CPU cap, never on battery; no fiat prices.
+- [~] **Ghillie desktop v0.9 for launch (decided Nov 11)**: PUBLIC repo `thedifference7717-sys/ghillie` = fork of Monero's
+      desktop wallet monero-gui `v0.18.5.4` (full history kept), rebranded/restyled; wallet logic untouched (libwallet
+      from this repo). Plan + status: `GHILLIE.md` in that repo. Nov 11: CAMO text/ports/URIs, no price lookups, no
+      update checks, no P2Pool (not compiled yet). Nov 12: plumbing done (submodule -> camo, starts camod, CI builds incl.
+      Intel Mac); **first test PASSED on Anthony's Intel Mac**: opened `friend-stagenet` on stagenet via his local node,
+      showed 5.0 CAMO, synced. Bug fixed (ghillie `bea1e67f`): network was guessed from Monero address letters (5/7 =
+      stagenet); now Q = stagenet, K/L = testnet. Workaround used: renamed `friend-stagenet.address.txt` to `.bak`.
+      Still to do: QML tests in CI, Apple-silicon build, binary name `ghillie`, Monero logo/title, "CAMO" overlapping the
+      balance, Windows installer monerod refs, Ghillie look.
 - [ ] v1.2 (Q2 2027): built-in BTC↔CAMO atomic swaps; merchant checkout plugins
 - Ghillie fee model (decided Nov 3): **no fee on sends, ever** (an extra output would fingerprint Ghillie txs);
   0.25% on built-in swaps, 1% official pool fee, optional tip off by default; all to the marketing wallet.
@@ -174,6 +183,9 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
   (run on Anthony's Mac). The free AMD micro is NOT obtainable on his account: CLI gave LimitExceeded (AD-1/2) and
   NotAuthorizedOrNotFound (AD-3, any image) and the console lists no E2.1.Micro in any AD. Anthony will not pay
   (no Pay As You Go upgrade). Free fallback if ARM never frees: Google Cloud always-free e2-micro.
+  **Nov 11 decision: stay 100% free** (no paid servers, incl. no $5-7 Hetzner box); keep the Oracle ARM script running.
+  Consequence: explorer + pool + 2nd/3rd seed wait for an Oracle ARM server (or a community-run seed node).
+  camocoin.org HTTPS enforced Nov 11.
 - Google Cloud (Nov 11): free-tier VM **camo-seed-1**, e2-micro, us-central1-f, Ubuntu 24.04 amd64, 30 GB standard disk,
   no snapshots, **static** external IP **34.171.218.2** (`camo-seed-1-ip`), firewall rule `camo-p2p` (tcp 39740,19740). Billing:
   free trial ($300/90 d), budget alert camo-1-dollar-alert ($0.50/$0.90/$1). Unclear if the in-use external IPv4 is
@@ -185,6 +197,15 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
   **Nov 11 ~20:05 UTC: public stagenet chain STARTED.** Anthony mines from his Intel iMac (`~/camo`, Mac depends build
   845a54633, `camod --stagenet --add-priority-node 34.171.218.2:39740 --start-mining <Q...> --mining-threads 2`, wallet
   `~/camo/miner-stagenet`, empty password, stagenet only). Height 7 after 3 min, ~944 H/s, 1 outbound peer (the seed).
+  Live checks Nov 11: block 1 vout = 489,600 / 54,400 / 96,000 CAMO, unlock_time 61 (`print_block 1`); blocks ~1/min by
+  height 20 (difficulty ~33k-45k); miner 2,207.50 CAMO at height 131 (1,205.67 unlocked, ~16.98/block); **first public
+  stagenet transaction**: 5 CAMO miner -> `~/camo/friend-stagenet`, fee 0.0012 CAMO, received exactly 5.0.
+  **Nov 12 ~01:35-03:48 UTC: stagenet stalled at height 359** (only miner = Anthony's Mac). Cause: Mac memory full (8 GB,
+  ~5.5 GB of Safari/Claude WebKit pages, 96 MB free, heavy swap); camod showed `mining at 0 H/s`, state "stuck" in `top`.
+  Not a CAMO bug (sync_info clean; stop/start_mining and a camod restart didn't help). Fixed by a Mac restart: blocks
+  resumed at once. Mining guide must say: mining needs free RAM; check `status` H/s. Until more miners join, any stall on
+  his Mac stalls stagenet. Restart: `~/camo/camod --stagenet --add-priority-node 34.171.218.2:39740 --start-mining
+  <miner Q... address> --mining-threads 2` (address in `~/camo/miner-stagenet.address.txt`). Oracle script restarted.
 - Release signing key (Nov 10): `CAMO release signing <camocoin@proton.me>`, ed25519, fingerprint
   `5F1A 8350 C748 BC43 AD19  2472 AF13 7B28 E11A 0857`, on keys.openpgp.org (verified). Secret key only on Anthony's Mac (backup file in his home folder; USB backup still to do).
 - Project email (Nov 9): **camocoin@proton.me** (Proton Mail, 2FA on; security contact on the site and in SECURITY.md).
