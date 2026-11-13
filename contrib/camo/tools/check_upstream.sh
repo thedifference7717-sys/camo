@@ -11,6 +11,8 @@
 #      does not apply      master-only code or needs a hand port; read it to decide
 #    Never take consensus or cryptography changes this way (see CLAUDE.md ground rules).
 set -uo pipefail
+# The Monero release CAMO's code is based on. Update this line whenever you merge a newer release-v0.18.
+BASE_TAG=v0.18.5.4
 cd "$(git rev-parse --show-toplevel)"
 SINCE=${1:-$(date -d '6 months ago' +%Y-%m-%d 2>/dev/null || date -v-6m +%Y-%m-%d)}
 git remote get-url upstream >/dev/null 2>&1 || git remote add upstream https://github.com/monero-project/monero.git
@@ -20,10 +22,11 @@ git fetch -q upstream release-v0.18 master --tags || { echo "fetch failed"; exit
 echo
 echo "== release-v0.18"
 echo "upstream tip: $(git log -1 --format='%h %ad %s' --date=short upstream/release-v0.18) ($(git describe --tags upstream/release-v0.18 2>/dev/null))"
-MB=$(git merge-base HEAD upstream/release-v0.18)
-N=$(git rev-list --count "$MB"..upstream/release-v0.18)
-echo "CAMO is based on: $(git log -1 --format='%h %ad' --date=short "$MB") ($(git describe --tags "$MB" 2>/dev/null)); missing commits: $N"
-[ "$N" -gt 0 ] && git log --oneline "$MB"..upstream/release-v0.18 | head -50
+# Compare against the recorded base release, not a merge-base: a shallow clone (cloud sessions) has no common
+# commit with upstream, and the Nov 10 history rewrite changed CAMO's own commit ids.
+N=$(git rev-list --count "$BASE_TAG"..upstream/release-v0.18)
+echo "CAMO is based on: $BASE_TAG; upstream commits since then: $N"
+[ "$N" -gt 0 ] && git log --oneline "$BASE_TAG"..upstream/release-v0.18 | head -50
 
 echo
 echo "== master fixes since $SINCE (not merged into release-v0.18)"

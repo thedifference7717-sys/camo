@@ -13,8 +13,9 @@ CAMO is a privacy cryptocurrency: a rebranded fork of **Monero v0.18** (C++), ow
   crypto or consensus change, stop and explain the risk first.
 - Keep Monero/CryptoNote copyright headers and `LICENSE` (BSD-3) intact.
 - Merge upstream Monero security fixes from the `release-v0.18` branch promptly (`git remote add upstream https://github.com/monero-project/monero.git`).
-  Check with `bash contrib/camo/tools/check_upstream.sh` (monthly and before releases). Nov 4: CAMO = v0.18.5.4 (tip of
-  release-v0.18, nothing to merge). From Monero master, 22 small fixes were cherry-picked with `-x` (original authors
+  Check with `bash contrib/camo/tools/check_upstream.sh` (monthly and before releases; it compares against `BASE_TAG` in the
+  script, so bump that when merging a newer release). Nov 4 and Nov 13: CAMO = v0.18.5.4 (tip of release-v0.18, nothing to
+  merge). Nov 13: master's `b5f7330e0` (tx_pool use-after-free) checked: master-only bug, CAMO's 0.18 code already copies txid. From Monero master, 22 small fixes were cherry-picked with `-x` (original authors
   kept; never `--reset-author` on cherry-picks): RPC/HTTP hardening, db, locking, p2p, wallet. Deliberately NOT taken
   (wait for Monero's 0.18 release): `742bc14c5` and `fccaccbc8` (touch src/crypto, ringct), `a3ba0122c` (multisig kex),
   `dfc246116` (block templates, next to CAMO's block-1 code), `c1f7f0bdb` (crypto/aesb.c). Master-only fixes that need
