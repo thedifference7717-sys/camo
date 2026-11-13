@@ -215,7 +215,13 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
   ~5.5 GB of Safari/Claude WebKit pages, 96 MB free, heavy swap); camod showed `mining at 0 H/s`, state "stuck" in `top`.
   Not a CAMO bug (sync_info clean; stop/start_mining and a camod restart didn't help). Fixed by a Mac restart: blocks
   resumed at once. Mining guide must say: mining needs free RAM; check `status` H/s. Until more miners join, any stall on
-  his Mac stalls stagenet. Restart: `~/camo/camod --stagenet --add-priority-node 34.171.218.2:39740 --start-mining
+  his Mac stalls stagenet. **Nov 13: seed #2 RUNNING on AWS** (account `camo-seed`, project email; FREE PLAN: "does not get
+  charged", $100 credits, ends ~May 2027 or when credits run out -> plan a replacement before then). EC2 `camo-seed-2`
+  (i-056784d10469d8eac), us-east-2 Ohio, t3.micro, Ubuntu 24.04, 30 GB gp3, security group `camo-seed` (22, 39740, 19740),
+  **Elastic IP 3.134.132.214**. Login `ssh -i ~/.ssh/camo-seed-2.pem ubuntu@3.134.132.214`. Installed with
+  `deploy-seed-node.sh --binary ~/camod --stagenet --limit-up 16` (camod v1.0.0-fe86eb95c from the depends artifact);
+  synced 2138 blocks in 23 s. Both stagenet seeds in `get_ip_seed_nodes()` and website/stagenet.html.
+  Restart: `~/camo/camod --stagenet --add-priority-node 34.171.218.2:39740 --start-mining
   <miner Q... address> --mining-threads 2` (address in `~/camo/miner-stagenet.address.txt`). Oracle script restarted.
 - Release signing key (Nov 10): `CAMO release signing <camocoin@proton.me>`, ed25519, fingerprint
   `5F1A 8350 C748 BC43 AD19  2472 AF13 7B28 E11A 0857`, on keys.openpgp.org (verified). Secret key only on Anthony's Mac (backup file in his home folder; USB backup still to do).
