@@ -228,6 +228,9 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
   thedifference7717-sys.github.io. `CNAME` file in camo-website (and website/). camocoin.com is taken by someone else.
 - BitcoinTalk (Nov 11): account **CAMO_Coin** registered with the project email (email hidden). Newbie rank: activity grows
   per 14-day period with posts, so post a few genuine replies each period before the [ANN] thread (~Dec 1).
+  Nov 13: first 2 posts (Altcoin Discussion: free-tier VPS advice; how XMR tracing happens in practice), no CAMO mentions
+  (shilling in others' threads risks flags). New accounts: 6 min between posts; a blocked post is saved as a draft. Keep it
+  to 1-3 genuine replies every few days.
 - Launch tooling: `contrib/camo/STAGENET-LAUNCH.md` (Nov 10 runbook), `tools/set_seed_nodes.py` (seed IPs into code +
   website in one step), `ANNOUNCE-DRAFT.md` (BitcoinTalk draft, not posted), `website/faq.html` (published Nov 5).
   The wallet's `donate` command pays the public marketing wallet (`Cfbe7EfJ...aAtK4`, decided Nov 5). Wallet units are
