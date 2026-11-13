@@ -172,7 +172,11 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       0.18 net_ssl.cpp fails with Homebrew's OpenSSL 4). Tested on Linux/regtest: 15/15 QML tests; sent 5 CAMO from
       Ghillie, received exactly 5.0. **Caution (same as Monero GUI):** a wallet made by camo-wallet-cli and never synced
       is treated as new when first opened in Ghillie and skips existing blocks; fix: Settings > Info > restore height 0.
-      Applies to the founder/marketing wallets. Still to do: signed builds, translations, Apple-silicon build check.
+      Applies to the founder/marketing wallets. **Nov 12: CI all green** (Intel + Apple-silicon Mac bundles, Windows,
+      Linux, QML tests); **v0.9.0 tested on Anthony's Intel Mac**: friend-stagenet opened without picking the network
+      (address-prefix fix confirmed), 5.0 CAMO on the pixel-camo card, "Ghillie fee: 0 · never" shown, synced at 2085.
+      Mac test builds: CI artifact `macos-bundle-intel` -> `~/Downloads/Ghillie.tar` -> unpack to `~/ghillie-new`
+      (chmod -R u+w, xattr -cr). Still to do: signed builds, translations.
 - [ ] v1.2 (Q2 2027): built-in BTC↔CAMO atomic swaps; merchant checkout plugins
 - Ghillie fee model (decided Nov 3): **no fee on sends, ever** (an extra output would fingerprint Ghillie txs);
   0.25% on built-in swaps, 1% official pool fee, optional tip off by default; all to the marketing wallet.
