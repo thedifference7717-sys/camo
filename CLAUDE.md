@@ -119,7 +119,7 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       (what to do, the exact command, what he should see), wait for "done" + output, check it, then the next step.
 - [ ] Public stagenet 2–4 weeks → signed reproducible binaries (`contrib/gitian`; Monero 0.18 has no guix) → announced fair launch
       Gitian is set up for CAMO (Nov 4): recipes and scripts build `camo-<host>-<tag>` from this repo, sigs repo
-      `thedifference7717-sys/camo-gitian.sigs` (Anthony to create), workflow `ci/gh-actions/gitian` on `v*` tags + manual
+      `thedifference7717-sys/camo-gitian.sigs` (created Nov 12: README + release public key), workflow `ci/gh-actions/gitian` on `v*` tags + manual
       (Linux/Win/Mac). Checklist: `contrib/gitian/CAMO-RELEASE.md`. **First full run PASSED Nov 10** (workflow on branch,
       commit 4d156bee4: Linux 1h35, Win 43 min, Mac 47 min) after the recipes got `git describe --always` (repo has no tags
       before v1.0.0). Still to do: a second, independent builder compares hashes; signing with the release key. Version decided Nov 5: **v1.0.0** (tag `v1.0.0`; binaries say v1.0.0).
