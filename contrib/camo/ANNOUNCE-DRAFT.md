@@ -1,5 +1,5 @@
 <!-- DRAFT for Anthony to review. Not posted anywhere. Numbers match CLAUDE.md, ALLOCATION.md and the website.
-     Fill the [PLACEHOLDERS] before posting. BitcoinTalk uses BBCode; this is plain text with light formatting
+     Placeholders filled Nov 13; re-check numbers and links before posting. BitcoinTalk uses BBCode; this is plain text with light formatting
      that pastes cleanly, convert headings to [b]...[/b] if you like. -->
 
 # [ANN][CAMO] CAMO: private digital cash | RandomX CPU mining | fair launch Dec 15, 2026 18:00 UTC | public stagenet open
@@ -10,7 +10,7 @@ payment, with no opt-in and no exceptions. It runs Monero's audited privacy tech
 ## Why another coin?
 CAMO is a deliberately conservative Monero fork: the cryptography and consensus code are Monero's v0.18, kept as-is.
 What changes is parameters (name, ports, addresses, genesis, 1-minute blocks) and a launch done in the open: a public
-stagenet first, one disclosed allocation, and a wallet (Ghillie) built around mining on ordinary computers.
+stagenet first, one disclosed allocation, and its own desktop wallet, Ghillie, ready on launch day.
 
 ## Specs
 | | |
@@ -44,24 +44,24 @@ published at launch.
 - **Nov 10, 2026**: public stagenet opens (test network, worthless coins). Please help test.
 - **Dec 7, 2026**: signed release binaries and their hashes.
 - **Dec 15, 2026, 18:00 UTC**: mainnet. Anyone can mine from the first block.
-- **Q1 2027**: Ghillie wallet (desktop + mobile), fast sync, "mine while idle", control mining on your own computers from your phone.
+- **Dec 15, 2026**: Ghillie desktop wallet (Mac, Windows, Linux) ships with the launch downloads.
+- **Q1 2027**: Ghillie for phones, "mine while idle", control mining on your own computers from your phone.
 - **Q2 2027**: BTC to CAMO atomic swaps in Ghillie, merchant checkout plugins.
 - **Later**: FCMP++ (every spend hidden among every coin on the chain) once it is audited and live on Monero.
 
 ## Mining
-Any modern CPU. Solo with your own node, solo with XMRig, or the official pool (1% fee to the public marketing
-wallet, PPLNS). Guide: [WEBSITE]/mine.html
+Any modern CPU. Solo with your own node or Ghillie, solo with XMRig, or the official pool (1% fee to the public
+marketing wallet, PPLNS). Mining needs free memory: close heavy apps if your hash rate drops to 0. Guide: https://camocoin.org/mine.html
 
 ## Join the stagenet
-Build from source or use the test binaries, start a node, make a test wallet, mine, send: [WEBSITE]/stagenet.html
-Seed nodes: [SEED NODE IPs]
+Build from source or use the test binaries, start a node, make a test wallet, mine, send: https://camocoin.org/stagenet.html
+Seed nodes: 34.171.218.2:39740 and 3.134.132.214:39740 (both built into the software)
 
 ## Links
-- Website: [WEBSITE]
+- Website: https://camocoin.org
 - Source: https://github.com/thedifference7717-sys/camo
-- White paper: [WEBSITE]/assets/CAMO-White-Paper.pdf
-- Block explorer: [EXPLORER LINK]
-- Pool: [POOL LINK]
+- White paper: https://camocoin.org/assets/CAMO-White-Paper.pdf
+- Block explorer and official pool: links posted here when their servers are live
 - Community: X https://x.com/CAMO_Coin (@CAMO_Coin), BitcoinTalk CAMO_Coin; more channels to follow
 - Security reports (private): camocoin@proton.me
 
