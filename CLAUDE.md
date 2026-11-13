@@ -197,8 +197,9 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
   camocoin.org HTTPS enforced Nov 11.
 - Google Cloud (Nov 11): free-tier VM **camo-seed-1**, e2-micro, us-central1-f, Ubuntu 24.04 amd64, 30 GB standard disk,
   no snapshots, **static** external IP **34.171.218.2** (`camo-seed-1-ip`), firewall rule `camo-p2p` (tcp 39740,19740). Billing:
-  free trial ($300/90 d), budget alert camo-1-dollar-alert ($0.50/$0.90/$1). Unclear if the in-use external IPv4 is
-  billed (~$3.65/mo list): check the billing report ~Nov 13. 1 GB/mo free egress: cap camod upload. 1 GB RAM: install
+  free trial ($300/90 d), budget alert camo-1-dollar-alert ($0.50/$0.90/$1). **Billing checked Nov 12 (SKU report):
+  total $0.00, trial credit untouched**: External IP on a standard VM $0.00 (28.5 h), e2-micro core/RAM fully offset by
+  "free tier discount" lines, 30 GB standard PD $0.00. Re-check monthly and after the trial ends (~Feb 9, 2027). 1 GB/mo free egress: cap camod upload. 1 GB RAM: install
   the prebuilt binary (deploy-seed-node.sh --binary), don't build on it.
   **Nov 11: stagenet seed node RUNNING** (`deploy-seed-node.sh --binary ~/camod --stagenet --limit-up 16`, camod
   v1.0.0-845a54633 from the depends CI artifact, copied via scp from Anthony's Mac). Login: `ssh camo-servers@34.171.218.2`
