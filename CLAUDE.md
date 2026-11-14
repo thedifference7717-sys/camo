@@ -194,7 +194,11 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       (`android-lib.yml`, contrib/depends NDK r17b) and iOS (`ios-lib.yml`, `native/ios/build-ios-lib.sh`, pinned
       checksummed sources, Boost 1.84). **Phone node:** `deploy-seed-node.sh --public-rpc` (Nov 14) adds a restricted
       view-only RPC on 19749 / stagenet 39749 (4 conns per IP, 64 total; full RPC stays local); tested on regtest with
-      the app syncing and sending through it. NOT enabled on any server: owner's call (egress).
+      the app syncing and sending through it. **Nov 14 (Anthony approved): ENABLED on seed 2** (AWS security group rule
+      tcp 39749 0.0.0.0/0 "CAMO stagenet phone wallets"; flags appended to /etc/default/camod; ufw allow 39749). Verified
+      from his Mac: `curl http://3.134.132.214:39749/get_info` -> stagenet, restricted true; survives reboot (seed rebooted
+      for pending updates). The app suggests `3.134.132.214:39749` as the stagenet node. Cloud sessions can't reach it
+      (non-443 ports blocked); test from his Mac.
       **Nov 14 night: both phone engines BUILD.** Android `libcamo_wallet.so` (arm64, 17.7 MB, 33 functions); the CI APK
       `ghillie-android-stagenet` bundles it. iOS `libcamo_wallet.a` (arm64, iOS 15+, 81 MB static) on macos-15 from pinned
       checksummed sources; iPhone link check passes. iOS needs a build-only patch applied to the CI's copy of camo
