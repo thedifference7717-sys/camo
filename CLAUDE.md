@@ -214,7 +214,11 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       the miner (review screen: real fee 0.00086355, Ghillie fee 0; balance 3.99 with change unlocking): both directions work.
       Later Nov 14 (CI green on Android + iOS): seed screens protected (Android FLAG_SECURE via MainActivity channel,
       words covered whenever the app leaves the foreground) and QR scanning on Send (mobile_scanner, on-device; camera
-      text in Info.plist). Still to do: Face ID/fingerprint unlock, recovery sheet, real-device test (needs a cable). Real iPhone not yet: he has no cable (Apple
+      text in Info.plist). **Face ID / fingerprint unlock (Anthony chose it, Nov 14; CI green):** opt-in checkbox when typing
+      the password; flutter_secure_storage 11 (Swift Package Manager OK; biometric_storage was rejected: no SPM, would force
+      CocoaPods): iOS Keychain biometryCurrentSet + passcode-only + this device; Android Keystore, strong biometrics per read
+      (MainActivity is a FlutterFragmentActivity); refusal falls back to the password; a stale saved password is deleted;
+      Settings turns it off. Linux dev builds need libsecret-1-dev. Still to do: recovery sheet, real-device test (cable). Real iPhone not yet: he has no cable (Apple
       needs one for first pairing). Lesson: copying a command from chat overwrites the clipboard (and the simulator's);
       save addresses to a file first (`xcrun simctl pbpaste booted`). Code: PUBLIC repo `thedifference7717-sys/ghillie-mobile`
       (created Nov 13, branch `main`). Plan in its README:
