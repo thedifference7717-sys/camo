@@ -204,7 +204,15 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       checksummed sources; iPhone link check passes. iOS needs a build-only patch applied to the CI's copy of camo
       (`native/ios/camo-ios-miner.patch`: miner.cpp's macOS battery API) and `ios_shims.c` (`__clear_cache` for
       RandomX's JIT, unused by wallets); camo itself unchanged. Settings > Node switches nodes on a live wallet; sends run
-      on a background isolate and broadcast exactly the reviewed tx. Not yet run on a real phone. Code: PUBLIC repo `thedifference7717-sys/ghillie-mobile`
+      on a background isolate and broadcast exactly the reviewed tx. **Nov 14 ~11:08 local: FIRST REAL iOS RUN PASSED** on
+      Anthony's Intel iMac in the iOS simulator (iPhone 17, iOS 26.5; Xcode 26.5 runs on his Intel Mac despite the App
+      Store's "not compatible" banner; Flutter 3.50.0 in ~/flutter, Swift Package Manager on instead of CocoaPods; app in
+      ~/ghillie-mobile; engines in ios/Engine (device) and ios/Engine/sim (x86_64 sim build, `ios-lib.yml` matrix target
+      sim-x86_64) wired by the git-ignored ios/Flutter/Engine.xcconfig with [sdk=iphoneos*]/[sdk=iphonesimulator*] lines):
+      created a wallet (25 words from the real library, 3 checked), synced via 3.134.132.214:39749 to block 4,200, miner
+      sent 5 CAMO (fee 0.00124), Ghillie showed +5.00, 1 of 10 confirmations. Real iPhone not yet: he has no cable (Apple
+      needs one for first pairing). Lesson: copying a command from chat overwrites the clipboard (and the simulator's);
+      save addresses to a file first (`xcrun simctl pbpaste booted`). Code: PUBLIC repo `thedifference7717-sys/ghillie-mobile`
       (created Nov 13, branch `main`). Plan in its README:
       Linux dev build with real lib on regtest -> Android via contrib/depends -> iOS xcframework on macOS CI -> public
       restricted-RPC node for phones (AWS seed has the egress; Google's 1 GB/mo doesn't) -> store accounts ($99/$25) = owner's call.
