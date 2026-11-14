@@ -75,7 +75,9 @@ crashes with "invalid opcode" on other CPUs.
 
 ## Test
 Unit tests (`-DBUILD_TESTS=ON`, `make unit_tests test_notifier`; run from the build dir): Nov 4, full suite with nothing
-excluded: 1282 run, 1275 pass, 7 expected failures (~10 min): 6 DNS tests (no DNS in sandboxes) and
+excluded: 1282 run, 1275 pass, 7 expected failures (~10 min; re-checked Nov 14 after the fair-launch rule: same 7, plus
+`rpc.is_version_string_valid`, fixed the same day: its regex wanted Monero's 4-part versions, so `camod`'s `version` command
+said "not available" for 1.0.0): 6 DNS tests (no DNS in sandboxes) and
 `Serialization.portability_wallet` (its fixture is a real Monero testnet wallet with Monero chain history; CAMO wallets
 rightly refuse it: genesis mismatch). The address-based tests (uri, multisig, base58 address, portability tx) use the
 same keys re-encoded with CAMO prefixes (`contrib/camo/tools/make_genesis.py` helpers), and the wallet_storage fixture's
@@ -296,7 +298,8 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
   launch). **D1 DONE Nov 14 (Anthony: "fix that asap")**: mainnet-only launch-time rule, see the table above. Tested on a
   local mainnet node: before launch every mined block is refused ("is dated before the CAMO launch time"); with the clock
   faked to Dec 15 18:05 (`faketime`) the same node mined 11 blocks; stagenet mines normally today; regtest-demo and
-  attack_block1.py pass. Residual: up to ~2 h head start for someone who dates blocks just after 18:00.
+  attack_block1.py pass; unit tests unchanged (the `race_condition` test now runs on testnet: it dated blocks at genesis
+  time, mainnet refused them, and it hung). PR #47 merged. Residual: up to ~2 h head start for someone who dates blocks just after 18:00.
 - Launch tooling: `contrib/camo/STAGENET-LAUNCH.md` (Nov 10 runbook), `tools/set_seed_nodes.py` (seed IPs into code +
   website in one step), `ANNOUNCE-DRAFT.md` (BitcoinTalk draft, not posted), `website/faq.html` (published Nov 5).
   The wallet's `donate` command pays the public marketing wallet (`Cfbe7EfJ...aAtK4`, decided Nov 5). Wallet units are
