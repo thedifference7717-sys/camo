@@ -194,7 +194,13 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       (`android-lib.yml`, contrib/depends NDK r17b) and iOS (`ios-lib.yml`, `native/ios/build-ios-lib.sh`, pinned
       checksummed sources, Boost 1.84). **Phone node:** `deploy-seed-node.sh --public-rpc` (Nov 14) adds a restricted
       view-only RPC on 19749 / stagenet 39749 (4 conns per IP, 64 total; full RPC stays local); tested on regtest with
-      the app syncing and sending through it. NOT enabled on any server: owner's call (egress). Code: PUBLIC repo `thedifference7717-sys/ghillie-mobile`
+      the app syncing and sending through it. NOT enabled on any server: owner's call (egress).
+      **Nov 14 night: both phone engines BUILD.** Android `libcamo_wallet.so` (arm64, 17.7 MB, 33 functions); the CI APK
+      `ghillie-android-stagenet` bundles it. iOS `libcamo_wallet.a` (arm64, iOS 15+, 81 MB static) on macos-15 from pinned
+      checksummed sources; iPhone link check passes. iOS needs a build-only patch applied to the CI's copy of camo
+      (`native/ios/camo-ios-miner.patch`: miner.cpp's macOS battery API) and `ios_shims.c` (`__clear_cache` for
+      RandomX's JIT, unused by wallets); camo itself unchanged. Settings > Node switches nodes on a live wallet; sends run
+      on a background isolate and broadcast exactly the reviewed tx. Not yet run on a real phone. Code: PUBLIC repo `thedifference7717-sys/ghillie-mobile`
       (created Nov 13, branch `main`). Plan in its README:
       Linux dev build with real lib on regtest -> Android via contrib/depends -> iOS xcframework on macOS CI -> public
       restricted-RPC node for phones (AWS seed has the egress; Google's 1 GB/mo doesn't) -> store accounts ($99/$25) = owner's call.
