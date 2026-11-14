@@ -895,6 +895,9 @@ TEST(cryptonote_protocol_handler, race_condition)
             "--disable-dns-checkpoints",
             "--check-updates=disabled",
             "--fixed-difficulty=1",
+            // CAMO: testnet (same hard-fork rules as mainnet). Mainnet now refuses blocks dated before the launch
+            // time (fair-launch rule), and this test dates its blocks at the genesis timestamp.
+            "--testnet",
             "--block-sync-size=1",
             "--db-sync-mode=fastest:async:50000",
           }).options([]{
@@ -922,6 +925,9 @@ TEST(cryptonote_protocol_handler, race_condition)
             "--disable-dns-checkpoints",
             "--check-updates=disabled",
             "--fixed-difficulty=1",
+            // CAMO: testnet (same hard-fork rules as mainnet). Mainnet now refuses blocks dated before the launch
+            // time (fair-launch rule), and this test dates its blocks at the genesis timestamp.
+            "--testnet",
             "--block-sync-size=1",
             "--db-sync-mode=fastest:async:50000",
           }).options([]{
