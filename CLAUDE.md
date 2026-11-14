@@ -290,6 +290,10 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
   Nov 13: first 2 posts (Altcoin Discussion: free-tier VPS advice; how XMR tracing happens in practice), no CAMO mentions
   (shilling in others' threads risks flags). New accounts: 6 min between posts; a blocked post is saved as a draft. Keep it
   to 1-3 genuine replies every few days.
+- **Mainnet runbook (Nov 14): `contrib/camo/MAINNET-LAUNCH.md`** (decisions D1-D4, dated timeline to Dec 22). **D1 OPEN,
+  IMPORTANT: nothing stops pre-mining mainnet before Dec 15** (public code; a private chain mined for weeks would win at
+  launch). Recommended fix = mainnet-only launch-time rule (blocks >= height 1 dated before 1797357600 invalid; with the
+  2 h future limit a pre-miner gets ~2 h head start). It is a consensus change: NOT implemented, waiting for Anthony.
 - Launch tooling: `contrib/camo/STAGENET-LAUNCH.md` (Nov 10 runbook), `tools/set_seed_nodes.py` (seed IPs into code +
   website in one step), `ANNOUNCE-DRAFT.md` (BitcoinTalk draft, not posted), `website/faq.html` (published Nov 5).
   The wallet's `donate` command pays the public marketing wallet (`Cfbe7EfJ...aAtK4`, decided Nov 5). Wallet units are
