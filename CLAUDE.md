@@ -178,6 +178,15 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       (address-prefix fix confirmed), 5.0 CAMO on the pixel-camo card, "Ghillie fee: 0 · never" shown, synced at 2085.
       Mac test builds: CI artifact `macos-bundle-intel` -> `~/Downloads/Ghillie.tar` -> unpack to `~/ghillie-new`
       (chmod -R u+w, xattr -cr). Still to do: signed builds, translations.
+- [~] **Ghillie mobile groundwork (Nov 13-14)**: Flutter app (iOS/iPadOS/Android from one codebase), approved mockup
+      screens on DEMO data (home, send w/ review + "Ghillie fee: 0 · never", receive w/ QR + camo: links + fresh subaddress
+      per payer, rigs preview, settings), opening screen = the camocoin.org scope (hidden CAMO, aim + tap, Skip), CamoAmount
+      (BigInt, 12 decimals), address hints (C/Q/K-L, Monero refused), 11 tests, CI (tests, Android demo APK, unsigned iOS).
+      C bridge `native/camo_wallet_ffi.{h,cpp}` over wallet2_api.h (glue only; mixin 0 = library default ring 16;
+      remote nodes untrusted), compile-checked, NOT yet linked/run. Code saved on branch `mobile-groundwork` of
+      `thedifference7717-sys/ghillie` until Anthony creates repo `ghillie-mobile` (then push main there). Plan in its README:
+      Linux dev build with real lib on regtest -> Android via contrib/depends -> iOS xcframework on macOS CI -> public
+      restricted-RPC node for phones (AWS seed has the egress; Google's 1 GB/mo doesn't) -> store accounts ($99/$25) = owner's call.
 - [ ] v1.2 (Q2 2027): built-in BTC↔CAMO atomic swaps; merchant checkout plugins
 - Ghillie fee model (decided Nov 3): **no fee on sends, ever** (an extra output would fingerprint Ghillie txs);
   0.25% on built-in swaps, 1% official pool fee, optional tip off by default; all to the marketing wallet.
