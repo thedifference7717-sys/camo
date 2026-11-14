@@ -5,13 +5,16 @@
 #   bash deploy-seed-node.sh --binary /root/camod [--stagenet]          # copy a prebuilt camod first (private repo)
 #   bash deploy-seed-node.sh --repo https://github.com/<you>/camo.git [--branch main] [--stagenet]   # build from source
 #   --limit-up KB   cap camod's upload rate in kB/s (e.g. 16 on a free-tier VM with a small monthly egress allowance)
+#   --public-rpc    also serve a RESTRICTED wallet RPC to the internet (port 19749 mainnet / 39749 stagenet) so phone
+#                   wallets (Ghillie mobile) can sync. Restricted = view-only calls, no admin commands, capped
+#                   connections. The full RPC stays on localhost. Uses upload bandwidth: mind free-tier egress limits.
 #
 # Security defaults: firewall (only SSH + CAMO P2P open), RPC bound to localhost, SSH key-only login (only if a key
 # is already installed, so you can't lock yourself out), fail2ban, automatic security updates, camod runs as an
 # unprivileged sandboxed user.
 set -euo pipefail
 
-BINARY=""; REPO=""; BRANCH="main"; NET="mainnet"; LIMIT_UP=""
+BINARY=""; REPO=""; BRANCH="main"; NET="mainnet"; LIMIT_UP=""; PUBLIC_RPC=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --binary) BINARY="$2"; shift 2 ;;
@@ -19,11 +22,14 @@ while [ $# -gt 0 ]; do
     --branch) BRANCH="$2"; shift 2 ;;
     --stagenet) NET="stagenet"; shift ;;
     --limit-up) LIMIT_UP="$2"; shift 2 ;;
+    --public-rpc) PUBLIC_RPC=1; shift ;;
     *) echo "unknown option $1"; exit 1 ;;
   esac
 done
 [ -n "$BINARY" ] || [ -n "$REPO" ] || { echo "pass --binary <path-to-camod> or --repo <git-url>"; exit 1; }
-if [ "$NET" = "stagenet" ]; then P2P=39740; RPC=39741; NETFLAG="--stagenet"; else P2P=19740; RPC=19741; NETFLAG=""; fi
+if [ "$NET" = "stagenet" ]; then P2P=39740; RPC=39741; PUB=39749; NETFLAG="--stagenet"; else P2P=19740; RPC=19741; PUB=19749; NETFLAG=""; fi
+PUBLIC_ARGS=""
+[ -n "$PUBLIC_RPC" ] && PUBLIC_ARGS=" --rpc-restricted-bind-ip 0.0.0.0 --rpc-restricted-bind-port $PUB --confirm-external-bind --rpc-max-connections-per-public-ip 4 --rpc-max-connections 64"
 
 echo "==> System updates and security tools"
 apt-get update -qq
@@ -70,7 +76,7 @@ echo "==> Service user and data dir"
 id camo &>/dev/null || useradd --system --home /var/lib/camo --shell /usr/sbin/nologin camo
 mkdir -p /var/lib/camo && chown camo:camo /var/lib/camo && chmod 700 /var/lib/camo
 cat > /etc/default/camod <<EOF
-CAMOD_ARGS="$NETFLAG --p2p-bind-port $P2P --rpc-bind-ip 127.0.0.1 --rpc-bind-port $RPC${LIMIT_UP:+ --limit-rate-up $LIMIT_UP}"
+CAMOD_ARGS="$NETFLAG --p2p-bind-port $P2P --rpc-bind-ip 127.0.0.1 --rpc-bind-port $RPC${LIMIT_UP:+ --limit-rate-up $LIMIT_UP}$PUBLIC_ARGS"
 EOF
 cat > /etc/systemd/system/camod.service <<'EOF'
 [Unit]
@@ -113,12 +119,15 @@ ufw default allow outgoing >/dev/null
 ufw allow OpenSSH >/dev/null
 ufw limit OpenSSH >/dev/null
 ufw allow "$P2P"/tcp >/dev/null
+if [ -n "$PUBLIC_RPC" ]; then ufw allow "$PUB"/tcp >/dev/null; echo "    restricted wallet RPC for phones open on $PUB"; fi
 ufw --force enable >/dev/null
 # Oracle Cloud's Ubuntu images ship their own iptables rules that REJECT everything but SSH before ufw's chains are
 # reached, so the P2P port would stay closed. Open it there too, ahead of that REJECT, and keep it across reboots.
 if iptables -C INPUT -j REJECT --reject-with icmp-host-prohibited 2>/dev/null; then
-  iptables -C INPUT -p tcp --dport "$P2P" -m state --state NEW -j ACCEPT 2>/dev/null || \
-    iptables -I INPUT "$(iptables -L INPUT --line-numbers | awk '/REJECT/ {print $1; exit}')" -p tcp --dport "$P2P" -m state --state NEW -j ACCEPT
+  for PORT in "$P2P" ${PUBLIC_RPC:+$PUB}; do
+    iptables -C INPUT -p tcp --dport "$PORT" -m state --state NEW -j ACCEPT 2>/dev/null || \
+      iptables -I INPUT "$(iptables -L INPUT --line-numbers | awk '/REJECT/ {print $1; exit}')" -p tcp --dport "$PORT" -m state --state NEW -j ACCEPT
+  done
   command -v netfilter-persistent >/dev/null && netfilter-persistent save >/dev/null 2>&1 || true
   echo "    Oracle Cloud firewall rules found: opened $P2P there as well (also open it in the cloud console's security list)"
 fi
@@ -143,5 +152,5 @@ else
 fi
 
 echo
-echo "CAMO $NET seed node is running. Public IP: $(curl -s https://api.ipify.org || echo unknown), P2P port $P2P"
+echo "CAMO $NET seed node is running. Public IP: $(curl -s https://api.ipify.org || echo unknown), P2P port $P2P${PUBLIC_RPC:+, phone wallet RPC $PUB}"
 echo "Check it with:  journalctl -u camod -f"
