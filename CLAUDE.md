@@ -183,7 +183,10 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       per payer, rigs preview, settings), opening screen = the camocoin.org scope (hidden CAMO, aim + tap, Skip), CamoAmount
       (BigInt, 12 decimals), address hints (C/Q/K-L, Monero refused), 11 tests, CI (tests, Android demo APK, unsigned iOS).
       C bridge `native/camo_wallet_ffi.{h,cpp}` over wallet2_api.h (glue only; mixin 0 = library default ring 16;
-      remote nodes untrusted), compile-checked, NOT yet linked/run. Code: PUBLIC repo `thedifference7717-sys/ghillie-mobile`
+      remote nodes untrusted). **Nov 14: bridge PASSES end to end** against the real library on regtest
+      (`native/test/run-regtest-smoke.sh <camo src> <build dir>`): 5 CAMO to a new labelled subaddress, fee 0.00123462
+      ("Normal" = library's automatic priority), txid returned, receiver exactly 5.0. Lesson: a wallet opened while the
+      chain is <=1 block tall counts as new on every open (library rule; irrelevant on real chains). Code: PUBLIC repo `thedifference7717-sys/ghillie-mobile`
       (created Nov 13, branch `main`). Plan in its README:
       Linux dev build with real lib on regtest -> Android via contrib/depends -> iOS xcframework on macOS CI -> public
       restricted-RPC node for phones (AWS seed has the egress; Google's 1 GB/mo doesn't) -> store accounts ($99/$25) = owner's call.
