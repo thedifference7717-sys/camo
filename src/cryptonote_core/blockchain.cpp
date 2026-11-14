@@ -1331,6 +1331,15 @@ bool Blockchain::prevalidate_miner_transaction(const block& b, uint64_t height, 
 }
 //------------------------------------------------------------------
 // This function validates the miner transaction reward
+bool Blockchain::camo_launch_time_ok(uint64_t height, uint64_t timestamp) const
+{
+  // CAMO fair launch: on mainnet, every block after the genesis block must be dated at or after the launch time.
+  // Together with the 2-hour future limit this stops anyone from mining mainnet privately before launch.
+  if (m_nettype != MAINNET || height == 0)
+    return true;
+  return timestamp >= ::config::CAMO_LAUNCH_TIMESTAMP;
+}
+//------------------------------------------------------------------
 bool Blockchain::camo_allocation_tx(transaction& tx) const
 {
   blobdata blob;
@@ -1971,6 +1980,13 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
     if(!check_block_timestamp(timestamps, b))
     {
       MERROR_VER("Block with id: " << id << std::endl << " for alternative chain, has invalid timestamp: " << b.timestamp);
+      bvc.m_verifivation_failed = true;
+      return false;
+    }
+    // CAMO: fair-launch rule (mainnet blocks after genesis may not be dated before the launch time)
+    if (!camo_launch_time_ok(bei.height, b.timestamp))
+    {
+      MERROR_VER("Block with id: " << id << std::endl << " for alternative chain, is dated before the CAMO launch time: " << b.timestamp);
       bvc.m_verifivation_failed = true;
       return false;
     }
@@ -4151,6 +4167,15 @@ leave:
   if(!check_block_timestamp_main_chain(bl))
   {
     MERROR_VER("Block with id: " << id << std::endl << "has invalid timestamp: " << bl.timestamp);
+    bvc.m_verifivation_failed = true;
+    goto leave;
+  }
+
+  // CAMO: fair-launch rule (mainnet blocks after genesis may not be dated before the launch time)
+  if (!camo_launch_time_ok(m_db->height(), bl.timestamp))
+  {
+    MERROR_VER("Block with id: " << id << std::endl << "is dated before the CAMO launch time: " << bl.timestamp
+      << " < " << config::CAMO_LAUNCH_TIMESTAMP);
     bvc.m_verifivation_failed = true;
     goto leave;
   }
