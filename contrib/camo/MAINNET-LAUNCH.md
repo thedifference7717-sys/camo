@@ -5,7 +5,11 @@ Written Nov 14. Companion to `STAGENET-LAUNCH.md`, `contrib/gitian/CAMO-RELEASE.
 
 ## Decisions for Anthony (before Dec 1)
 
-### D1. Pre-mining guard (IMPORTANT, consensus change: needs your OK)
+### D1. Pre-mining guard: DONE Nov 14 (option 1, approved by Anthony)
+`CAMO_LAUNCH_TIMESTAMP` in `src/cryptonote_config.h`, `Blockchain::camo_launch_time_ok`. Tested: before launch a
+mainnet node refuses every block it mines; with the clock set to Dec 15 18:05 UTC it mines normally; stagenet unaffected.
+Keep the original reasoning below for reviewers.
+
 **Problem.** Nothing in the code stops anyone from mining *mainnet* before Dec 15. The source is public, so anyone can
 build `camod` today, mine a private mainnet chain for weeks (difficulty adjusts to their hashrate), and publish it at
 launch. Every node follows the chain with the most work, so that private chain becomes CAMO's history: the pre-miner
@@ -46,7 +50,7 @@ Same as stagenet: `--public-rpc` on the AWS seed (port **19749**), plus an AWS s
 ## Timeline
 
 ### Now to Nov 30: stagenet
-- [ ] Decide D1-D4. If D1 = option 1: implement, test, merge (Claude), well before the code freeze.
+- [x] D1 implemented and tested (Nov 14). - [ ] Decide D2-D4.
 - [ ] Keep stagenet mining; test Ghillie desktop + mobile against it; `bash contrib/camo/tools/check_upstream.sh` weekly.
 - [ ] BitcoinTalk: 1-3 genuine replies every few days (rank).
 - [ ] USB backups (offline, two copies): release signing key, `~/.ssh/camo-seed-2.pem`, Google SSH key.

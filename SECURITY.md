@@ -50,3 +50,8 @@ wallet is planned once CAMO has value.
 - [ ] `git log upstream/release-v0.18` checked; any security fixes merged
 - [ ] Reproducible build matches across two machines; hashes signed and published
 - [ ] Checkpoints updated (after launch)
+
+## Fair launch
+On mainnet, every block after genesis must be dated at or after Dec 15 2026 18:00 UTC (`CAMO_LAUNCH_TIMESTAMP`).
+Nodes already refuse blocks dated more than 2 hours ahead, so nobody can mine mainnet privately before launch and
+publish the chain afterwards. The most anyone can gain is about 2 hours of blocks dated just after the launch time.

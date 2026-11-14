@@ -235,6 +235,10 @@ namespace config
     } }; // CAMO
   std::string const GENESIS_TX = "013c01ff0001ffffffffffff030285b25ce9bfe1bd22e140fbc73a4bcd54475d32ea2504a08d347abdf32bc5e19221012b84594df9b28cb785a590c2718b24549b15dabea0253f27c20a7489b3d7dc5e"; // burned genesis (no allocation here; see camo_allocation.h)
   uint32_t const GENESIS_NONCE = 7171;
+  // CAMO fair launch: on mainnet every block after genesis must be dated at or after Dec 15 2026 18:00 UTC.
+  // Blocks dated more than 2 hours ahead are already refused (CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT), so nobody can
+  // pre-mine a chain before launch and publish it later. Mainnet only; testnet, stagenet and regtest are unaffected.
+  uint64_t const CAMO_LAUNCH_TIMESTAMP = 1797357600;
 
   // Hash domain separators
   const char HASH_KEY_BULLETPROOF_EXPONENT[] = "bulletproof";

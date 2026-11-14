@@ -35,6 +35,7 @@ CAMO is a privacy cryptocurrency: a rebranded fork of **Monero v0.18** (C++), ow
 | `src/version.cpp.in` | release name "CAMO Genesis"; version **1.0.0** (Nov 5; code base Monero 0.18.5.4). Keep it when merging Monero version bumps |
 | `src/wallet/wallet2.cpp`, `src/simplewallet/simplewallet.cpp` | payment URI scheme `camo:` (Nov 4); `monero:` links are rejected |
 | `src/cryptonote_config.h` `DIFFICULTY_TARGET_V2` | **1-minute blocks** (60 s). Emission per minute is unchanged: the reward formula scales by block time, so blocks pay ~17.25 CAMO at start and the tail is 0.3 CAMO/block |
+| `src/cryptonote_config.h` `CAMO_LAUNCH_TIMESTAMP`, `blockchain.cpp` `camo_launch_time_ok` | **Fair-launch rule (Nov 14, Anthony approved):** on MAINNET, blocks above genesis dated before 1797357600 (Dec 15 2026 18:00 UTC) are invalid (main and alt chains). With the 2 h future limit, nobody can pre-mine before launch. Testnet/stagenet/regtest unaffected |
 
 Launch plan: mainnet **Dec 15, 2026 18:00 UTC**; public stagenet from Nov 10. Roadmap doc: https://claude.ai/artifact/Afc9iNZRfzU3dqgiZ3QsDc
 
@@ -291,9 +292,11 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
   (shilling in others' threads risks flags). New accounts: 6 min between posts; a blocked post is saved as a draft. Keep it
   to 1-3 genuine replies every few days.
 - **Mainnet runbook (Nov 14): `contrib/camo/MAINNET-LAUNCH.md`** (decisions D1-D4, dated timeline to Dec 22). **D1 OPEN,
-  IMPORTANT: nothing stops pre-mining mainnet before Dec 15** (public code; a private chain mined for weeks would win at
-  launch). Recommended fix = mainnet-only launch-time rule (blocks >= height 1 dated before 1797357600 invalid; with the
-  2 h future limit a pre-miner gets ~2 h head start). It is a consensus change: NOT implemented, waiting for Anthony.
+  IMPORTANT (was): nothing stopped pre-mining mainnet before Dec 15** (public code; a private chain mined for weeks would win at
+  launch). **D1 DONE Nov 14 (Anthony: "fix that asap")**: mainnet-only launch-time rule, see the table above. Tested on a
+  local mainnet node: before launch every mined block is refused ("is dated before the CAMO launch time"); with the clock
+  faked to Dec 15 18:05 (`faketime`) the same node mined 11 blocks; stagenet mines normally today; regtest-demo and
+  attack_block1.py pass. Residual: up to ~2 h head start for someone who dates blocks just after 18:00.
 - Launch tooling: `contrib/camo/STAGENET-LAUNCH.md` (Nov 10 runbook), `tools/set_seed_nodes.py` (seed IPs into code +
   website in one step), `ANNOUNCE-DRAFT.md` (BitcoinTalk draft, not posted), `website/faq.html` (published Nov 5).
   The wallet's `donate` command pays the public marketing wallet (`Cfbe7EfJ...aAtK4`, decided Nov 5). Wallet units are
