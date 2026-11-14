@@ -218,7 +218,10 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       the password; flutter_secure_storage 11 (Swift Package Manager OK; biometric_storage was rejected: no SPM, would force
       CocoaPods): iOS Keychain biometryCurrentSet + passcode-only + this device; Android Keystore, strong biometrics per read
       (MainActivity is a FlutterFragmentActivity); refusal falls back to the password; a stale saved password is deleted;
-      Settings turns it off. Linux dev builds need libsecret-1-dev. Still to do: recovery sheet, real-device test (cable). Real iPhone not yet: he has no cable (Apple
+      Settings turns it off. Linux dev builds need libsecret-1-dev. Settings also has LOCK WALLET and "turn on" for Face ID (the
+      password typed once proves it). Bug found by Anthony and fixed: after Lock, Face ID auto-prompted and reopened the
+      wallet instantly; now auto-prompt only at app start, after Lock it waits for a tap. **Verified by Anthony in the
+      simulator Nov 14 ("works great")** (simulator Face ID: Features > Face ID > Enrolled / Matching Face). Still to do: recovery sheet, real-device test (cable). Real iPhone not yet: he has no cable (Apple
       needs one for first pairing). Lesson: copying a command from chat overwrites the clipboard (and the simulator's);
       save addresses to a file first (`xcrun simctl pbpaste booted`). Code: PUBLIC repo `thedifference7717-sys/ghillie-mobile`
       (created Nov 13, branch `main`). Plan in its README:
