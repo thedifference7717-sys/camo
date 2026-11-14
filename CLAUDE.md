@@ -211,7 +211,10 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       sim-x86_64) wired by the git-ignored ios/Flutter/Engine.xcconfig with [sdk=iphoneos*]/[sdk=iphonesimulator*] lines):
       created a wallet (25 words from the real library, 3 checked), synced via 3.134.132.214:39749 to block 4,200, miner
       sent 5 CAMO (fee 0.00124), Ghillie showed +5.00, 1 of 10 confirmations. ~11:25: after unlocking, **Ghillie SENT 1 CAMO back** to
-      the miner (review screen: real fee 0.00086355, Ghillie fee 0; balance 3.99 with change unlocking): both directions work. Real iPhone not yet: he has no cable (Apple
+      the miner (review screen: real fee 0.00086355, Ghillie fee 0; balance 3.99 with change unlocking): both directions work.
+      Later Nov 14 (CI green on Android + iOS): seed screens protected (Android FLAG_SECURE via MainActivity channel,
+      words covered whenever the app leaves the foreground) and QR scanning on Send (mobile_scanner, on-device; camera
+      text in Info.plist). Still to do: Face ID/fingerprint unlock, recovery sheet, real-device test (needs a cable). Real iPhone not yet: he has no cable (Apple
       needs one for first pairing). Lesson: copying a command from chat overwrites the clipboard (and the simulator's);
       save addresses to a file first (`xcrun simctl pbpaste booted`). Code: PUBLIC repo `thedifference7717-sys/ghillie-mobile`
       (created Nov 13, branch `main`). Plan in its README:
