@@ -230,6 +230,10 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
   **Elastic IP 3.134.132.214**. Login `ssh -i ~/.ssh/camo-seed-2.pem ubuntu@3.134.132.214`. Installed with
   `deploy-seed-node.sh --binary ~/camod --stagenet --limit-up 16` (camod v1.0.0-fe86eb95c from the depends artifact);
   synced 2138 blocks in 23 s. Both stagenet seeds in `get_ip_seed_nodes()` and website/stagenet.html.
+  **Nov 14: phone alarm RUNNING on seed 2** (`contrib/camo/tools/install-alarm.sh <topic> --stagenet`: systemd
+  `camo-alarm`, camo_health.py --watch 120 on the local node, ntfy.sh topic in Anthony's ntfy app (private; not
+  recorded here), alerts on WARN/CRIT + recovery). Tested: notifications reach his phone (iOS notifications had to be
+  allowed for ntfy). Re-run with --mainnet on mainnet seeds.
   Restart: `~/camo/camod --stagenet --add-priority-node 34.171.218.2:39740 --start-mining
   <miner Q... address> --mining-threads 2` (address in `~/camo/miner-stagenet.address.txt`). Oracle script restarted.
 - Release signing key (Nov 10): `CAMO release signing <camocoin@proton.me>`, ed25519, fingerprint
