@@ -38,6 +38,10 @@ TEST(rpc, is_version_string_valid)
   ASSERT_TRUE(is_version_string_valid("0.14.1.2"));
   ASSERT_TRUE(is_version_string_valid("0.15.0.0-release"));
   ASSERT_TRUE(is_version_string_valid("0.15.0.0-fe3f6a3e6"));
+  ASSERT_TRUE(is_version_string_valid("1.0.0")); // CAMO's 3-part versions
+  ASSERT_TRUE(is_version_string_valid("1.0.0-release"));
+  ASSERT_TRUE(is_version_string_valid("1.0.1-fe3f6a3e6"));
+  ASSERT_FALSE(is_version_string_valid("1.0"));
 
   ASSERT_FALSE(is_version_string_valid(""));
   ASSERT_FALSE(is_version_string_valid("invalid"));
