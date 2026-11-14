@@ -1459,6 +1459,11 @@ namespace cryptonote
     bool camo_allocation_tx(transaction& tx) const;
 
     /**
+     * @brief CAMO fair launch: false if a mainnet block above the genesis block is dated before the launch time
+     */
+    bool camo_launch_time_ok(uint64_t height, uint64_t timestamp) const;
+
+    /**
      * @brief reverts the blockchain to its previous state following a failed switch
      *
      * If Blockchain fails to switch to an alternate chain when it means
