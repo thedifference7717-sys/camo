@@ -187,7 +187,14 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       (`native/test/run-regtest-smoke.sh <camo src> <build dir>`): 5 CAMO to a new labelled subaddress, fee 0.00123462
       ("Normal" = library's automatic priority), txid returned, receiver exactly 5.0. Lesson: a wallet opened while the
       chain is <=1 block tall counts as new on every open (library rule; irrelevant on real chains). **Nov 14 later: the app's Dart wallet (`lib/wallet/ffi_wallet.dart`) runs on the real library too**
-      (`native/test/run-regtest-dart.sh`: 5 CAMO sent, receiver exactly 5); demo data stays the default unless `CAMO_WALLET_LIB` etc. are set. Code: PUBLIC repo `thedifference7717-sys/ghillie-mobile`
+      (`native/test/run-regtest-dart.sh`: 5 CAMO sent, receiver exactly 5); demo data stays the default unless `CAMO_WALLET_LIB` etc. are set.
+      Same day: setup screens (create: password 8+, 25 words shown once, 3 checked; restore with height; unlock; node
+      field on phones), tested on the real library (wrong password refused, restore gives the same address). Phones use
+      the real wallet when the engine is bundled (stagenet for now), else demo. CI builds the engine for Android
+      (`android-lib.yml`, contrib/depends NDK r17b) and iOS (`ios-lib.yml`, `native/ios/build-ios-lib.sh`, pinned
+      checksummed sources, Boost 1.84). **Phone node:** `deploy-seed-node.sh --public-rpc` (Nov 14) adds a restricted
+      view-only RPC on 19749 / stagenet 39749 (4 conns per IP, 64 total; full RPC stays local); tested on regtest with
+      the app syncing and sending through it. NOT enabled on any server: owner's call (egress). Code: PUBLIC repo `thedifference7717-sys/ghillie-mobile`
       (created Nov 13, branch `main`). Plan in its README:
       Linux dev build with real lib on regtest -> Android via contrib/depends -> iOS xcframework on macOS CI -> public
       restricted-RPC node for phones (AWS seed has the egress; Google's 1 GB/mo doesn't) -> store accounts ($99/$25) = owner's call.
