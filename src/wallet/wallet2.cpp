@@ -4237,24 +4237,30 @@ void wallet2::refresh(bool trusted_daemon, uint64_t start_height, uint64_t & blo
         {
           waiter.wait();
           MINFO("Daemon claims next refresh block is out of hash chain bounds, resetting hash chain");
-          uint64_t stop_height = m_blockchain.offset();
-          std::vector<crypto::hash> tip(m_blockchain.size() - m_blockchain.offset());
-          for (size_t i = m_blockchain.offset(); i < m_blockchain.size(); ++i)
-            tip[i - m_blockchain.offset()] = m_blockchain[i];
           cryptonote::block b;
           generate_genesis(b);
-          m_blockchain.clear();
-          m_blockchain.push_back(get_block_hash(b));
-          short_chain_history.clear();
-          get_short_chain_history(short_chain_history);
-          fast_refresh(stop_height, blocks_start_height, short_chain_history, true);
-          THROW_WALLET_EXCEPTION_IF((m_blockchain.size() == stop_height || (m_blockchain.size() == 1 && stop_height == 0) ? false : true), error::wallet_internal_error, "Unexpected hashchain size");
-          THROW_WALLET_EXCEPTION_IF(m_blockchain.offset() != 0, error::wallet_internal_error, "Unexpected hashchain offset");
-          for (const auto &h: tip)
-            m_blockchain.push_back(h);
-          short_chain_history.clear();
-          get_short_chain_history(short_chain_history);
-          start_height = stop_height;
+          hashchain original_blockchain(std::move(m_blockchain));
+          try
+          {
+            const uint64_t stop_height = original_blockchain.offset();
+            m_blockchain.clear();
+            m_blockchain.push_back(get_block_hash(b));
+            short_chain_history.clear();
+            get_short_chain_history(short_chain_history);
+            fast_refresh(stop_height, blocks_start_height, short_chain_history, true);
+            THROW_WALLET_EXCEPTION_IF((m_blockchain.size() == stop_height || (m_blockchain.size() == 1 && stop_height == 0) ? false : true), error::wallet_internal_error, "Unexpected hashchain size");
+            THROW_WALLET_EXCEPTION_IF(m_blockchain.offset() != 0, error::wallet_internal_error, "Unexpected hashchain offset");
+            for (size_t i = m_blockchain.size(); i < original_blockchain.size(); ++i)
+              m_blockchain.push_back(original_blockchain[i]);
+            short_chain_history.clear();
+            get_short_chain_history(short_chain_history);
+            start_height = stop_height;
+          }
+          catch (...)
+          {
+            m_blockchain = std::move(original_blockchain);
+            throw;
+          }
           throw std::runtime_error(""); // loop again
         }
         catch (const std::exception &e)
@@ -5016,16 +5022,12 @@ bool wallet2::load_keys(const std::string& keys_file_name, const epee::wipeable_
   // Rewrite with encrypted keys if unencrypted, ignore errors
   if (r && keys_to_encrypt != boost::none)
   {
-    if (m_ask_password == AskPasswordToDecrypt && !m_unattended && !m_watch_only)
-      encrypt_keys(keys_to_encrypt.get());
     bool saved_ret = store_keys(keys_file_name, password, m_watch_only);
     if (!saved_ret)
     {
       // just moan a bit, but not fatal
       MERROR("Error saving keys file with encrypted keys, not fatal");
     }
-    if (m_ask_password == AskPasswordToDecrypt && !m_unattended && !m_watch_only)
-      decrypt_keys(keys_to_encrypt.get());
     m_keys_file_locker.reset();
   }
   return r;
@@ -8980,6 +8982,8 @@ uint32_t wallet2::adjust_priority(uint32_t priority)
       if (result)
         return 1;
       const uint64_t full_reward_zone = block_weight_limit / 2;
+      if (full_reward_zone == 0)
+          return 1; // Unimportant (lowest priority; 0.18 uses numeric priorities)
 
       // get the last N block headers and sum the block sizes
       const size_t N = 10;
@@ -9281,7 +9285,7 @@ bool wallet2::is_keys_file_locked() const
 {
   if (m_wallet_file.empty())
     return false;
-  return m_keys_file_locker->locked();
+  return m_keys_file_locker && m_keys_file_locker->locked();
 }
 
 bool wallet2::lock_background_keys_file(const std::string &background_keys_file)
@@ -14120,6 +14124,15 @@ std::string wallet2::sign(const std::string &data, message_signature_type_t sign
     secret_key_to_public_key(skey, pkey);
     hash = get_message_hash(data,pkey_spend,pkey_view,mode);
   }
+
+  const cryptonote::account_public_address address = index.is_zero()
+      ? keys.m_account_address : get_subaddress(index);
+  const crypto::public_key &expected_key = signature_type == sign_with_spend_key
+      ? address.m_spend_public_key : address.m_view_public_key;
+  crypto::public_key derived_key;
+  CHECK_AND_ASSERT_THROW_MES(crypto::secret_key_to_public_key(skey, derived_key) && derived_key == expected_key,
+      "Wallet does not have the requested message signing key");
+
   crypto::generate_signature(hash, pkey, skey, signature);
   return std::string("SigV2") + tools::base58::encode(std::string((const char *)&signature, sizeof(signature)));
 }
