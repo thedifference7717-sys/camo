@@ -58,6 +58,8 @@
       <dd>No sale of any kind. There is one disclosed allocation, fixed into block 1 by the consensus rules so it can't be changed or added to: 489,600 CAMO to the founder and 54,400 CAMO to a public marketing wallet (together 3.0% of the 18.13M main emission), plus 96,000 CAMO sent to a provably unspendable burn address. Everything else is mined.</dd>
       <dt>How can I check that?</dt>
       <dd>Coinbase amounts are public on chain, so anyone can read block 1. The burn address and its public view key are on the <a href="home.html#supply">home page</a>, and the founder and marketing view keys are published at launch.</dd>
+      <dt>The code is public. Can't someone mine CAMO before launch?</dt>
+      <dd>No. The consensus rules reject every mainnet block dated before the launch time, Dec 15, 2026 18:00 UTC, and nodes already refuse blocks dated more than 2 hours in the future. So nobody can mine a chain in private for weeks and publish it at launch: at most someone could squeeze about 2 hours' worth of blocks in just after 18:00, the same as anyone mining from the first minute. The rule is in <code>src/cryptonote_config.h</code> (<code>CAMO_LAUNCH_TIMESTAMP</code>) if you want to read it.</dd>
       <dt>How many CAMO will there be?</dt>
       <dd>18.13 million over the first ~8 years (about 17 CAMO per block at launch, falling smoothly), then a permanent tail of 0.3 CAMO per block so miners are always paid to secure the network.</dd>
       <dt>Where can I buy CAMO?</dt>
