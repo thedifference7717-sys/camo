@@ -20,6 +20,15 @@ CAMO is a privacy cryptocurrency: a rebranded fork of **Monero v0.18** (C++), ow
   (wait for Monero's 0.18 release): `742bc14c5` and `fccaccbc8` (touch src/crypto, ringct), `a3ba0122c` (multisig kex),
   `dfc246116` (block templates, next to CAMO's block-1 code), `c1f7f0bdb` (crypto/aesb.c). Master-only fixes that need
   hand ports were not attempted (key-offset sanity check, levin data races, block template reserved offset, etc.).
+  **Nov 15: 12 more master fixes taken** (`-x`, original authors kept): tx_pool double-spend flag (4d2a0da33), banned hosts
+  dropped from startup peer lists (c85fb9b27), epee rejects nested arrays (d0788a876, C++14 static_assert follow-up),
+  command args out of debug logs (a56d2d9bd), zero full-reward-zone guard (96b1cea20, numeric-priority follow-up), and
+  source-only (their test hunks conflict with CAMO-adapted tests): 7672a71d4, 8a1cb7bc5, bb5c3c6cf, 090d6d828,
+  e69fd7fde (reject unverifiable message signatures), d5a187b83, 36b87ef80. Skipped: 35b2b6ed2 (Polyseed-era rewrite; CAMO's
+  0.18 print_seed already bypasses logs), 0216b7458/22bd3f073 (linenoise rewrite), features (i2p, tx-proxy, RPC queries),
+  DNS/update-check fixes (both disabled in CAMO), 1b02df82e (crypto build flags), FCMP++. release-v0.18: nothing new.
+  Tested: unit tests 1276 pass + the 7 known failures; regtest-demo and attack_block1.py pass; stagenet rehearsal PASS
+  (Nov 15, before these picks: block 1 allocation, 3 nodes in sync at 20/35/86, last-20 avg 62 s, friend got exactly 5.0).
 
 ## What differs from Monero (all CAMO edits)
 | File | Change |

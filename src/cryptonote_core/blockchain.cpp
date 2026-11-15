@@ -1330,7 +1330,6 @@ bool Blockchain::prevalidate_miner_transaction(const block& b, uint64_t height, 
   return true;
 }
 //------------------------------------------------------------------
-// This function validates the miner transaction reward
 bool Blockchain::camo_launch_time_ok(uint64_t height, uint64_t timestamp) const
 {
   // CAMO fair launch: on mainnet, every block after the genesis block must be dated at or after the launch time.
@@ -1348,6 +1347,7 @@ bool Blockchain::camo_allocation_tx(transaction& tx) const
   return parse_and_validate_tx_from_blob(blob, tx);
 }
 //------------------------------------------------------------------
+// This function validates the miner transaction reward
 bool Blockchain::validate_miner_transaction(const block& b, size_t cumulative_block_weight, uint64_t fee, uint64_t& base_reward, uint64_t already_generated_coins, bool &partial_block_reward, uint8_t version)
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
