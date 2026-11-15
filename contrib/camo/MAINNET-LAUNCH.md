@@ -32,25 +32,25 @@ Monero never had this problem because it launched before its code was public.
    bundled `camod`) into launch-day hours, which is risky for a one-person team.
 3. Do nothing and watch with `camo_health.py`. Not recommended: detection does not undo a pre-mined chain.
 
-### D2. Which servers become mainnet seeds
+### D2. Which servers become mainnet seeds: DECIDED Nov 15 (Anthony: yes)
 Plan (free): switch both current stagenet seeds to mainnet on **Dec 14**: Google `34.171.218.2` and AWS
 `3.134.132.214`. A 1 GB server cannot run two nodes, so public stagenet then continues only on volunteers' machines (and
 Anthony's iMac if he wants). If the Oracle ARM script ever wins a server, it becomes seed 3 (and can host the explorer
 and pool).
 
-### D3. Google upload cost
+### D3. Google upload cost: DECIDED Nov 15 (`--limit-up 4` on Google; AWS carries most traffic)
 Google's free tier includes 1 GB/month of upload; more costs about $0.12/GB (budget alert at $0.50 is set). A mainnet
 seed with more peers uploads more than the stagenet one. Options: install the Google seed with `--limit-up 4`
 (worst case ~10 GB/month, ~$1) and check billing weekly in December, or keep the Google seed on a lower cap and let the
 AWS seed (free plan, no charges) carry most traffic.
 
-### D4. Phone wallet node on mainnet
+### D4. Phone wallet node on mainnet: DECIDED Nov 15 (yes, AWS seed, port 19749)
 Same as stagenet: `--public-rpc` on the AWS seed (port **19749**), plus an AWS security-group rule for tcp 19749.
 
 ## Timeline
 
 ### Now to Nov 30: stagenet
-- [x] D1 implemented and tested (Nov 14). - [ ] Decide D2-D4.
+- [x] D1 implemented and tested (Nov 14). - [x] D2-D4 decided (Nov 15, as recommended).
 - [ ] Keep stagenet mining; test Ghillie desktop + mobile against it; `bash contrib/camo/tools/check_upstream.sh` weekly.
 - [ ] BitcoinTalk: 1-3 genuine replies every few days (rank).
 - [ ] USB backups (offline, two copies): release signing key, `~/.ssh/camo-seed-2.pem`, Google SSH key.
