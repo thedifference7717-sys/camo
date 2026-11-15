@@ -185,7 +185,7 @@ namespace epee
     template<class type_name>
     storage_entry throwable_buffer_reader::read_ae()
     {
-      static_assert(!std::is_same_v<type_name, array_entry>);
+      static_assert(!std::is_same<type_name, array_entry>::value, "nested arrays are not supported");
       RECURSION_LIMITATION();
       //for pod types
       array_entry_t<type_name> sa;
