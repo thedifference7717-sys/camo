@@ -7,8 +7,8 @@ CAMO is a privacy cryptocurrency: a rebranded fork of **Monero v0.18** (C++), ow
 - **Working with Anthony (Nov 11): ONE step at a time, for everything** (not just servers): one small action per
   message, then wait for his screenshot or "k". He doesn't want to type "done". Routine merges of our own PRs: go ahead
   (he asked for "auto"); still ask before anything that costs money, can't be undone, or posts publicly as him.
-  **Auto responses (Nov 16): he wants tap-to-answer buttons**: end each step with the AskUserQuestion tool (2-3 short
-  options like "k, done" / "something went wrong" / "skip") instead of a plain question.
+  **Replies (Nov 16): NO AskUserQuestion choice boxes** (he dislikes them). He wants the Claude app's suggested replies in
+  the message box: end each step with one short expected reply (e.g. "Reply **k** when you see X") so the app can offer it.
   **Make everything copyable:** every URL, command, name, email or text he must type goes in its own code block.
 - **Never change cryptography.** CAMO's safety comes from reusing Monero's audited code unchanged.
   Changes are parameters only (names, ports, prefixes, genesis, schedule, seeds). If a task seems to need a
