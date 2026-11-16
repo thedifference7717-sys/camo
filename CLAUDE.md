@@ -29,6 +29,8 @@ CAMO is a privacy cryptocurrency: a rebranded fork of **Monero v0.18** (C++), ow
   DNS/update-check fixes (both disabled in CAMO), 1b02df82e (crypto build flags), FCMP++. release-v0.18: nothing new.
   Tested: unit tests 1276 pass + the 7 known failures; regtest-demo and attack_block1.py pass; stagenet rehearsal PASS
   (Nov 15, before these picks: block 1 allocation, 3 nodes in sync at 20/35/86, last-20 avg 62 s, friend got exactly 5.0).
+  **Nov 16: `allocation-spend-test.sh` PASS 6/6 on main after the picks** (throwaway test wallets; test header reverted and
+  verified identical to the committed one, then rebuilt).
 
 ## What differs from Monero (all CAMO edits)
 | File | Change |
