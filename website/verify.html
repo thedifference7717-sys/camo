@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verify a CAMO download</title>
+<meta name="description" content="Step-by-step: check that a CAMO download is genuine, on Mac, Windows and Linux, with the signed SHA-256 list and CAMO's release key.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; font-src 'self'; style-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0B0F0C">
+<link rel="icon" href="assets/favicon.ico" sizes="any">
+<link rel="icon" href="assets/camo-logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#start">Skip to content</a>
+<div class="grid-bg">
+
+<header class="topbar">
+  <nav class="wrap nav" aria-label="Main">
+    <a class="brand" href="home.html">
+      <img src="assets/camo-logo.svg" alt="" width="36" height="36">
+      <span>CAMO</span>
+    </a>
+    <div class="nav-links">
+      <a href="home.html">HOME</a>
+      <a href="stagenet.html">STAGENET</a>
+      <a href="mine.html">MINING GUIDE</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+    <a class="btn btn-solid btn-sm" href="stagenet.html">JOIN STAGENET</a>
+  </nav>
+</header>
+
+<main class="wrap doc" id="start">
+  <p class="kicker">// VERIFY BEFORE YOU RUN · TAKES 5 MINUTES</p>
+  <h1>Verify your download</h1>
+  <p class="lede">Fake wallets are the most common way people lose coins. Before you run any CAMO download, check two things: that the list of file fingerprints (hashes) was signed by CAMO's release key, and that your file's fingerprint is on that list.</p>
+  <p class="note"><strong>The only genuine release key:</strong> <code>CAMO release signing &lt;camocoin@proton.me&gt;</code>, fingerprint <code>5F1A 8350 C748 BC43 AD19  2472 AF13 7B28 E11A 0857</code>. Get it from <a href="assets/camo-release.asc">this site</a> or keys.openpgp.org. A signature from any other key is not from CAMO, whatever its name says. Nobody from CAMO will ever DM you a download.</p>
+
+  <section class="doc-sec">
+    <h2><span class="step">01</span> Download three things</h2>
+    <p>From the official links on this site (or CAMO's GitHub releases): your package (Mac, Windows or Linux), the signed hash list <code>SHA256SUMS.asc</code>, and the public key <a href="assets/camo-release.asc"><code>camo-release.asc</code></a>. Put all three in your Downloads folder.</p>
+  </section>
+
+  <section class="doc-sec">
+    <h2><span class="step">02</span> Check the signature</h2>
+    <p><strong>Mac:</strong> install GnuPG (GPG Suite, or <code>brew install gnupg</code>). <strong>Windows:</strong> install Gpg4win and use its command prompt. <strong>Linux:</strong> <code>gpg</code> is usually already there. Then, in a terminal in your Downloads folder:</p>
+<pre><code>gpg --import camo-release.asc
+gpg --verify SHA256SUMS.asc</code></pre>
+    <p>You must see <strong>Good signature from "CAMO release signing &lt;camocoin@proton.me&gt;"</strong> and a primary key fingerprint ending <code>E11A 0857</code> that matches the full fingerprint above. A warning that the key "is not certified with a trusted signature" is normal: it means you haven't personally vouched for the key, which is why you compare the fingerprint yourself. <strong>BAD signature, or a different fingerprint: stop and delete everything.</strong></p>
+  </section>
+
+  <section class="doc-sec">
+    <h2><span class="step">03</span> Check your file is on the list</h2>
+    <p><strong>Linux:</strong></p>
+<pre><code>sha256sum --ignore-missing -c SHA256SUMS.asc</code></pre>
+    <p>Your file must say <strong>OK</strong>. (Lines about "improperly formatted" are the signature text and can be ignored.)</p>
+    <p><strong>Mac:</strong></p>
+<pre><code>shasum -a 256 <span class="ph">your-file-name</span></code></pre>
+    <p><strong>Windows</strong> (Command Prompt):</p>
+<pre><code>certutil -hashfile <span class="ph">your-file-name</span> SHA256</code></pre>
+    <p>On Mac and Windows, open <code>SHA256SUMS.asc</code> in a text editor and find your file's name: the long code next to it must match yours exactly, every character. Any difference means the file was changed: delete it.</p>
+  </section>
+
+  <section class="doc-sec">
+    <h2><span class="step">04</span> Why this works</h2>
+    <dl class="faq">
+      <dt>Can't an attacker just put a fake hash list next to a fake file?</dt>
+      <dd>They can, but they can't sign it with CAMO's release key: that key never leaves the founder's computer. That is why step 02 matters most, and why the fingerprint must match the one printed here and on keys.openpgp.org.</dd>
+      <dt>Do I have to trust CAMO at all?</dt>
+      <dd>Less every release. The builds are reproducible: anyone can rebuild them from the public source code with <code>contrib/gitian</code> and get the same fingerprints, and independent builders publish theirs. If they match, nobody slipped anything in.</dd>
+      <dt>And on phones?</dt>
+      <dd>Install Ghillie for iPhone or Android only from the official app stores once it is released (Q1 2027), from the publisher named on this site. Never from a link someone sends you.</dd>
+    </dl>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-in">
+    <div class="stack-xs">
+      <div class="brand brand-sm"><img src="assets/camo-logo.svg" alt="" width="28" height="28"><span>CAMO</span></div>
+      <p class="fine">Open-source software built on Monero. Not an offer to sell anything and not investment advice. Follow the laws where you live.</p>
+    </div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="home.html">HOME</a>
+      <a href="stagenet.html">STAGENET</a>
+      <a href="faq.html">FAQ</a>
+      <a href="verify.html">VERIFY DOWNLOADS</a>
+      <a href="assets/CAMO-White-Paper.pdf">WHITE PAPER</a>
+      <a href="https://github.com/thedifference7717-sys/camo" rel="noopener">GITHUB</a>
+      <a href="https://x.com/CAMO_Coin" rel="noopener">X · @CAMO_Coin</a>
+    </nav>
+  </div>
+</footer>
+
+</div>
+</body>
+</html>
