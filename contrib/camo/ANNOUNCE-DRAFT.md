@@ -43,7 +43,9 @@ published at launch.
 ## Timeline
 - **Nov 10, 2026**: public stagenet opens (test network, worthless coins). Please help test.
 - **Dec 7, 2026**: signed release binaries and their hashes.
-- **Dec 15, 2026, 18:00 UTC**: mainnet. Anyone can mine from the first block.
+- **Dec 15, 2026, 18:00 UTC**: mainnet. Anyone can mine from the first block. Every block must be dated 18:00 UTC or
+  later; nodes accept blocks dated up to 2 hours ahead, so in practice mining opens at about **16:00 UTC**. We say it here
+  so nobody has an insider head start.
 - **Dec 15, 2026**: Ghillie desktop wallet (Mac, Windows, Linux) ships with the launch downloads.
 - **Q1 2027**: Ghillie for phones, "mine while idle", control mining on your own computers from your phone.
 - **Q2 2027**: BTC to CAMO atomic swaps in Ghillie, merchant checkout plugins.

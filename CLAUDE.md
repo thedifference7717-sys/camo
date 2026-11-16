@@ -311,6 +311,8 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
   time, mainnet refused them, and it hung). PR #47 merged. Residual: up to ~2 h head start for someone who dates blocks just after 18:00.
   **D2-D4 decided Nov 15 (Anthony: "yes to all three")**: both seeds (Google 34.171.218.2, AWS 3.134.132.214) switch to
   mainnet on Dec 14 (stagenet then only on volunteers' machines); Google seed `--limit-up 4`; AWS seed `--public-rpc` on 19749.
+  **Nov 16 (Anthony: "yes, announce 16:00")**: website (home, mine, FAQ), ANNOUNCE-DRAFT and the runbook say openly that
+  mining effectively opens ~16:00 UTC (blocks dated 18:00+ accepted up to 2 h early), so nobody has an insider edge.
 - Launch tooling: `contrib/camo/STAGENET-LAUNCH.md` (Nov 10 runbook), `tools/set_seed_nodes.py` (seed IPs into code +
   website in one step), `ANNOUNCE-DRAFT.md` (BitcoinTalk draft, not posted), `website/faq.html` (published Nov 5).
   The wallet's `donate` command pays the public marketing wallet (`Cfbe7EfJ...aAtK4`, decided Nov 5). Wallet units are

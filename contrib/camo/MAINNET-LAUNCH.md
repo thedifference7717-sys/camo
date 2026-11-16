@@ -85,6 +85,9 @@ sudo bash deploy-seed-node.sh --binary ~/camod --limit-up 4           # Google (
 - [ ] Check: `journalctl -u camod -f` shows the node waiting at height 1 (genesis only); `curl http://3.134.132.214:19749/get_info`
   from the Mac shows `"mainnet"` / `"restricted": true`.
 
+### Dec 15, ~16:00 UTC: mining effectively opens (announced openly, decided Nov 16)
+Blocks dated 18:00+ are accepted from about 16:00 (2-hour future limit). Anthony may start then like anyone else.
+
 ### Dec 15, 18:00 UTC: launch
 - [ ] Anyone may start mining (it is a fair launch: no one gets a head start). Anthony mines like everyone else:
   `./camod --start-mining <C... address> --mining-threads 2` (mainnet = no `--stagenet`).
