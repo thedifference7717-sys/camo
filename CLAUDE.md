@@ -193,7 +193,9 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       Linux, QML tests); **v0.9.0 tested on Anthony's Intel Mac**: friend-stagenet opened without picking the network
       (address-prefix fix confirmed), 5.0 CAMO on the pixel-camo card, "Ghillie fee: 0 · never" shown, synced at 2085.
       Mac test builds: CI artifact `macos-bundle-intel` -> `~/Downloads/Ghillie.tar` -> unpack to `~/ghillie-new`
-      (chmod -R u+w, xattr -cr). Still to do: signed builds, translations.
+      (chmod -R u+w, xattr -cr). **Nov 16: rebuilt on camo main 03be81d92 (12 upstream fixes), CI all green (run 43804499227);
+      tested on Anthony's Intel Mac**: friend-stagenet opened (empty password), 5.0 CAMO, synced at 7163, "Connected + Mining"
+      via his running camod. Still to do: signed builds, translations.
 - [~] **Ghillie mobile groundwork (Nov 13-14)**: Flutter app (iOS/iPadOS/Android from one codebase), approved mockup
       screens on DEMO data (home, send w/ review + "Ghillie fee: 0 · never", receive w/ QR + camo: links + fresh subaddress
       per payer, rigs preview, settings), opening screen = the camocoin.org scope (hidden CAMO, aim + tap, Skip), CamoAmount
