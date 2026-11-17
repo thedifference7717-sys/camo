@@ -110,7 +110,7 @@
       <dt>Why did block 1 pay its miner nothing?</dt>
       <dd>Block 1 carries CAMO's disclosed allocation (founder 489,600, marketing 54,400, and 96,000 provably burned). The rules fix its payout, so whoever mines it gets no reward. Every block after it pays the miner as normal.</dd>
       <dt>Can I mine on my phone?</dt>
-      <dd>No. Phones are slow at RandomX and app stores ban mining apps. Ghillie for phones will start, stop and watch mining on your own computers instead.</dd>
+      <dd>No. Phones are slow at RandomX and app stores ban mining apps. Ghillie for phones starts, stops and watches mining on your own computers instead (see <a href="#rigs">step 06</a>).</dd>
       <dt>Can I mine on a work or school computer?</dt>
       <dd>Only computers you own or have permission to use. Mining on someone else's machine without permission is theft of their electricity, and often illegal.</dd>
       <dt>My miner says "0 H/s" or no blocks come in. Why?</dt>
@@ -118,6 +118,21 @@
       <dt>Does mining hurt my computer?</dt>
       <dd>It runs the CPU at full load, so it gets warm and uses more power. Keep it ventilated, and use fewer threads (<code>-t 2</code>) if you want to keep using it.</dd>
     </dl>
+  </section>
+  <section class="doc-sec" id="rigs">
+    <h2><span class="step">06</span> Control it from your phone</h2>
+    <p>Ghillie for phones has a <b>Rigs</b> screen: start, stop, set CPU threads and watch the hash rate of mining on your own computers. The computer does the mining; the phone is the remote.</p>
+    <ol class="ticks">
+      <li>On the computer that runs <code>camod</code>, get the rig helper: <a href="https://github.com/thedifference7717-sys/camo/blob/main/contrib/camo/tools/ghillie-rig-agent.py" rel="noopener">ghillie-rig-agent.py</a> (one Python file, no installs; macOS and Linux include Python 3).</li>
+      <li>Set it up once with your CAMO address: <code>python3 ghillie-rig-agent.py setup --address C…</code></li>
+      <li>Show the pairing code: <code>python3 ghillie-rig-agent.py pair</code>. In Ghillie: Rigs &gt; Pair a computer &gt; paste or scan it.</li>
+      <li>Leave <code>python3 ghillie-rig-agent.py run</code> running next to camod.</li>
+    </ol>
+    <ul class="ticks">
+      <li>The phone talks straight to your computer on your own Wi-Fi, encrypted, and only to the computer it was paired with. No server in the middle.</li>
+      <li>A paired phone can start, stop, set threads and watch. It can never spend, see keys or change where rewards go: the payout address is fixed on the computer.</li>
+      <li>Treat the pairing code like a password. To unpair every phone: <code>python3 ghillie-rig-agent.py setup --address C… --new-secret</code></li>
+    </ul>
   </section>
 </main>
 

@@ -181,6 +181,8 @@ class Handler(BaseHTTPRequestHandler):
                 want = self._body().get("threads")
                 threads = int(want) if isinstance(want, int) else cfg["max_threads"]
                 threads = max(1, min(threads, cfg["max_threads"]))
+                if rpc(cfg, "mining_status").get("active"):  # camod refuses start while mining: change = stop + start
+                    rpc(cfg, "stop_mining")
                 r = rpc(cfg, "start_mining", {"miner_address": cfg["address"], "threads_count": threads,
                                               "do_background_mining": False, "ignore_battery": False})
                 print(time.strftime("%H:%M:%S"), f"phone: start mining, {threads} threads ->", r.get("status"))

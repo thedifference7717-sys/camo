@@ -100,6 +100,8 @@ def main():
                 break
             time.sleep(2)
         check("blocks are being mined", body.get("height", 0) > 2, f"height {body.get('height')}, {body.get('hashrate')} H/s")
+        st, body = call(code, "/v1/start", {"threads": 1})
+        check("change threads while mining", st == 200 and body["mining"] and body["threads"] == 1, str(body))
         st, body = call(code, "/v1/stop", {})
         check("stop", st == 200 and body["mining"] is False, str(body))
 
