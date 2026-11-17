@@ -16,7 +16,7 @@ Security model
     helper, and it never sees keys.
   * camod's RPC is reached on 127.0.0.1 only. Mining needs camod running on this computer (as for mining today).
 """
-import argparse, base64, hashlib, hmac, json, os, socket, ssl, subprocess, sys, threading, time, urllib.request
+import argparse, base64, hashlib, hmac, json, os, socket, ssl, subprocess, sys, threading, time, traceback, urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 HOME = os.path.expanduser(os.environ.get("CAMO_RIG_HOME", "~/.camo-rig"))
@@ -166,14 +166,31 @@ class Handler(BaseHTTPRequestHandler):
         except ValueError:
             return {}
 
+    def _guard(self, fn):
+        try:
+            fn()
+        except Exception as e:  # show it here and tell the phone, instead of dropping the connection
+            print(time.strftime("%H:%M:%S"), "error:", repr(e))
+            traceback.print_exc()
+            try:
+                self._send(500, {"error": f"rig helper error: {e!r}"})
+            except Exception:
+                pass
+
     def do_GET(self):
+        self._guard(self._get)
+
+    def do_POST(self):
+        self._guard(self._post)
+
+    def _get(self):
         if not self._authorized():
             return self._send(401, {"error": "not paired"})
         if self.path == "/v1/status":
             return self._send(200, status(self.cfg))
         self._send(404, {"error": "unknown"})
 
-    def do_POST(self):
+    def _post(self):
         if not self._authorized():
             return self._send(401, {"error": "not paired"})
         cfg = self.cfg
@@ -216,6 +233,8 @@ def cmd_run(a):
     ctx.load_cert_chain(CERT, KEY)
     # Handshake in the request thread (lazily), so one slow client cannot block new connections.
     httpd.socket = ctx.wrap_socket(httpd.socket, server_side=True, do_handshake_on_connect=False)
+    sys.stdout.reconfigure(line_buffering=True)
+    print(f"Python {sys.version.split()[0]}, {ssl.OPENSSL_VERSION}")
     print(f"Ghillie rig helper for {cfg['name']} ({cfg['network']}) on {lan_ip()}:{port}. Ctrl-C stops it.")
     try:
         httpd.serve_forever()
