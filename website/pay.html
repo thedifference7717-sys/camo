@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CAMO payment request</title>
+<meta name="description" content="Someone sent you a CAMO payment request. Open it in the Ghillie wallet to review and pay.">
+<meta property="og:title" content="CAMO payment request">
+<meta property="og:description" content="Tap to see the amount and pay with Ghillie. Private by default.">
+<meta property="og:image" content="https://camocoin.org/assets/ghillie-icon-512.png">
+<meta property="og:type" content="website">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; font-src 'self'; style-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0B0F0C">
+<link rel="icon" href="assets/favicon.ico" sizes="any">
+<link rel="icon" href="assets/camo-logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+<script src="pay.js" defer></script>
+</head>
+<body>
+<div class="grid-bg">
+<header class="topbar">
+  <nav class="wrap nav" aria-label="Main">
+    <a class="brand" href="home.html">
+      <img src="assets/camo-logo.svg" alt="" width="36" height="36">
+      <span>CAMO</span>
+    </a>
+  </nav>
+</header>
+
+<main class="wrap doc pay" id="start">
+  <p class="kicker">// PAYMENT REQUEST</p>
+  <div id="req" hidden>
+    <p class="pay-amount"><span id="amt"></span> <span class="pay-unit">CAMO</span></p>
+    <p class="pay-note" id="note" hidden></p>
+    <p><a class="btn btn-solid" id="open" href="#">OPEN IN GHILLIE</a></p>
+    <p class="label">TO ADDRESS</p>
+    <p class="addr" id="addr"></p>
+    <p><button class="btn btn-sm" id="copy" type="button">COPY ADDRESS</button> <span id="copied" class="fine" hidden>Copied</span></p>
+    <p class="note">Check the address with the person who asked before you pay. Payments can't be reversed. This page never sends the address or amount anywhere: they stay in the part of the link after <code>#</code>, which browsers keep to themselves.</p>
+    <p class="fine">No Ghillie yet? It's the CAMO wallet. <a href="home.html">camocoin.org</a></p>
+  </div>
+  <div id="bad" hidden>
+    <h1>Link incomplete</h1>
+    <p class="lede">This payment link is missing its address. Ask the sender to share it again from Ghillie.</p>
+  </div>
+</main>
+</div>
+</body>
+</html>
