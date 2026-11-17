@@ -162,9 +162,21 @@ class Handler(BaseHTTPRequestHandler):
         return ok
 
     def _body(self):
-        n = min(int(self.headers.get("Content-Length") or 0), 4096)
+        """JSON body, max 4 KB; Content-Length or chunked (Dart's HttpClient sends chunked by default)."""
         try:
-            return json.loads(self.rfile.read(n) or b"{}")
+            if "chunked" in (self.headers.get("Transfer-Encoding") or "").lower():
+                data = b""
+                while len(data) <= 4096:
+                    size = int(self.rfile.readline(64).split(b";")[0].strip() or b"0", 16)
+                    if size == 0:
+                        self.rfile.readline(64)
+                        break
+                    data += self.rfile.read(min(size, 4097 - len(data)))
+                    self.rfile.readline(64)
+            else:
+                data = self.rfile.read(min(int(self.headers.get("Content-Length") or 0), 4096))
+            j = json.loads(data or b"{}")
+            return j if isinstance(j, dict) else {}
         except ValueError:
             return {}
 
@@ -199,7 +211,9 @@ class Handler(BaseHTTPRequestHandler):
         try:
             if self.path == "/v1/start":
                 want = self._body().get("threads")
-                threads = int(want) if isinstance(want, int) else cfg["max_threads"]
+                if not isinstance(want, int) or isinstance(want, bool):  # never guess: a missing count is an error
+                    return self._send(400, {"error": "say how many threads"})
+                threads = want
                 threads = max(1, min(threads, cfg["max_threads"]))
                 if rpc(cfg, "mining_status").get("active"):  # camod refuses start while mining: change = stop + start
                     rpc(cfg, "stop_mining")
