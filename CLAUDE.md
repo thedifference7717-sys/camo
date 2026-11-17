@@ -248,6 +248,13 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       (Nov 17): fork eigenwallet/core (GPL-3.0, keep it a separate process from Ghillie); change prefixes, wallet lib -> camo,
       and **monero-oxide's decoy BLOCK_TIME 120 s -> 60 s (privacy-critical)**; regtest -> stagenet -> outside review;
       lawyer before Anthony runs a maker. USDC later via AthanorLabs/atomic-swap (LGPL-3.0).
+      **Nov 17: prototype BUILT and the first BTC<->CAMO swap PASSED** (`happy_path`, regtest, 191 s) in PRIVATE repo
+      `thedifference7717-sys/camo-swap` (branch `main`; setup + status in its `CAMO.md`). Build here with
+      `CAMO_SWAP_SYSTEM_DEPS=1` (system libs; depends hosts are blocked) and `CARGO_PROFILE_DEV_DEBUG=0` (debug target was
+      18 GB and filled the disk). monero-oxide fix: address prefix written as a varint (CAMO stagenet 140+ needs 2 bytes).
+      Docker works in cloud sessions after starting `dockerd`; bitcoin/bitcoin:28.1 + vulpemventures/electrs pulled
+      (Docker Hub rate-limits: retry or use mirror.gcr.io); CAMO image `camo-local/camo:dev` = camod + camo-wallet-rpc
+      from build/release with ldd libs, FROM scratch, EXPOSE 18080-18083 18089. Next: refund/punish tests, stagenet.
 - Ghillie fee model (decided Nov 3): **no fee on sends, ever** (an extra output would fingerprint Ghillie txs);
   0.25% on built-in swaps, 1% official pool fee, optional tip off by default; all to the marketing wallet.
 - Website design (tactical "night-ops" look, original, not Call of Duty branding): https://claude.ai/artifact/QB6piNbZWjL9suC5Kvfirw
