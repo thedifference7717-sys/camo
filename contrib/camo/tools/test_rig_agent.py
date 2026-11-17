@@ -22,7 +22,7 @@ def check(name, ok, detail=""):
     fails += not ok
 
 
-def call(code, path, body=None, secret=None, fp=None):
+def call(code, path, body=None, secret=None, fp=None, chunked=False):
     """Talk to the helper like the phone does: TLS, accept only the pinned certificate fingerprint."""
     ctx = ssl.create_default_context()
     ctx.check_hostname, ctx.verify_mode = False, ssl.CERT_NONE  # pinning below replaces CA checks
@@ -34,7 +34,8 @@ def call(code, path, body=None, secret=None, fp=None):
             data = json.dumps(body).encode() if body is not None else b""
             req = (f"{'POST' if body is not None else 'GET'} {path} HTTP/1.1\r\nHost: rig\r\nConnection: close\r\n"
                    f"Authorization: Bearer {secret or code['secret']}\r\nContent-Type: application/json\r\n"
-                   f"Content-Length: {len(data)}\r\n\r\n").encode() + data
+                   + (f"Transfer-Encoding: chunked\r\n\r\n{len(data):x}\r\n" if chunked else f"Content-Length: {len(data)}\r\n\r\n")
+                   ).encode() + data + (b"\r\n0\r\n\r\n" if chunked else b"")
             s.sendall(req)
             resp = b""
             while chunk := s.recv(65536):
@@ -101,8 +102,10 @@ def main():
                 break
             time.sleep(2)
         check("blocks are being mined", body.get("height", 0) > 2, f"height {body.get('height')}, {body.get('hashrate')} H/s")
-        st, body = call(code, "/v1/start", {"threads": 1})
-        check("change threads while mining", st == 200 and body["mining"] and body["threads"] == 1, str(body))
+        st, body = call(code, "/v1/start", {"threads": 1}, chunked=True)  # as Ghillie (Dart) sends it
+        check("change threads while mining (chunked body, as the phone sends)", st == 200 and body["mining"] and body["threads"] == 1, str(body))
+        st, body = call(code, "/v1/start", {})
+        check("start without a thread count is refused (no guessing)", st == 400 and body["threads"] == 1 if "threads" in body else st == 400, str(body))
         st, body = call(code, "/v1/stop", {})
         check("stop", st == 200 and body["mining"] is False, str(body))
 
