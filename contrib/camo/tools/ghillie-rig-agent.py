@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Copyright (c) 2026, The CAMO Project. BSD-3-Clause, see LICENSE.
+# Works with Python 3.7+ (macOS command line tools ship 3.8/3.9): no removeprefix, no dict |, no walrus.
 """Ghillie rig helper: lets a paired phone start, stop and watch mining on THIS computer.
 
     python3 ghillie-rig-agent.py setup --address <your CAMO address> [--stagenet] [--max-threads N] [--name "iMac"]
@@ -149,7 +150,8 @@ class Handler(BaseHTTPRequestHandler):
             n, until = self.fails.get(ip, (0, 0))
             if until > time.time():
                 return False
-        got = (self.headers.get("Authorization") or "").removeprefix("Bearer ").encode()
+        auth = self.headers.get("Authorization") or ""
+        got = (auth[len("Bearer "):] if auth.startswith("Bearer ") else auth).encode()
         ok = hmac.compare_digest(got, self.secret)
         with self.lock:
             if ok:
@@ -204,11 +206,11 @@ class Handler(BaseHTTPRequestHandler):
                 r = rpc(cfg, "start_mining", {"miner_address": cfg["address"], "threads_count": threads,
                                               "do_background_mining": False, "ignore_battery": False})
                 print(time.strftime("%H:%M:%S"), f"phone: start mining, {threads} threads ->", r.get("status"))
-                return self._send(200, status(cfg) | {"result": r.get("status")})
+                return self._send(200, dict(status(cfg), result=r.get("status")))
             if self.path == "/v1/stop":
                 r = rpc(cfg, "stop_mining")
                 print(time.strftime("%H:%M:%S"), "phone: stop mining ->", r.get("status"))
-                return self._send(200, status(cfg) | {"result": r.get("status")})
+                return self._send(200, dict(status(cfg), result=r.get("status")))
         except OSError:
             return self._send(503, {"error": "camod is not running on this computer"})
         self._send(404, {"error": "unknown"})

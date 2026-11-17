@@ -11,6 +11,7 @@ import base64, hashlib, json, os, shutil, socket, ssl, subprocess, sys, tempfile
 HERE = os.path.dirname(os.path.abspath(__file__))
 BIN = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "../../../build/release/bin"))
 AGENT = os.path.join(HERE, "ghillie-rig-agent.py")
+PY = os.environ.get("RIG_PYTHON", sys.executable)  # run the helper with another Python (e.g. 3.8, as on macOS)
 BURN = "Cdqd3jC3ocP6H1BX4G2Uis8qVYj6ddShVfqGaxkvCE64YEgGgZTt5RjLZ4toVBJ3pae1HJR1AcWQxBmSRi55ePTv4dxHzs8"
 fails = 0
 
@@ -56,21 +57,21 @@ def main():
                 break
             except OSError:
                 time.sleep(1)
-        out = subprocess.run([sys.executable, AGENT, "setup", "--address", BURN, "--max-threads", "2", "--name", "test-rig"],
+        out = subprocess.run([PY, AGENT, "setup", "--address", BURN, "--max-threads", "2", "--name", "test-rig"],
                              env=env, capture_output=True, text=True)
         check("setup", out.returncode == 0, out.stdout.strip().splitlines()[0] if out.stdout else out.stderr)
-        bad = subprocess.run([sys.executable, AGENT, "setup", "--address", "4" + BURN[1:]], env=env, capture_output=True, text=True)
+        bad = subprocess.run([PY, AGENT, "setup", "--address", "4" + BURN[1:]], env=env, capture_output=True, text=True)
         check("setup refuses a non-CAMO address", bad.returncode != 0)
         check("key and secret are private", all(os.stat(os.path.join(env["CAMO_RIG_HOME"], f)).st_mode & 0o077 == 0
                                                 for f in ("key.pem", "secret", "config.json")))
-        pair = subprocess.run([sys.executable, AGENT, "pair"], env=env, capture_output=True, text=True).stdout
+        pair = subprocess.run([PY, AGENT, "pair"], env=env, capture_output=True, text=True).stdout
         line = next(l for l in pair.splitlines() if l.startswith("ghillie-rig:"))
         b64 = line[len("ghillie-rig:"):]
         code = json.loads(base64.urlsafe_b64decode(b64 + "=" * (-len(b64) % 4)))
         check("pairing code has host, port, fingerprint, 256-bit secret",
               code["port"] == 19760 and len(code["fp"]) == 64 and len(base64.urlsafe_b64decode(code["secret"] + "=")) == 32)
         code["host"] = "127.0.0.1"
-        agent = subprocess.Popen([sys.executable, AGENT, "run"], env=env, stdout=subprocess.PIPE, text=True)
+        agent = subprocess.Popen([PY, AGENT, "run"], env=env, stdout=subprocess.PIPE, text=True)
         for _ in range(30):
             try:
                 socket.create_connection(("127.0.0.1", 19760), timeout=1).close()
