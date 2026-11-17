@@ -73,11 +73,12 @@ def cmd_setup(a):
     if a.new_secret or not os.path.exists(SECRET):
         write_private(SECRET, base64.urlsafe_b64encode(os.urandom(32)).decode().rstrip("="))
     if not (os.path.exists(CERT) and os.path.exists(KEY)):
-        r = subprocess.run(["openssl", "req", "-x509", "-newkey", "ec", "-pkeyopt", "ec_paramgen_curve:prime256v1",
-                            "-nodes", "-keyout", KEY, "-out", CERT, "-days", "3650", "-subj", "/CN=ghillie-rig"],
-                           capture_output=True, text=True)
-        if r.returncode != 0:
-            die("could not create the TLS certificate with openssl:\n" + r.stderr)
+        # Two steps that both OpenSSL and macOS's LibreSSL accept.
+        for cmd in (["openssl", "ecparam", "-name", "prime256v1", "-genkey", "-noout", "-out", KEY],
+                    ["openssl", "req", "-new", "-x509", "-key", KEY, "-out", CERT, "-days", "3650", "-subj", "/CN=ghillie-rig"]):
+            r = subprocess.run(cmd, capture_output=True, text=True)
+            if r.returncode != 0:
+                die("could not create the TLS certificate with openssl:\n" + r.stderr)
         os.chmod(KEY, 0o600)
     print(f"Set up for {net}: rewards always go to {addr[:8]}…{addr[-4:]}, at most {cfg['max_threads']} of {cpus} CPU threads.")
     print("Next: python3 ghillie-rig-agent.py pair")
