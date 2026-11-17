@@ -53,7 +53,7 @@ Same as stagenet: `--public-rpc` on the AWS seed (port **19749**), plus an AWS s
 - [x] D1 implemented and tested (Nov 14). - [x] D2-D4 decided (Nov 15, as recommended).
 - [ ] Keep stagenet mining; test Ghillie desktop + mobile against it; `bash contrib/camo/tools/check_upstream.sh` weekly.
 - [ ] BitcoinTalk: 1-3 genuine replies every few days (rank).
-- [x] USB backup 1 (Nov 17, encrypted stick): release signing key + revocation cert, `~/.ssh/camo-seed-2.pem`, Google SSH key. - [ ] Second copy kept in another place.
+- [x] USB backup 1 (Nov 17, encrypted stick): release signing key + revocation cert, `~/.ssh/camo-seed-2.pem`, Google SSH key. - [x] Second copy `CAMO-Keys-2` (Nov 17), kept in another place.
 
 ### ~Dec 1: announce
 - [ ] Post the [ANN] thread (`contrib/camo/ANNOUNCE-DRAFT.md`; owner posts). Link the stagenet page, mining guide, FAQ.
