@@ -239,7 +239,7 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       Settings turns it off. Linux dev builds need libsecret-1-dev. Settings also has LOCK WALLET and "turn on" for Face ID (the
       password typed once proves it). Bug found by Anthony and fixed: after Lock, Face ID auto-prompted and reopened the
       wallet instantly; now auto-prompt only at app start, after Lock it waits for a tap. **Verified by Anthony in the
-      simulator Nov 14 ("works great")** (simulator Face ID: Features > Face ID > Enrolled / Matching Face). Still to do: recovery sheet, real-device test (cable). Real iPhone not yet: he has no cable (Apple
+      simulator Nov 14 ("works great")** (simulator Face ID: Features > Face ID > Enrolled / Matching Face). **Nov 16: REAL iPhone PASSED** (iPhone 15 Pro, iOS 27.2, Xcode 26.5 on the Intel iMac, free Personal Team signing, Developer Mode, `flutter run --release -d iPhone`): wallet created with the real engine, synced via 3.134.132.214:39749 to 7,207, **Face ID unlock works on hardware**. Release builds needed `ios/Flutter/Release.xcconfig`: DEAD_CODE_STRIPPING = NO + STRIP_STYLE = non-global (else the static engine is stripped and the app silently falls back to DEMO; check with `nm -gU build/ios/iphoneos/Runner.app/Runner | grep -c _camo_` = 33). App icons = Ghillie logo (were Flutter default). Free-team installs expire after 7 days (re-run flutter run). Still to do: recovery sheet, screenshot warning on the words screen, 5 CAMO receive/send on the real phone. Real iPhone not yet: he has no cable (Apple
       needs one for first pairing). Lesson: copying a command from chat overwrites the clipboard (and the simulator's);
       save addresses to a file first (`xcrun simctl pbpaste booted`). Code: PUBLIC repo `thedifference7717-sys/ghillie-mobile`
       (created Nov 13, branch `main`). Plan in its README:
@@ -295,7 +295,7 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
   Restart: `~/camo/camod --stagenet --add-priority-node 34.171.218.2:39740 --start-mining
   <miner Q... address> --mining-threads 2` (address in `~/camo/miner-stagenet.address.txt`). Oracle script restarted.
 - Release signing key (Nov 10): `CAMO release signing <camocoin@proton.me>`, ed25519, fingerprint
-  `5F1A 8350 C748 BC43 AD19  2472 AF13 7B28 E11A 0857`, on keys.openpgp.org (verified). Secret key only on Anthony's Mac (backup file in his home folder; USB backup still to do).
+  `5F1A 8350 C748 BC43 AD19  2472 AF13 7B28 E11A 0857`, on keys.openpgp.org (verified). Secret key on Anthony's Mac; **USB backup DONE Nov 17**: encrypted stick `CAMO-Keys` (APFS Encrypted, FileVault: Yes, password on paper kept apart) holds `camo/`: release-signing-SECRET.asc (passphrase-locked) + public.asc, revocation cert (.rev), AWS `camo-seed-2.pem`, Google seed key `id_ed25519`(+.pub; the Google login user is camo-servers). A second stick in another place is still advised.
 - Project email (Nov 9): **camocoin@proton.me** (Proton Mail, 2FA on; security contact on the site and in SECURITY.md).
 - X account (Nov 10): **@CAMO_Coin** (https://x.com/CAMO_Coin), signed up with the project email, 2FA by authenticator app,
   launch post pinned. Profile photo = app icon crop, header 1500x500 (camo field, wordmark, mainnet date). Linked in the
