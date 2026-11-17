@@ -217,3 +217,15 @@ pre code{background:none;border:0;padding:0;font-size:13px;color:var(--text);whi
 .doc-stats{grid-template-columns:repeat(4,minmax(0,1fr))}
 @media (max-width:760px){.doc-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .doc .card pre code{white-space:pre-wrap;word-break:break-word}
+
+/* payment request page (pay.html) */
+.pay .pay-amount { font-family: var(--display); font-weight: 700; font-size: clamp(52px, 15vw, 88px); line-height: 1; margin: 18px 0 6px; }
+.pay .pay-unit { font-size: 0.4em; color: var(--olive); }
+.pay .pay-note { font-size: 20px; margin: 0 0 22px; }
+.pay .addr { word-break: break-all; }
+.pay #req > p { margin: 0 0 14px; }
+.pay .pay-amount { margin: 22px 0 8px !important; }
+.pay .pay-note { margin-bottom: 26px !important; }
+.pay .label { margin-top: 26px !important; margin-bottom: 6px !important; }
+.pay #copy { background: transparent; color: var(--text); border: 1px solid var(--olive-dim); cursor: pointer; }
+.pay .note { margin-top: 22px !important; }
