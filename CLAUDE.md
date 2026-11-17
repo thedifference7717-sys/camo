@@ -249,7 +249,13 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       self-signed cert pinned by SHA-256 in the pairing code, 256-bit secret, 5-strike lockout; phone can only
       status/start (threads capped)/stop; payout fixed on the computer; camod RPC on 127.0.0.1 only;
       `test_rig_agent.py` 15/15 on regtest) + Ghillie Rigs screen (pair by paste/QR, pinned HttpClient with no trusted
-      roots; real-helper test via CAMO_RIG_AGENT); guide: camocoin.org/mine#rigs. Not yet tried on Anthony's Mac/iPhone.
+      roots; real-helper test via CAMO_RIG_AGENT); guide: camocoin.org/mine#rigs. **Verified Nov 17 on Anthony's iMac + iPhone**: paired (Universal Clipboard
+      paste; macOS asked Python for local-network access: Allow), card showed MINING 1139 H/s 2 of 9 threads, thread
+      change from the phone works. Bugs found and fixed that day: his Mac's python3 is **3.7.7** (no removeprefix /
+      dict |; the helper is now 3.7+ and test_rig_agent.py takes RIG_PYTHON), Dart sent chunked bodies the helper
+      didn't read (started 9 threads instead of 3; helper now reads chunked and refuses a missing count; phone sends
+      Content-Length). **iOS screenshots of the 25-words screens come out black** (window drawn in a secure text
+      field layer; verified on the iPhone; other screens screenshot normally).
       Nov 17: Anthony's stagenet test wallet's words were shown in a chat screenshot: test only, never for real coins.
       Lesson: copying a command from chat overwrites the clipboard (and the simulator's);
       save addresses to a file first (`xcrun simctl pbpaste booted`). Code: PUBLIC repo `thedifference7717-sys/ghillie-mobile`
