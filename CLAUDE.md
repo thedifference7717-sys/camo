@@ -50,7 +50,7 @@ Never pass `--allow-mismatched-daemon-version` in tests. Details: PROJECT-LOG.md
 - Release key fingerprint `5F1A 8350 C748 BC43 AD19 2472 AF13 7B28 E11A 0857` (backups on 2 encrypted USB sticks).
 
 ## Open items (Nov 17)
-- Swap tests: last 19 docker tests were running in the cloud session; then stagenet swap, outside review, lawyer.
+- Swaps: 41 of 42 docker tests pass on regtest (camo-swap CAMO.md; re-run happy_path_hermes_disabled); next stagenet swap, outside review, lawyer.
 - Engine update for Ghillie mobile: expose the wallet's restore height so old wallets print it automatically.
 - BitcoinTalk [ANN] ~Dec 1; marketing posts await Anthony's approval (campaign doc in PROJECT-LOG.md).
 - Signed release builds (gitian second builder + release key); explorer/pool need a free server.
