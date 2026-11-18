@@ -26,6 +26,9 @@ start(){ # name rpcport p2pport [extra camod args...]
 stop(){ kill "$(cat "$T/$1.pid")"; for i in $(seq 30); do kill -0 "$(cat "$T/$1.pid")" 2>/dev/null || break; sleep 1; done; rm -f "$T/$1.pid"; }
 mine(){ rpc "$1" generateblocks "{\"amount_of_blocks\":$2,\"wallet_address\":\"$ADDR\"}" >/dev/null; }
 wait_h(){ for i in $(seq 60); do [ "$(height "$1")" -ge "$2" ] && return; sleep 1; done; }
+# the checker warns below 2 peers: let every node finish connecting first (else the "healthy" check races)
+peers(){ curl -s "127.0.0.1:$1/get_info" | python3 -c 'import sys,json;j=json.load(sys.stdin);print(j["incoming_connections_count"]+j["outgoing_connections_count"])'; }
+wait_peers(){ for i in $(seq 60); do [ "$(peers "$1")" -ge 2 ] && return; sleep 1; done; }
 run(){ $H --state "$T/state-$1.json" "${@:2}" > "$T/out" 2>&1; echo $? > "$T/rc"; }
 expect(){ # description exit-code grep-pattern
   local rc; rc=$(cat "$T/rc")
@@ -41,7 +44,7 @@ start a 28081 28080 $A:28090 $A:28100
 start b 28091 28090 $A:28080 $A:28100
 start c 28101 28100 $A:28080 $A:28090
 NODES="a=http://127.0.0.1:28081 b=http://127.0.0.1:28091 c=http://127.0.0.1:28101"
-sleep 5; mine 28081 20; wait_h 28091 21; wait_h 28101 21
+sleep 5; mine 28081 20; wait_h 28091 21; wait_h 28101 21; wait_peers 28081; wait_peers 28091; wait_peers 28101
 log "3 nodes at heights $(height 28081)/$(height 28091)/$(height 28101)"
 
 run all $NODES;                            expect "healthy network is OK" 0 "health: OK"
