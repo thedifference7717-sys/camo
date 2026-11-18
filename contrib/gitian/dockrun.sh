@@ -30,7 +30,7 @@ IMAGE=`docker images | grep $TAG`
 WORKDIR=/home/ubuntu
 
 if [ -z "$IMAGE" ]; then
-GID=`getent group docker`
+GID=`getent group docker 2>/dev/null`  # CAMO: empty on macOS (no getent); harmless
 mkdir -p docker
 cd docker
 
@@ -98,6 +98,11 @@ if [ -z "$RUNNING" ]; then
   else
     docker start gitrun
   fi
+fi
+# CAMO: on macOS (Docker Desktop) the socket's group doesn't match the container's docker group, so the build user
+# gets "permission denied" on /var/run/docker.sock. Open it to the builder (local Docker VM only; resets on restart).
+if [ "$(uname -s)" = "Darwin" ]; then
+  docker exec -u root gitrun chmod 666 /var/run/docker.sock
 fi
 docker cp gitian-build.py gitrun:$WORKDIR/
 docker exec -t gitrun ./gitian-build.py -d -b -D -n $OPT $GH_USER $VERSION
