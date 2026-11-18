@@ -49,8 +49,8 @@ Never pass `--allow-mismatched-daemon-version` in tests. Details: PROJECT-LOG.md
 - Stagenet seeds: Google 34.171.218.2, AWS 3.134.132.214 (phone RPC 39749, ntfy alarm). Both go mainnet Dec 14.
 - Release key fingerprint `5F1A 8350 C748 BC43 AD19 2472 AF13 7B28 E11A 0857` (backups on 2 encrypted USB sticks).
 
-## Open items (Nov 17)
-- Swaps: 41 of 42 docker tests pass on regtest (camo-swap CAMO.md; re-run happy_path_hermes_disabled); next stagenet swap, outside review, lawyer.
-- Engine update for Ghillie mobile: expose the wallet's restore height so old wallets print it automatically.
+## Open items (Nov 18)
+- Swaps: all 42 docker tests pass on regtest (camo-swap CAMO.md); next stagenet swap (BTC testnet), outside review, lawyer.
+- Ghillie mobile: restore height from the engine merged Nov 18 (PR #1); put the new iOS engine on Anthony's iPhone.
 - BitcoinTalk [ANN] ~Dec 1; marketing posts await Anthony's approval (campaign doc in PROJECT-LOG.md).
 - Signed release builds (gitian second builder + release key); explorer/pool need a free server.
