@@ -50,7 +50,8 @@ Never pass `--allow-mismatched-daemon-version` in tests. Details: PROJECT-LOG.md
 - Release key fingerprint `5F1A 8350 C748 BC43 AD19 2472 AF13 7B28 E11A 0857` (backups on 2 encrypted USB sticks).
 
 ## Open items (Nov 18)
-- Swaps: all 42 docker tests pass on regtest (camo-swap CAMO.md); next stagenet swap (BTC testnet), outside review, lawyer.
-- Ghillie mobile: restore height from the engine merged Nov 18 (PR #1); put the new iOS engine on Anthony's iPhone.
+- Swaps: 42/42 docker tests + first stagenet swap PASSED Nov 18 (camo-taker, iMac build); before a real maker: CAMO price
+  source, outside review, lawyer.
+- Ghillie mobile: words screen now closes when leaving the app (PR #2), install with the next `flutter run`.
 - BitcoinTalk [ANN] ~Dec 1; marketing posts await Anthony's approval (campaign doc in PROJECT-LOG.md).
 - Signed release builds (gitian second builder + release key); explorer/pool need a free server.
