@@ -262,7 +262,8 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       (60 s) and printed "about <date>" (asking the node for that block would tell it roughly when the wallet was made).
       flutter test 46 pass; native regtest smoke passes with the new check. New engine on the iPhone Nov 18 (nm check = 1).
       **Nov 18 (Anthony found it): leaving the app closes Settings > Recovery words** (ghillie-mobile PR #2; Sensitive
-      onLeave on hidden/paused, not inactive; covered until gone; 47 tests). Not yet on his iPhone (next flutter run).
+      onLeave on hidden/paused, not inactive; covered until gone; 47 tests). **Verified on his iPhone Nov 18** (words gone after
+      leaving and reopening).
       The new-wallet setup words screen still only covers itself.
       Nov 17: Anthony's stagenet test wallet's words were shown in a chat screenshot: test only, never for real coins.
       Lesson: copying a command from chat overwrites the clipboard (and the simulator's);
