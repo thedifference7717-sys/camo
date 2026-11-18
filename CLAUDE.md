@@ -52,6 +52,5 @@ Never pass `--allow-mismatched-daemon-version` in tests. Details: PROJECT-LOG.md
 ## Open items (Nov 18)
 - Swaps: 42/42 docker tests + first stagenet swap PASSED Nov 18 (camo-taker, iMac build); before a real maker: CAMO price
   source, outside review, lawyer.
-- Ghillie mobile: words screen now closes when leaving the app (PR #2), install with the next `flutter run`.
 - BitcoinTalk [ANN] ~Dec 1; marketing posts await Anthony's approval (campaign doc in PROJECT-LOG.md).
 - Signed release builds (gitian second builder + release key); explorer/pool need a free server.
