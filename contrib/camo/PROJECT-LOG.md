@@ -139,7 +139,21 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       `thedifference7717-sys/camo-gitian.sigs` (created Nov 12: README + release public key), workflow `ci/gh-actions/gitian` on `v*` tags + manual
       (Linux/Win/Mac). Checklist: `contrib/gitian/CAMO-RELEASE.md`. **First full run PASSED Nov 10** (workflow on branch,
       commit 4d156bee4: Linux 1h35, Win 43 min, Mac 47 min) after the recipes got `git describe --always` (repo has no tags
-      before v1.0.0). Still to do: a second, independent builder compares hashes; signing with the release key. Version decided Nov 5: **v1.0.0** (tag `v1.0.0`; binaries say v1.0.0).
+      before v1.0.0). **Nov 18 rehearsal on main `a9371c3b42c013a36a220f79ca3c3b5d1f513d5d`** (run 44367910575: Linux 1h16,
+      Win 26 min, Mac 1h03, all PASS). Second builder = Anthony's Intel iMac (Docker Desktop 19.03, 6 CPUs / 6 GB,
+      `dockrun.sh` with OPT="-c -j 6 -m 5000"; started Nov 18 ~19:30 UTC). GitHub's hashes to compare:
+      ```
+      20e6c9ab5bc8bf5b2dc9a24052a93cf28a8b3c0346a321c0e31ce8f83e47196d  camo-aarch64-linux-gnu-a9371c3b4.tar.bz2
+      08cd71dd1d8808c8c74273a65500f4ee7438005ccacb191b1ed32715cb8457d4  camo-arm-linux-gnueabihf-a9371c3b4.tar.bz2
+      8cef1a582a46b374192dd949033fe9807f9248a0cee46c261d6e2c5b2b099786  camo-i686-linux-gnu-a9371c3b4.tar.bz2
+      356e59dbcb46c9fb1bad9208fe41c2c61f7fd22da0a4be90c9e7fb51442c1080  camo-riscv64-linux-gnu-a9371c3b4.tar.bz2
+      6f2c756ce7400cb329414fefab64f41c5a824afdaebe1b0d516ba7018406ffb5  camo-x86_64-linux-gnu-a9371c3b4.tar.bz2
+      48d73ba73eaec7d5159fd9510f45d1a79fb65c4f66977f994ea647801e9dac5d  camo-i686-w64-mingw32-a9371c3b4.zip
+      5eddc74ca1b296374f0093279074cdbecd24f4146db94f110262ccbdc1c46884  camo-x86_64-w64-mingw32-a9371c3b4.zip
+      bfa1f17c168224de85519fcf9301e6b16db23ed97aa9891f4e7cdc06cdf63f5a  camo-aarch64-apple-darwin11-a9371c3b4.tar.bz2
+      fdd5b18653f67ae40cf1a41f026ae0f5c51854cdc8ec1c37113d51bd98dd3a4b  camo-x86_64-apple-darwin11-a9371c3b4.tar.bz2
+      ```
+      Still to do: the iMac's hashes must match these; then a practice signing (test files only) before Dec 5. Version decided Nov 5: **v1.0.0** (tag `v1.0.0`; binaries say v1.0.0).
 - [x] 1-minute blocks; founder genesis tool
 - [x] Founder + marketing addresses received; block-1 allocation (489,600 / 54,400 / 96,000 burn) built and tested end to end
 - [x] Website (Nov 3): `website/` here, published from the PUBLIC repo `thedifference7717-sys/camo-website`
