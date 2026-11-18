@@ -260,7 +260,10 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       wallets the library resets it to the node's exact height on first connect, so it is never too high). Wallets made
       before Ghillie recorded it fill the sheet in automatically; the date is estimated on the phone from the block count
       (60 s) and printed "about <date>" (asking the node for that block would tell it roughly when the wallet was made).
-      flutter test 46 pass; native regtest smoke passes with the new check. iPhone needs the new engine from `ios-lib.yml`.
+      flutter test 46 pass; native regtest smoke passes with the new check. New engine on the iPhone Nov 18 (nm check = 1).
+      **Nov 18 (Anthony found it): leaving the app closes Settings > Recovery words** (ghillie-mobile PR #2; Sensitive
+      onLeave on hidden/paused, not inactive; covered until gone; 47 tests). Not yet on his iPhone (next flutter run).
+      The new-wallet setup words screen still only covers itself.
       Nov 17: Anthony's stagenet test wallet's words were shown in a chat screenshot: test only, never for real coins.
       Lesson: copying a command from chat overwrites the clipboard (and the simulator's);
       save addresses to a file first (`xcrun simctl pbpaste booted`). Code: PUBLIC repo `thedifference7717-sys/ghillie-mobile`
@@ -277,7 +280,14 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       18 GB and filled the disk). monero-oxide fix: address prefix written as a varint (CAMO stagenet 140+ needs 2 bytes).
       Docker works in cloud sessions after starting `dockerd`; bitcoin/bitcoin:28.1 + vulpemventures/electrs pulled
       (Docker Hub rate-limits: retry or use mirror.gcr.io); CAMO image `camo-local/camo:dev` = camod + camo-wallet-rpc
-      from build/release with ldd libs, FROM scratch, EXPOSE 18080-18083 18089. Nov 17: the 7 tests that failed on Monero test addresses all PASS after the CAMO-address fix; the other 32 docker tests (refund, punish, restarts, concurrent) were started in the cloud session. **Nov 18: all 42 of 42 docker tests PASS** (last one, happy_path_hermes_disabled, 187 s). Next: stagenet swap with BTC testnet.
+      from build/release with ldd libs, FROM scratch, EXPOSE 18080-18083 18089. Nov 17: the 7 tests that failed on Monero test addresses all PASS after the CAMO-address fix; the other 32 docker tests (refund, punish, restarts, concurrent) were started in the cloud session. **Nov 18: all 42 of 42 docker tests PASS** (last one, happy_path_hermes_disabled, 187 s).
+      **Nov 18: FIRST STAGENET SWAP PASSED** on Anthony's Intel iMac (camo-swap CAMO.md has details): `camo-taker`
+      (new headless buyer, PR #1, stagenet/regtest only; docker test camo_headless_taker PASS) bought 0.1206 CAMO for
+      0.001 testnet3 BTC (coinfaucet.eu) from an `asb` on his local stagenet camod, ~22 min. iMac build 79 min (Homebrew
+      cmake/autotools after fresh CLT for macOS 26, rustup 1.92, monero-depends submodule, no fat LTO); fixed the
+      build script re-applying patches (PR #3). GitHub Actions minutes for private repos used up Nov 18 (2 s, no log);
+      camo-swap's upstream workflows are now manual-only. Gaps before a real maker: a CAMO price source (asb uses
+      XMR/BTC feeds), per-swap Tor wormhole services always on (review/lawyer). Next: outside review, lawyer.
 - Ghillie fee model (decided Nov 3): **no fee on sends, ever** (an extra output would fingerprint Ghillie txs);
   0.25% on built-in swaps, 1% official pool fee, optional tip off by default; all to the marketing wallet.
 - Website design (tactical "night-ops" look, original, not Call of Duty branding): https://claude.ai/artifact/QB6piNbZWjL9suC5Kvfirw
