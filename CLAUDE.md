@@ -38,7 +38,7 @@ make -j$(nproc) daemon simplewallet wallet_rpc_server
 ```
 Always `-DARCH=x86-64` (or armv8-a) for shared builds. Tests: unit tests (7 known failures: 6 DNS + portability_wallet;
 `select_outputs.gamma` flaky ~1%), `contrib/camo/regtest-demo.sh`, `tools/attack_block1.py`, `allocation-spend-test.sh`,
-`stagenet-rehearsal.sh`, `tools/test_camo_health.sh`, `tools/test_rig_agent.py` (RIG_PYTHON=python3.8 too).
+`stagenet-rehearsal.sh`, `tools/test_camo_health.sh` (incl. offline rule tests), `tools/test_rig_agent.py` (RIG_PYTHON=python3.8 too).
 Never pass `--allow-mismatched-daemon-version` in tests. Details: PROJECT-LOG.md "Test".
 
 ## Repos and services (details in PROJECT-LOG.md)
@@ -56,4 +56,4 @@ Never pass `--allow-mismatched-daemon-version` in tests. Details: PROJECT-LOG.md
 - Signed release: rehearsed Nov 19 (iMac = GitHub on all 9 files; practice signing OK); real one at code freeze Dec 5.
   Explorer/pool need a free server.
 - Seals watch team (MAINNET-LAUNCH.md, panic page there too): GitHub protection DONE Nov 19 (4 public repos);
-  Seal Watch mainnet checks before Dec 14; Seal Code/Scout ~Dec 1.
+  Seal Watch mainnet checks written Nov 20 (install on seeds Dec 14); Seal Code/Scout ~Dec 1.
