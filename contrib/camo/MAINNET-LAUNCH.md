@@ -69,6 +69,8 @@ Same as stagenet: `--public-rpc` on the AWS seed (port **19749**), plus an AWS s
 - [ ] Final check: `src/cryptonote_core/camo_allocation.h` = the real founder/marketing addresses (not a test header);
   `src/version.cpp.in` says 1.0.0; checkpoints file empty for mainnet.
 - [ ] Full test pass (unit tests, `regtest-demo.sh`, `attack_block1.py`, `allocation-spend-test.sh`, rehearsal).
+  Early run Nov 18-20 on main: unit tests (only the 7 known failures), regtest demo, attack_block1 4/4, health 12+rules,
+  rehearsal PASS. Re-run all at the freeze commit.
 - [ ] Tag `v1.0.0` (owner, signed) and run the gitian workflow (`contrib/gitian/CAMO-RELEASE.md`). A second builder
   compares hashes.
 
