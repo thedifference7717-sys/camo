@@ -54,6 +54,7 @@ Never pass `--allow-mismatched-daemon-version` in tests. Details: PROJECT-LOG.md
   source, outside review, lawyer.
 - BitcoinTalk [ANN] ~Dec 1; marketing posts await Anthony's approval (campaign doc in PROJECT-LOG.md).
 - Signed release: rehearsed Nov 19 (iMac = GitHub on all 9 files; practice signing OK); real one at code freeze Dec 5.
-  Explorer/pool need a free server.
+  Explorer: prebuilt + deploy ready (PR #94), needs AWS console (ports 80/443) or another host.
+- AWS seed account: console login lost (not the project email); recover before Dec 14 (PROJECT-LOG.md).
 - Seals watch team (MAINNET-LAUNCH.md, panic page there too): GitHub protection DONE Nov 19 (4 public repos);
   Seal Watch mainnet checks written Nov 20 (install on seeds Dec 14); Seal Code/Scout ~Dec 1.

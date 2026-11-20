@@ -352,7 +352,11 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
   Not a CAMO bug (sync_info clean; stop/start_mining and a camod restart didn't help). Fixed by a Mac restart: blocks
   resumed at once. Mining guide must say: mining needs free RAM; check `status` H/s. Until more miners join, any stall on
   his Mac stalls stagenet. **Nov 13: seed #2 RUNNING on AWS** (account `camo-seed`, project email; FREE PLAN: "does not get
-  charged", $100 credits, ends ~May 2027 or when credits run out -> plan a replacement before then). EC2 `camo-seed-2`
+  charged", $100 credits, ends ~May 2027 or when credits run out -> plan a replacement before then).
+  **Nov 20: AWS console login not working**: the account's root email is NOT camocoin@proton.me ("no account"), and
+  the other address Anthony found is a general Amazon/Builder login, not this account. Seed unaffected. Needed before
+  Dec 14 (security group: tcp 19749, 80/443 for the explorer): recover via AWS account support (free, no sign-in).
+  Never record the email here. Safari can't do AWS sign-in ("Bad request"); use Chrome. EC2 `camo-seed-2`
   (i-056784d10469d8eac), us-east-2 Ohio, t3.micro, Ubuntu 24.04, 30 GB gp3, security group `camo-seed` (22, 39740, 19740),
   **Elastic IP 3.134.132.214**. Login `ssh -i ~/.ssh/camo-seed-2.pem ubuntu@3.134.132.214`. Installed with
   `deploy-seed-node.sh --binary ~/camod --stagenet --limit-up 16` (camod v1.0.0-fe86eb95c from the depends artifact);
