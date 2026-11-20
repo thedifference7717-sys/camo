@@ -104,6 +104,23 @@ Blocks dated 18:00+ are accepted from about 16:00 (2-hour future limit). Anthony
   `python3 contrib/camo/tools/make_checkpoints.py --write seed1=ssh://... seed2=ssh://...` (only blocks 720+ deep, all
   seeds must agree), gitian build, sign, release. Then each point release for 3 months.
 
+## The Seals: watch team (decided Nov 19, Anthony: "k")
+Watch and report only. No Seal changes servers, code or public posts by itself: Anthony decides. No Seal tries to
+identify users (watching the network is fine, tracking people is not).
+
+| Seal | Watches | How often | Where / cost |
+|---|---|---|---|
+| **Seal Watch** | 51% risk (one miner's share of recent blocks), deep reorgs, chain splits, stalls, odd timestamps, block-1 allocation, node down | every 2 min, phone alert at once | `camo_health.py` + ntfy alarm on both seeds; free (plain code, no AI) |
+| **GitHub alarms** | known-vulnerable dependencies, leaked secrets, force-push / deletion of `main` | instant | GitHub security alerts, secret scanning, branch protection; free |
+| **Seal Code** | new Monero security fixes (`check_upstream.sh`), dependency advisories, outside PRs | daily Dec 10-22, weekly after | scheduled Claude session, report to Anthony; uses plan allowance |
+| **Seal Scout** | fake CAMO sites, fake Ghillie apps, impersonating accounts, fake "CAMO" tokens | daily Dec 10-22, weekly after | scheduled Claude session, report to Anthony; uses plan allowance |
+
+- [ ] Before Dec 14: Seal Watch mainnet checks (miner share, reorg depth, timestamps) in `camo_health.py`, tested
+      on regtest like the existing 12 checks; `install-alarm.sh --mainnet` on both seeds.
+- [ ] GitHub alarms on `camo`, `ghillie`, `ghillie-mobile`, `camo-website`, private repos: security alerts + secret
+      scanning; branch protection on `camo` `main` (no force-push, no deletion).
+- [ ] ~Dec 1: Seal Code and Seal Scout scheduled tasks (report-only prompts), daily from Dec 10.
+
 ## If something goes wrong
 The incident table is in the launch security plan. The short version: a chain split or deep reorg means stop announcing,
 compare both seeds with `camo_health.py`, and post facts (heights, hashes) before opinions.
