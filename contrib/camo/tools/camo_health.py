@@ -17,7 +17,10 @@ A node can be named: seed1=ssh://root@203.0.113.10 . ssh://user@host:PORT querie
 Checks: every node answers, is synchronized and has peers; the genesis block is CAMO's for that network and block 1
 pays the 640,000 CAMO allocation; all nodes agree on the block hash at the lowest common height and their tips are
 close; block times (last 30 and last 720 blocks) and time since the last block; competing chains seen by the nodes,
-and reorganizations since the previous run (block hashes are remembered in a small state file).
+and reorganizations since the previous run (block hashes are remembered in a small state file); sudden hashrate
+changes (difficulty up or down by --hashrate-jump within the last 120 blocks: a large miner arriving or leaving, the
+usual setup for a 51% attack); and block timestamps in the future (difficulty manipulation). Which miner found a
+block cannot be seen on CAMO (rewards go to one-time addresses), so miner share is watched through these signals.
 
 Exit code: 0 OK, 1 WARN, 2 CRIT (Nagios-style), so it also works from cron or a monitoring system. Read-only: it
 only calls get_info, get_block_header_by_height, get_block_headers_range and get_alternate_chains.
@@ -91,6 +94,34 @@ class Node:
 def fmt_secs(s):
     s = int(s)
     return '%dh%02dm' % (s // 3600, s % 3600 // 60) if s >= 3600 else '%dm%02ds' % (s // 60, s % 60) if s >= 60 else '%ds' % s
+
+
+def hashrate_finding(headers, factor, window=120):
+    """(level, message) if difficulty changed by more than `factor` within the last `window` blocks, else None."""
+    if factor <= 1 or len(headers) < 2:
+        return None
+    seg = headers[-(window + 1):]
+    old, new = int(seg[0]['difficulty']), int(seg[-1]['difficulty'])
+    if old <= 0 or new <= 0:
+        return None
+    blocks = len(seg) - 1
+    if new >= old * factor:
+        return WARN, ('hashrate surge: difficulty x%.1f in the last %d blocks (%d -> %d): a large miner arrived; '
+                      'watch for reorgs' % (new / old, blocks, old, new))
+    if old >= new * factor:
+        return WARN, ('hashrate drop: difficulty /%.1f in the last %d blocks (%d -> %d): a large miner left'
+                      % (old / new, blocks, old, new))
+    return None
+
+
+def timestamp_finding(headers, now, ahead_minutes, window=30):
+    """(level, message) if recent blocks are dated more than `ahead_minutes` after `now`, else None."""
+    ahead = [h for h in headers[-window:] if h['timestamp'] > now + ahead_minutes * 60]
+    if not ahead:
+        return None
+    worst = max(h['timestamp'] for h in ahead) - now
+    return WARN, ('%d of the last %d blocks are dated in the future (up to %s ahead): possible timestamp '
+                  'manipulation' % (len(ahead), min(window, len(headers)), fmt_secs(worst)))
 
 
 def check(args, nodes, state):
@@ -186,6 +217,10 @@ def check(args, nodes, state):
         if a30 and len(ts) > 30 and not (TARGET / 3 <= a30 <= TARGET * 3):
             add(WARN, 'blocktime', 'last 30 blocks averaged %s (target 60s); difficulty is still adjusting'
                 % fmt_secs(a30))
+        for key, found in (('hashrate', hashrate_finding(headers, args.hashrate_jump)),
+                           ('timestamps', timestamp_finding(headers, time.time(), args.future_minutes))):
+            if found:
+                add(found[0], key, found[1])
 
     # Competing chains the nodes know about.
     for n, i in up:
@@ -261,6 +296,10 @@ def main():
     p.add_argument('--stall-crit', type=float, default=30, help='minutes without a block before CRIT (default 30)')
     p.add_argument('--reorg-warn', type=int, default=3, help='reorg/competing-chain depth for WARN (default 3)')
     p.add_argument('--reorg-crit', type=int, default=10, help='reorg/competing-chain depth for CRIT (default 10)')
+    p.add_argument('--hashrate-jump', type=float, default=3,
+                   help='warn if difficulty changes by this factor within 120 blocks (default 3; 0 = off)')
+    p.add_argument('--future-minutes', type=float, default=10,
+                   help='warn if recent blocks are dated this many minutes ahead of this clock (default 10)')
     p.add_argument('--timeout', type=int, default=15, help='seconds per query (default 15)')
     p.add_argument('--state', help='state file (default ~/.camo-health/<network>.json)')
     p.add_argument('--json', action='store_true', help='print one JSON object instead of text')

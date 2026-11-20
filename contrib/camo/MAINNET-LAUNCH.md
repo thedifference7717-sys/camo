@@ -61,6 +61,11 @@ Same as stagenet: `--public-rpc` on the AWS seed (port **19749**), plus an AWS s
 ### By Dec 5: code freeze
 - [ ] Mainnet seed IPs into the code and website (parameters only):
   `python3 contrib/camo/tools/set_seed_nodes.py --mainnet 34.171.218.2 3.134.132.214` (`--dry-run` first).
+- [ ] Founder/marketing outputs vs Anthony's real wallets (Nov 20: amounts 489,600/54,400/96,000 at height 1, the three
+  mainnet addresses and the burn output (via its public view key) verified from the header; founder/marketing need
+  their view keys): on his Mac, a local `camod --regtest --offline --fixed-difficulty 1` (regtest uses the mainnet
+  allocation), `generateblocks 1`, then view-only wallets (address + view key, never the seed) for founder and
+  marketing restored from height 0 must show 489,600 and 54,400.
 - [ ] Final check: `src/cryptonote_core/camo_allocation.h` = the real founder/marketing addresses (not a test header);
   `src/version.cpp.in` says 1.0.0; checkpoints file empty for mainnet.
 - [ ] Full test pass (unit tests, `regtest-demo.sh`, `attack_block1.py`, `allocation-spend-test.sh`, rehearsal).
@@ -115,8 +120,11 @@ identify users (watching the network is fine, tracking people is not).
 | **Seal Code** | new Monero security fixes (`check_upstream.sh`), dependency advisories, outside PRs | daily Dec 10-22, weekly after | scheduled Claude session, report to Anthony; uses plan allowance |
 | **Seal Scout** | fake CAMO sites, fake Ghillie apps, impersonating accounts, fake "CAMO" tokens | daily Dec 10-22, weekly after | scheduled Claude session, report to Anthony; uses plan allowance |
 
-- [ ] Before Dec 14: Seal Watch mainnet checks (miner share, reorg depth, timestamps) in `camo_health.py`, tested
-      on regtest like the existing 12 checks; `install-alarm.sh --mainnet` on both seeds.
+- [x] Nov 20: Seal Watch mainnet checks in `camo_health.py`: hashrate surge/drop (difficulty x3 within 120 blocks;
+      miner share itself can't be seen on CAMO, rewards go to one-time addresses) and future-dated blocks; reorgs,
+      competing chains, splits, stalls, block 1 were already checked. Tests: `test_camo_health.sh` (rules + 12 network
+      checks) ALL PASS 3/3.
+- [ ] Dec 14: `install-alarm.sh --mainnet` on both seeds (pulls the new `camo_health.py`).
 - [x] Nov 19: ruleset "protect main" (Active; restrict deletions, block force pushes) on the default branch of `camo`,
       `ghillie-mobile` (both verified via the API), `ghillie` (screenshot) and `camo-website` (Anthony).
 - [x] Nov 19: on the same four public repos: private vulnerability reporting, Dependabot alerts, malware alerts,

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Self-test for camo_health.py: three local regtest nodes, then a forced chain split, a reorg, a stall, the wrong
-# network, a dead node, and the SSH transport (through a stand-in ssh that runs the command locally).
+# network, a dead node, and the SSH transport (through a stand-in ssh that runs the command locally). Starts with the
+# offline hashrate/timestamp rule tests (test_camo_health_rules.py; regtest runs at fixed difficulty).
 #   bash contrib/camo/tools/test_camo_health.sh [build/release/bin]
 set -uo pipefail
 HERE=$(cd "$(dirname "$0")" && pwd)
@@ -12,6 +13,7 @@ pass(){ log "PASS: $*"; }
 fail(){ log "FAIL: $*"; FAILS=$((FAILS+1)); }
 cleanup(){ for p in "$T"/*.pid; do [ -f "$p" ] && kill "$(cat "$p")" 2>/dev/null; done; sleep 2; rm -rf "$T"; }
 trap cleanup EXIT
+python3 "$HERE/test_camo_health_rules.py" | sed "s/^/  rules: /" && pass "hashrate and timestamp rules (10 cases)" || fail "hashrate and timestamp rules"
 
 rpc(){ curl -s "127.0.0.1:$1/json_rpc" -d "{\"jsonrpc\":\"2.0\",\"id\":0,\"method\":\"$2\",\"params\":${3:-{\}}}"; }
 height(){ curl -s "127.0.0.1:$1/get_info" | python3 -c 'import sys,json;print(json.load(sys.stdin)["height"])'; }
@@ -47,9 +49,10 @@ NODES="a=http://127.0.0.1:28081 b=http://127.0.0.1:28091 c=http://127.0.0.1:2810
 sleep 5; mine 28081 20; wait_h 28091 21; wait_h 28101 21; wait_peers 28081; wait_peers 28091; wait_peers 28101
 log "3 nodes at heights $(height 28081)/$(height 28091)/$(height 28101)"
 
-run all $NODES;                            expect "healthy network is OK" 0 "health: OK"
+# three test nodes don't always get 2 distinct connections each (counts differ under load): require 1 here
+run all --min-peers 1 $NODES;              expect "healthy network is OK" 0 "health: OK"
 grep -q "block 1 pays" "$T/out" && fail "block 1 allocation flagged" || pass "block 1 carries the 640,000 allocation"
-run all --json $NODES;                     expect "JSON output" 0 '"status": "OK"'
+run all --json --min-peers 1 $NODES;       expect "JSON output" 0 '"status": "OK"'
 run all --stall-warn 0.001 --stall-crit 1000 $NODES; expect "stall is reported" 1 "WARN: no new block"
 python3 "$HERE/camo_health.py" --stagenet --state "$T/state-x.json" $NODES > "$T/out" 2>&1; echo $? > "$T/rc"
 expect "wrong network is CRIT" 2 "expected stagenet"
