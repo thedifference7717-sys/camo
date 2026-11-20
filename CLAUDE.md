@@ -53,5 +53,5 @@ Never pass `--allow-mismatched-daemon-version` in tests. Details: PROJECT-LOG.md
 - Swaps: 42/42 docker tests + first stagenet swap PASSED Nov 18 (camo-taker, iMac build); before a real maker: CAMO price
   source, outside review, lawyer.
 - BitcoinTalk [ANN] ~Dec 1; marketing posts await Anthony's approval (campaign doc in PROJECT-LOG.md).
-- Signed release: builds proven reproducible Nov 19 (iMac = GitHub, all 9); next a practice signing before Dec 5.
+- Signed release: rehearsed Nov 19 (iMac = GitHub on all 9 files; practice signing OK); real one at code freeze Dec 5.
   Explorer/pool need a free server.
