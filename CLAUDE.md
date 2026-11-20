@@ -49,8 +49,9 @@ Never pass `--allow-mismatched-daemon-version` in tests. Details: PROJECT-LOG.md
 - Stagenet seeds: Google 34.171.218.2, AWS 3.134.132.214 (phone RPC 39749, ntfy alarm). Both go mainnet Dec 14.
 - Release key fingerprint `5F1A 8350 C748 BC43 AD19 2472 AF13 7B28 E11A 0857` (backups on 2 encrypted USB sticks).
 
-## Open items (Nov 18)
+## Open items (Nov 19)
 - Swaps: 42/42 docker tests + first stagenet swap PASSED Nov 18 (camo-taker, iMac build); before a real maker: CAMO price
   source, outside review, lawyer.
 - BitcoinTalk [ANN] ~Dec 1; marketing posts await Anthony's approval (campaign doc in PROJECT-LOG.md).
-- Signed release builds (gitian second builder + release key); explorer/pool need a free server.
+- Signed release: builds proven reproducible Nov 19 (iMac = GitHub, all 9); next a practice signing before Dec 5.
+  Explorer/pool need a free server.

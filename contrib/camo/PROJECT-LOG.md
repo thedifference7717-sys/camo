@@ -153,7 +153,12 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       bfa1f17c168224de85519fcf9301e6b16db23ed97aa9891f4e7cdc06cdf63f5a  camo-aarch64-apple-darwin11-a9371c3b4.tar.bz2
       fdd5b18653f67ae40cf1a41f026ae0f5c51854cdc8ec1c37113d51bd98dd3a4b  camo-x86_64-apple-darwin11-a9371c3b4.tar.bz2
       ```
-      Still to do: the iMac's hashes must match these; then a practice signing (test files only) before Dec 5. Version decided Nov 5: **v1.0.0** (tag `v1.0.0`; binaries say v1.0.0).
+      **Nov 19: ALL 9 MATCH on the iMac (second, independent builder): CAMO builds are reproducible.** Mac lessons:
+      `-j 6` with 6 GB ran out of memory (cc1plus Killed); `-j 2` works (Linux overnight, Win+Mac ~2 h with `-o wm`);
+      his network couldn't fetch the mingw packages from archive.ubuntu.com, so the target image was switched to
+      mirrors.edge.kernel.org (same packages, same hashes). Don't click Docker's "Install and Relaunch" mid-build.
+      Also Nov 18: full unit tests on main 6ce783a: 1283 run, 1276 pass, the 7 known failures only.
+      Still to do: a practice signing (test files only) before Dec 5. Version decided Nov 5: **v1.0.0** (tag `v1.0.0`; binaries say v1.0.0).
 - [x] 1-minute blocks; founder genesis tool
 - [x] Founder + marketing addresses received; block-1 allocation (489,600 / 54,400 / 96,000 burn) built and tested end to end
 - [x] Website (Nov 3): `website/` here, published from the PUBLIC repo `thedifference7717-sys/camo-website`
