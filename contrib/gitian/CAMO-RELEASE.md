@@ -21,7 +21,17 @@ Monero's own release tags (`v0.18.x`) are still in this repo. **Never build or s
 `5F1A 8350 C748 BC43 AD19  2472 AF13 7B28 E11A 0857`, expires 2030-11-10, published on keys.openpgp.org (email verified), in `gitian-pubkeys/camo-release.asc` and on the website (`assets/camo-release.asc`). Created with GPG Suite on Anthony's Mac.
 Done since: two encrypted USB backups of the secret key (Nov 17) and the signatures repo (Nov 12).
 **Second builder without a paid server:** an Intel Mac with Docker Desktop works (Nov 18: Anthony's iMac, Docker
-Preferences > Resources 6 CPUs / 6 GB; `OPT="-c -j 6 -m 5000"`; `getent: command not found` is harmless on macOS).
+Preferences > Resources 6 CPUs / 6 GB; `OPT="-c -j 6 -m 5000"`; `getent` / socket handled by dockrun.sh). **Use `OPT="-c -j 2 -m 5000"`** on 8 GB (more jobs ran out of
+memory). If apt can't reach archive.ubuntu.com, switch the target image's mirror (same packages, same hashes):
+```
+docker build -q -t base-bionic-amd64 - <<'EOF2'
+FROM base-bionic-amd64
+USER root
+RUN sed -i 's#http://archive.ubuntu.com/ubuntu#http://mirrors.edge.kernel.org/ubuntu#g' /etc/apt/sources.list
+USER ubuntu
+EOF2
+```
+`-o wm` rebuilds only Windows+Mac (finished targets stay). Nov 19 rehearsal: iMac and GitHub matched on all 9 files.
 
 1. **GPG key** (on your own computer; the private key never leaves it and is never shared with anyone,
    including Claude):
