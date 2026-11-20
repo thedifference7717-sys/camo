@@ -173,7 +173,12 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       rehearsal chain: block 1 allocation, ring 16 + hidden amounts, view-key decode finds exactly 5 CAMO, Monero
       addresses rejected. Code: PRIVATE repo `thedifference7717-sys/camo-explorer` (branch `main`, full upstream
       history kept for BSD-3 attribution; see its README). Still needs a server: deploy with
-      `contrib/camo/deploy-services.sh --explorer [--tor] [--explorer-domain D]` (bundle from `tools/make_source_bundle.sh`). Operator rule: never run it with `--enable-mixin-guess`.
+      `contrib/camo/deploy-services.sh --explorer [--tor] [--explorer-domain D]` (bundle from `tools/make_source_bundle.sh`). **Nov 20 plan (Anthony: k): host it on the AWS seed** (only free
+      server with real egress; the mainnet chain starts small). Built HERE (same Ubuntu 24.04) with
+      `tools/make_explorer_prebuilt.sh` (needs libasio-dev, libminiupnpc-dev) and installed with
+      `deploy-services.sh --explorer --explorer-prebuilt <tar.gz> --explorer-domain explorer.camocoin.org` (no compiling,
+      no swap on the server; Caddy HTTPS, no access logs). Tested locally: page, JSON API, address search. Stagenet first;
+      rebuild against v1.0.0 and switch to mainnet with the seed on Dec 14. Pool stays off this 1 GB server. Operator rule: never run it with `--enable-mixin-guess`.
 - [~] Mining pool (Nov 3): jtgrassie/monero-pool at `db16e73` in PRIVATE repo `thedifference7717-sys/camo-pool`
       (see its `camo/README.md`). **CAMO fix: never pay out block 1** (camod reports its 640,000 CAMO allocation as
       the block reward; unpatched, the pool would credit it to block 1's miner). 1% fee via `pool-fee-wallet` =

@@ -7,6 +7,9 @@
 #   bash deploy-services.sh --bundle /root/camo-bundle-<rev>.tar.gz --pool --pool-fee-wallet <marketing address> \
 #        [--pool-min-payout 0.25] [--pool-domain pool.example.org]
 #   add --stagenet for the stagenet node. Both --explorer and --pool can be given at once. Safe to re-run.
+#   --explorer-prebuilt camo-explorer-<rev>.tar.gz (camo-explorer + templates/, built on the same Ubuntu release with
+#   contrib/camo/tools/make_explorer_prebuilt.sh) installs the explorer without compiling anything on the server
+#   (small servers: no build tools, no swap, no CAMO build). Explorer only; the pool still builds from source.
 #   The bundle comes from contrib/camo/tools/make_source_bundle.sh (repos private); once the repos are public you can
 #   pass --camo-src/--explorer-src/--pool-src git URLs instead. --camo-build DIR reuses an existing CAMO build.
 #
@@ -20,7 +23,7 @@
 set -euo pipefail
 
 NET=mainnet; DO_EXPLORER=0; DO_POOL=0; TOR=0; EXPLORER_DOMAIN=""; POOL_DOMAIN=""; FEE_WALLET=""; MIN_PAYOUT=0.25
-BUNDLE=""; CAMO_SRC=""; EXPLORER_SRC=""; POOL_SRC=""; CAMO_BUILD=""; ROOT=""; STAGE=0; JOBS=$(nproc)
+BUNDLE=""; CAMO_SRC=""; EXPLORER_SRC=""; POOL_SRC=""; CAMO_BUILD=""; ROOT=""; STAGE=0; JOBS=$(nproc); PREBUILT=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --explorer) DO_EXPLORER=1; shift ;;
@@ -36,9 +39,10 @@ while [ $# -gt 0 ]; do
     --explorer-src) EXPLORER_SRC="$2"; shift 2 ;;
     --pool-src) POOL_SRC="$2"; shift 2 ;;
     --camo-build) CAMO_BUILD="$2"; shift 2 ;;
+    --explorer-prebuilt) PREBUILT="$(cd "$(dirname "$2")" && pwd)/$(basename "$2")"; shift 2 ;;
     --stage) ROOT="$(mkdir -p "$2" && cd "$2" && pwd)"; STAGE=1; shift 2 ;;
     --jobs) JOBS="$2"; shift 2 ;;
-    -h|--help) sed -n '2,22p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,25p' "$0"; exit 0 ;;
     *) echo "unknown option $1"; exit 1 ;;
   esac
 done
@@ -47,6 +51,10 @@ say(){ echo "==> $*"; }
 run(){ if [ $STAGE = 1 ]; then echo "    [stage] skip: $*"; else "$@"; fi; }
 [ $DO_EXPLORER = 1 ] || [ $DO_POOL = 1 ] || die "pass --explorer and/or --pool"
 [ $STAGE = 1 ] || [ "$(id -u)" = 0 ] || die "run as root (or use --stage DIR to try it without changing the system)"
+if [ -n "$PREBUILT" ]; then
+  [ $DO_POOL = 0 ] && [ $DO_EXPLORER = 1 ] || die "--explorer-prebuilt is for --explorer only (the pool builds from source)"
+  [ -f "$PREBUILT" ] || die "no such file: $PREBUILT"
+fi
 if [ $DO_POOL = 1 ]; then
   [ -n "$FEE_WALLET" ] || die "--pool-fee-wallet <public marketing wallet address> is required for the pool"
   # must match the network: the pool silently ignores an invalid fee wallet and keeps the fee
@@ -62,24 +70,33 @@ case "$(uname -m)" in x86_64) ARCH=x86-64 ;; aarch64|arm64) ARCH=armv8-a ;; *) A
 
 # ---------------------------------------------------------------- packages
 if [ $STAGE = 0 ]; then
-  say "Build dependencies"
   apt-get update -qq
+  if [ -n "$PREBUILT" ]; then
+  say "Runtime libraries for the prebuilt explorer"
+  DEBIAN_FRONTEND=noninteractive apt-get install -y -qq libboost-chrono1.83.0t64 libboost-filesystem1.83.0 \
+    libboost-program-options1.83.0 libboost-serialization1.83.0 libboost-thread1.83.0 libevent-2.1-7t64 \
+    libhidapi-libusb0 libsodium23 libssl3t64 libudev1 libunbound8 libunwind8 libusb-1.0-0 libcap2 libatomic1 ||
+    die "runtime libraries missing: the prebuilt explorer needs Ubuntu 24.04"
+  else
+  say "Build dependencies"
   DEBIAN_FRONTEND=noninteractive apt-get install -y -qq git build-essential cmake pkg-config ccache \
     libssl-dev libzmq3-dev libunbound-dev libsodium-dev libunwind8-dev liblzma-dev libreadline-dev libexpat1-dev \
     libpgm-dev libhidapi-dev libusb-1.0-0-dev libprotobuf-dev protobuf-compiler libudev-dev libboost-all-dev \
     libasio-dev libminiupnpc-dev libcurl4-openssl-dev liblmdb-dev libevent-dev libjson-c-dev uuid-dev xxd
+  fi
   [ $TOR = 1 ] && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq tor
   if [ -n "$EXPLORER_DOMAIN$POOL_DOMAIN" ]; then
     DEBIAN_FRONTEND=noninteractive apt-get install -y -qq caddy ||
       die "caddy isn't in this Ubuntu's archive; install it from https://caddyserver.com/docs/install, then re-run"
   fi
-  if [ "$(awk '/MemTotal/{print int($2/1024)}' /proc/meminfo)" -lt 3500 ] && ! swapon --show | grep -q /swapfile; then
+  if [ -z "$PREBUILT" ] && [ "$(awk '/MemTotal/{print int($2/1024)}' /proc/meminfo)" -lt 3500 ] && ! swapon --show | grep -q /swapfile; then
     say "Adding 4 GB swap for the build"; fallocate -l 4G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile
     echo '/swapfile none swap sw 0 0' >> /etc/fstab
   fi
   id camo &>/dev/null || die "user camo not found: set up the node with deploy-seed-node.sh first"
 fi
 
+if [ -z "$PREBUILT" ]; then
 # ---------------------------------------------------------------- sources
 say "Sources"
 mkdir -p "$SRC"
@@ -107,9 +124,19 @@ else
 fi
 install -D -m 755 "$CAMO_BUILD/bin/camo-wallet-rpc" "$ROOT/usr/local/bin/camo-wallet-rpc"
 install -D -m 755 "$CAMO_BUILD/bin/camo-wallet-cli" "$ROOT/usr/local/bin/camo-wallet-cli"
+fi
 
 # ---------------------------------------------------------------- explorer
 if [ $DO_EXPLORER = 1 ]; then
+  if [ -n "$PREBUILT" ]; then
+  say "Installing the prebuilt explorer"
+  rm -rf "$ROOT/opt/camo-explorer"; mkdir -p "$ROOT/opt/camo-explorer"
+  tar -xzf "$PREBUILT" -C "$ROOT/opt/camo-explorer"
+  [ -x "$ROOT/opt/camo-explorer/camo-explorer" ] && [ -d "$ROOT/opt/camo-explorer/templates" ] ||
+    die "$PREBUILT must contain camo-explorer and templates/"
+  [ $STAGE = 1 ] || ! ldd "$ROOT/opt/camo-explorer/camo-explorer" | grep -q "not found" ||
+    die "missing libraries: $(ldd "$ROOT/opt/camo-explorer/camo-explorer" | grep "not found" | tr -s ' \n' ' ')"
+  else
   [ -d "$SRC/camo-explorer" ] || die "no explorer source (bundle or --explorer-src)"
   say "Building the block explorer"
   UPNP=$(find /usr/lib /usr/lib64 -name 'libminiupnpc.so' 2>/dev/null | head -1)
@@ -120,6 +147,7 @@ if [ $DO_EXPLORER = 1 ]; then
   rm -rf "$ROOT/opt/camo-explorer"; mkdir -p "$ROOT/opt/camo-explorer"
   install -m 755 "$SRC/camo-explorer/build/camo-explorer" "$ROOT/opt/camo-explorer/"
   cp -a "$SRC/camo-explorer/build/templates" "$ROOT/opt/camo-explorer/"
+  fi
   mkdir -p "$ROOT/etc/systemd/system"
   # Never add --enable-mixin-guess (guesses real ring members) or the key/tx upload checkers.
   cat > "$ROOT/etc/systemd/system/camo-explorer.service" <<EOF
