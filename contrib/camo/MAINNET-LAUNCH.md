@@ -117,8 +117,11 @@ identify users (watching the network is fine, tracking people is not).
 
 - [ ] Before Dec 14: Seal Watch mainnet checks (miner share, reorg depth, timestamps) in `camo_health.py`, tested
       on regtest like the existing 12 checks; `install-alarm.sh --mainnet` on both seeds.
-- [x] Branch protection on `camo` `main`: ruleset "protect main" (Active; restrict deletions, block force pushes), Nov 19.
-- [ ] GitHub alarms on `camo`, `ghillie`, `ghillie-mobile`, `camo-website`, private repos: security alerts + secret scanning.
+- [x] Nov 19: ruleset "protect main" (Active; restrict deletions, block force pushes) on the default branch of `camo`,
+      `ghillie-mobile` (both verified via the API), `ghillie` (screenshot) and `camo-website` (Anthony).
+- [x] Nov 19: on the same four public repos: private vulnerability reporting, Dependabot alerts, malware alerts,
+      secret protection, push protection (AI Scan left off: paid credits).
+- [ ] Private repos (`camo-explorer`, `camo-pool`, `camo-swap`): Dependabot alerts (secret scanning is paid on private).
 - [ ] ~Dec 1: Seal Code and Seal Scout scheduled tasks (report-only prompts), daily from Dec 10.
 
 ## If something goes wrong: the panic page

@@ -55,4 +55,5 @@ Never pass `--allow-mismatched-daemon-version` in tests. Details: PROJECT-LOG.md
 - BitcoinTalk [ANN] ~Dec 1; marketing posts await Anthony's approval (campaign doc in PROJECT-LOG.md).
 - Signed release: rehearsed Nov 19 (iMac = GitHub on all 9 files; practice signing OK); real one at code freeze Dec 5.
   Explorer/pool need a free server.
-- Seals watch team (MAINNET-LAUNCH.md): Seal Watch mainnet checks + GitHub alarms before Dec 14; Seal Code/Scout ~Dec 1.
+- Seals watch team (MAINNET-LAUNCH.md, panic page there too): GitHub protection DONE Nov 19 (4 public repos);
+  Seal Watch mainnet checks before Dec 14; Seal Code/Scout ~Dec 1.
