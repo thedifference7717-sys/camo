@@ -117,10 +117,37 @@ identify users (watching the network is fine, tracking people is not).
 
 - [ ] Before Dec 14: Seal Watch mainnet checks (miner share, reorg depth, timestamps) in `camo_health.py`, tested
       on regtest like the existing 12 checks; `install-alarm.sh --mainnet` on both seeds.
-- [ ] GitHub alarms on `camo`, `ghillie`, `ghillie-mobile`, `camo-website`, private repos: security alerts + secret
-      scanning; branch protection on `camo` `main` (no force-push, no deletion).
+- [x] Branch protection on `camo` `main`: ruleset "protect main" (Active; restrict deletions, block force pushes), Nov 19.
+- [ ] GitHub alarms on `camo`, `ghillie`, `ghillie-mobile`, `camo-website`, private repos: security alerts + secret scanning.
 - [ ] ~Dec 1: Seal Code and Seal Scout scheduled tasks (report-only prompts), daily from Dec 10.
 
-## If something goes wrong
-The incident table is in the launch security plan. The short version: a chain split or deep reorg means stop announcing,
-compare both seeds with `camo_health.py`, and post facts (heights, hashes) before opinions.
+## If something goes wrong: the panic page
+**The CAMO chain cannot be paused** (by design: no one controls it, and a pause switch would be a consensus change and a
+target for attackers and governments). What we can freeze fast is **our side**. Do these in order, one at a time.
+
+**1. Warn first (minutes; this is the real brake on a 51% attack).** Exchanges and users stop on a warning.
+Post the same text on the website banner, X (@CAMO_Coin) and the BitcoinTalk thread:
+```
+CAMO notice: we are seeing <a deep reorg / a chain split / ...> at height <N>. Please pause large transfers and deposits
+and wait for 60+ confirmations until we post an all-clear. Details soon. Funds in your own wallet are safe; nothing
+needs to be moved.
+```
+Then post facts (heights, block hashes from both seeds via `camo_health.py`), never guesses.
+
+**2. Stop our services (one command each, on the machine that runs it).**
+- Swap maker: Control+C in the `asb` window (or `pkill -f "asb --"`). Takers' swaps refund by the protocol's timelocks.
+- Phone node on the AWS seed: `sudo ufw deny 19749` (phones show "can't reach node"; undo: `sudo ufw allow 19749`).
+- Explorer / pool (once hosted): stop their services; show a notice instead of possibly-wrong data.
+
+**3. Lock the code.** `main` is already protected (no force-push, no deletion). Also: GitHub, `camo` > Settings >
+Actions > General > **Disable actions** (re-enable after); review recent merges; rotate any token that may have leaked.
+
+**4. Fix and pin the honest chain.** Emergency point release with compiled-in checkpoints for the honest blocks (upgraded
+nodes then reject the attacker's chain; Monero's standard response):
+`python3 contrib/camo/tools/make_checkpoints.py --write seed1=ssh://camo-servers@34.171.218.2 seed2=ssh://ubuntu@3.134.132.214`
+(checkpoints must be agreed by both seeds), then the signed gitian release as rehearsed Nov 19 (contrib/gitian/CAMO-RELEASE.md;
+~2-3 h). Announce the version and ask exchanges, pools and node runners to upgrade. Code fixes for a software bug go the
+same way (fix, test, signed release); never change cryptography or consensus in a hurry without explaining the risk.
+
+**5. All-clear** once the honest chain is well ahead and most hashrate runs the fixed release: post it in the same three
+places with the new version and the checkpoint height.
