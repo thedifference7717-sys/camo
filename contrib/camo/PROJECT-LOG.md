@@ -407,6 +407,11 @@ Work moves to Claude Code from here; that session stops editing this repo.
     Watch this on the public stagenet.
   - miner wallet synced and saw 1,239.63 CAMO (237.74 unlocked); 5 CAMO spend sent; friend received exactly 5.0 CAMO
   - no ERROR/EXCEPTION lines in the node logs
+  **Nov 20 run on main (binaries from 01fc355; src unchanged since): PASS.** Block 1 allocation; 3 nodes in sync at 20;
+  node 2 offline 15 min, caught up at 35 in ~1 s; block times first 20 avg 27 s, last 20 avg 76 s (difficulty 40,676);
+  miner saw 1,239.63 CAMO; 5 CAMO spent, friend received 5.0; all 3 nodes on one chain at 88. Same day: test_camo_health.sh
+  (with the new Seal Watch rules) ALL PASS 3/3; block-1 header checked (amounts, three mainnet addresses, burn output
+  proven with its public view key).
   **Nov 4 run 3 (with the 22 upstream fixes): PASS.** Block 1 allocation on a non-mining node; 3 nodes in sync at 20/35/86;
   node 2 caught up in ~1 s; block times first 20 avg 28 s, last 20 avg 65 s; miner saw 1,239.63 CAMO; 5 CAMO arrived.
   Same day, with the fix: `regtest-demo.sh` passed without the mismatch flag (Bob 12.345 CAMO, ring 16, amounts
