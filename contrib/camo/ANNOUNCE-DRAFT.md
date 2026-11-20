@@ -59,6 +59,11 @@ marketing wallet, PPLNS). Mining needs free memory: close heavy apps if your has
 Build from source or use the test binaries, start a node, make a test wallet, mine, send: https://camocoin.org/stagenet.html
 Seed nodes: 34.171.218.2:39740 and 3.134.132.214:39740 (both built into the software)
 
+## Security
+Releases are reproducible and signed (two independent builders matched byte for byte). The Seals, CAMO's watch team,
+monitor the network around the clock for splits, deep reorgs and hashrate swings, and track Monero's security fixes.
+Report problems privately: camocoin@proton.me or GitHub private vulnerability reporting.
+
 ## Links
 - Website: https://camocoin.org
 - Source: https://github.com/thedifference7717-sys/camo
