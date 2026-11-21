@@ -50,11 +50,12 @@ Never pass `--allow-mismatched-daemon-version` in tests. Details: PROJECT-LOG.md
 - Release key fingerprint `5F1A 8350 C748 BC43 AD19 2472 AF13 7B28 E11A 0857` (backups on 2 encrypted USB sticks).
 
 ## Open items (Nov 19)
-- Swaps: 42/42 docker tests + first stagenet swap PASSED Nov 18 (camo-taker, iMac build); before a real maker: CAMO price
-  source, outside review, lawyer.
+- Swaps: 42/42 docker tests + first stagenet swap PASSED Nov 18 (camo-taker, iMac build); fixed CAMO price option added
+  Nov 21 (camo-swap PR #6, try it live on stagenet); before a real maker: outside review, lawyer.
 - BitcoinTalk [ANN] ~Dec 1; marketing posts await Anthony's approval (campaign doc in PROJECT-LOG.md).
 - Signed release: rehearsed Nov 19 (iMac = GitHub on all 9 files; practice signing OK); real one at code freeze Dec 5.
   Explorer: prebuilt + deploy ready (PR #94), needs AWS console (ports 80/443) or another host.
 - AWS seed account: console login lost (not the project email); recover before Dec 14 (PROJECT-LOG.md).
 - Seals watch team (MAINNET-LAUNCH.md, panic page there too): GitHub protection DONE Nov 19 (4 public repos);
-  Seal Watch mainnet checks written Nov 20 (install on seeds Dec 14); Seal Code/Scout ~Dec 1.
+  Seal Watch mainnet checks written Nov 20 (install on seeds Dec 14); Seal Code/Scout prompts in SEALS.md, schedule ~Dec 1.
+- Ghillie mobile: setup words lock on leave (PR #3, Nov 21); install with the next `flutter run`.
