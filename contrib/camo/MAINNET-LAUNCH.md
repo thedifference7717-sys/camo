@@ -132,7 +132,8 @@ identify users (watching the network is fine, tracking people is not).
 - [x] Nov 19: on the same four public repos: private vulnerability reporting, Dependabot alerts, malware alerts,
       secret protection, push protection (AI Scan left off: paid credits).
 - [ ] Private repos (`camo-explorer`, `camo-pool`, `camo-swap`): Dependabot alerts (secret scanning is paid on private).
-- [ ] ~Dec 1: Seal Code and Seal Scout scheduled tasks (report-only prompts), daily from Dec 10.
+- [ ] ~Dec 1: Seal Code and Seal Scout scheduled tasks, daily from Dec 10. Prompts ready in `contrib/camo/SEALS.md`
+      (Nov 21); schedule each only with Anthony's approval.
 
 ## If something goes wrong: the panic page
 **The CAMO chain cannot be paused** (by design: no one controls it, and a pause switch would be a consensus change and a
