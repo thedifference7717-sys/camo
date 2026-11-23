@@ -290,6 +290,12 @@ exits non-zero if the miner sees no rewards, the spend fails, or the friend does
       **Nov 18 (Anthony found it): leaving the app closes Settings > Recovery words** (ghillie-mobile PR #2; Sensitive
       onLeave on hidden/paused, not inactive; covered until gone; 47 tests). **Verified on his iPhone Nov 18** (words gone after
       leaving and reopening).
+      **Nov 22: iPhone not found over Wi-Fi** ("unable to connect after 30 seconds"; Xcode Devices: "Disconnected",
+      "Browsing on the local area network"). Cause: the iPhone had auto-updated to iOS 27.2.1 and the Mac had restarted.
+      Fix: cable once, Xcode > Window > Devices and Simulators until "Copying shared cache symbols" finishes; then
+      Wi-Fi works again (`flutter run` shows "(wireless)"). Restarting the iPhone or checking Local Network didn't help.
+      Mac cleanup same day (8 GB, it ran out of memory): Docker removed from login items (start by hand for gitian
+      builds), MacKeeper uninstalled, XQuartz background item off, desktop Stacks. Grass (bandwidth sharing) kept by choice.
       The new-wallet setup words screen still only covers itself.
       Nov 17: Anthony's stagenet test wallet's words were shown in a chat screenshot: test only, never for real coins.
       Lesson: copying a command from chat overwrites the clipboard (and the simulator's);
