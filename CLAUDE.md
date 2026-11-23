@@ -57,5 +57,4 @@ Never pass `--allow-mismatched-daemon-version` in tests. Details: PROJECT-LOG.md
   Explorer: prebuilt + deploy ready (PR #94), needs AWS console (ports 80/443) or another host.
 - AWS seed account: console login lost (not the project email); recover before Dec 14 (PROJECT-LOG.md).
 - Seals watch team (MAINNET-LAUNCH.md, panic page there too): GitHub protection DONE Nov 19 (4 public repos);
-  Seal Watch mainnet checks written Nov 20 (install on seeds Dec 14); Seal Code/Scout prompts in SEALS.md, schedule ~Dec 1.
-- Ghillie mobile: setup words lock on leave (PR #3, Nov 21); install with the next `flutter run`.
+  Seal Watch mainnet checks written Nov 20 (install on seeds Dec 14); Seal Code (Tue) and Seal Scout (Thu) scheduled weekly Nov 22; daily Dec 10-22.
