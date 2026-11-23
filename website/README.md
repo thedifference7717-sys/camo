@@ -5,20 +5,22 @@ Plain HTML/CSS/JS, no build step, no third-party requests (fonts are self-hosted
 visitors' IPs are not leaked to Google Fonts, analytics or CDNs.
 
 ```
-website/
+./
   index.html   opening screen: living camo field, scope, hidden CAMO; aim and click to enter
   intro.js     the camo field and scope (canvas, no dependencies)
   home.html    main site
+  stagenet.html  how to join the stagenet (seed IPs etc. are [PLACEHOLDERS] until servers exist)
+  mine.html    mining guide (pool address etc. are [PLACEHOLDERS])
   home.js      launch clock and headline decrypt
   styles.css   all styling (night-ops palette)
   assets/      logo, Ghillie icon, favicon, white paper PDF, fonts (SIL OFL, licenses alongside)
 ```
 
-Preview locally: `python3 -m http.server -d website 8080` then open http://localhost:8080.
+Preview locally: `python3 -m http.server 8080` then open http://localhost:8080.
 
 ## Hosting (free)
-The plan is a separate **public** repo (e.g. `thedifference7717-sys/camo-website`) so the site can go live
-while the code repo is private. Copy this folder's contents to that repo's root, then either:
+This repo is the public copy of `website/` from the CAMO code repo. Edit the site there and copy the
+changes here (or edit here and copy back) so the two stay in sync. To serve it, either:
 - **Cloudflare Pages**: connect the repo, framework "None", build command empty, output directory `/`.
 - **GitHub Pages**: Settings → Pages → deploy from branch `main`, folder `/ (root)`.
 
