@@ -38,7 +38,7 @@ make -j$(nproc) daemon simplewallet wallet_rpc_server
 ```
 Always `-DARCH=x86-64` (or armv8-a) for shared builds. Tests: unit tests (7 known failures: 6 DNS + portability_wallet;
 `select_outputs.gamma` flaky ~1%), `contrib/camo/regtest-demo.sh`, `tools/attack_block1.py`, `allocation-spend-test.sh`,
-`stagenet-rehearsal.sh`, `tools/test_camo_health.sh` (incl. offline rule tests), `tools/test_rig_agent.py` (RIG_PYTHON=python3.8 too).
+`stagenet-rehearsal.sh`, `tools/test_camo_health.sh` (incl. offline rule tests), `tools/test_double_spend.sh`, `tools/test_rig_agent.py` (RIG_PYTHON=python3.8 too).
 Never pass `--allow-mismatched-daemon-version` in tests. Details: PROJECT-LOG.md "Test".
 
 ## Repos and services (details in PROJECT-LOG.md)

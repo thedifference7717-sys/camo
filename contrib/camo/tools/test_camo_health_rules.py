@@ -45,5 +45,32 @@ expect('blocks dated 1 h ahead are WARN', ch.timestamp_finding(future, NOW, 10),
 slight = normal[:-1] + [{'difficulty': 1, 'timestamp': NOW + 300}]
 expect('5 min ahead is OK at 10 min', ch.timestamp_finding(slight, NOW, 10), None)
 
+# Double-spend watch (key images are what a spend consumes; a rival tx spending the same one = double-spend).
+def idx(blocks):
+    return {h: {'hash': 'b%d' % h, 'txs': txs} for h, txs in blocks.items()}
+
+
+old = idx({100: {'t_pay': ['ki_A']}, 101: {'t_other': ['ki_B']}, 102: {}})
+
+
+def levels(found):
+    return sorted((lvl, key.split(':')[0]) for lvl, key, _ in found)
+
+
+got = ch.double_spend_findings(old, idx({100: {'t_steal': ['ki_A']}, 101: {}, 102: {}}), 100, {'t_other'})
+expect('rival spend of the same key image is CRIT', levels(got)[-1] if got else None, ch.CRIT, 'doublespend')
+global_ds = [m for lvl, k, m in got if lvl == ch.CRIT]
+expect('the CRIT names the losing and winning tx', (ch.CRIT, global_ds[0]) if global_ds else None, ch.CRIT, 't_pay')
+expect('a tx back in the mempool is not an alarm', next(((l, m) for l, k, m in got if 't_other' in m), None), ch.OK,
+       'back in the mempool')
+got = ch.double_spend_findings(old, idx({100: {}, 101: {}, 102: {}}), 100, set())
+expect('a vanished tx not in the mempool is WARN', (got[0][0], got[0][2]) if got else None, ch.WARN, 'not in the mempool')
+got = ch.double_spend_findings(old, idx({100: {'t_pay': ['ki_A']}, 101: {'t_other': ['ki_B']}, 102: {}}), 100, set())
+expect('a reorg that keeps every tx is quiet', got or None, None)
+got = ch.double_spend_findings(old, idx({100: {'t_pay': ['ki_A']}, 101: {}, 102: {'t_other': ['ki_B']}}), 101, set())
+expect('a tx re-mined in a later block is quiet', got or None, None)
+got = ch.double_spend_findings(old, idx({100: {'t_steal': ['ki_A']}, 101: {'t_other': ['ki_B']}}), 101, set())
+expect('blocks before the reorg are not compared', got or None, None)
+
 print('ALL PASS' if not failed else '%d FAILED' % failed)
 sys.exit(1 if failed else 0)
