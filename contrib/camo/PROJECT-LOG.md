@@ -427,6 +427,10 @@ Work moves to Claude Code from here; that session stops editing this repo.
   miner saw 1,239.63 CAMO; 5 CAMO spent, friend received 5.0; all 3 nodes on one chain at 88. Same day: test_camo_health.sh
   (with the new Seal Watch rules) ALL PASS 3/3; block-1 header checked (amounts, three mainnet addresses, burn output
   proven with its public view key).
+  **Nov 23: Seal Watch double-spend watch** (camo_health.py remembers the last 60 blocks' txs and key images; after a
+  reorg a removed tx whose coins a different tx now spends is CRIT). Rule tests 17/17; test_double_spend.sh (real regtest
+  split: one coin paid to Bob on side A, to Carol on longer side B, reconnect) PASS with CRIT naming both txs;
+  test_camo_health.sh ALL PASS.
   **Nov 4 run 3 (with the 22 upstream fixes): PASS.** Block 1 allocation on a non-mining node; 3 nodes in sync at 20/35/86;
   node 2 caught up in ~1 s; block times first 20 avg 28 s, last 20 avg 65 s; miner saw 1,239.63 CAMO; 5 CAMO arrived.
   Same day, with the fix: `regtest-demo.sh` passed without the mismatch flag (Bob 12.345 CAMO, ring 16, amounts

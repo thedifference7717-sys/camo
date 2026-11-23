@@ -21,6 +21,10 @@ and reorganizations since the previous run (block hashes are remembered in a sma
 changes (difficulty up or down by --hashrate-jump within the last 120 blocks: a large miner arriving or leaving, the
 usual setup for a 51% attack); and block timestamps in the future (difficulty manipulation). Which miner found a
 block cannot be seen on CAMO (rewards go to one-time addresses), so miner share is watched through these signals.
+Double-spend watch: the transactions (and the key images they spend) of the last blocks are remembered; after a reorg,
+a transaction that vanished while another transaction spends the same key image is CRIT (the signature of a 51%
+double-spend: which txid lost, which won, at what height); a vanished transaction that isn't back in the mempool is
+WARN. Key images and txids are public chain data; nothing here identifies anyone.
 
 Exit code: 0 OK, 1 WARN, 2 CRIT (Nagios-style), so it also works from cron or a monitoring system. Read-only: it
 only calls get_info, get_block_header_by_height, get_block_headers_range and get_alternate_chains.
@@ -122,6 +126,55 @@ def timestamp_finding(headers, now, ahead_minutes, window=30):
     worst = max(h['timestamp'] for h in ahead) - now
     return WARN, ('%d of the last %d blocks are dated in the future (up to %s ahead): possible timestamp '
                   'manipulation' % (len(ahead), min(window, len(headers)), fmt_secs(worst)))
+
+
+INDEX_DEPTH = 60  # blocks whose transactions are remembered for the double-spend watch
+
+
+def block_txs(node, height):
+    """(block hash, {txid: [key images]}) for the block at `height`, coinbase excluded."""
+    blk = node.rpc('get_block', height=height)
+    txids = blk.get('tx_hashes') or []
+    txs = {}
+    if txids:
+        r = node._post('/get_transactions', {'txs_hashes': txids, 'decode_as_json': True})
+        for t in r.get('txs', []):
+            vin = json.loads(t['as_json']).get('vin', [])
+            txs[t['tx_hash']] = [i['key']['k_image'] for i in vin if 'key' in i]
+    return blk['block_header']['hash'], txs
+
+
+def double_spend_findings(old_index, new_index, changed_from, pool):
+    """Findings for transactions that a reorg removed. old_index/new_index: {height: {'hash': h, 'txs': {txid:
+    [key images]}}} before/after; changed_from: first height whose block was replaced; pool: txids in the mempool."""
+    old_txs = {}
+    for h, b in old_index.items():
+        if h >= changed_from:
+            for txid, kis in b['txs'].items():
+                old_txs[txid] = (h, kis)
+    new_txs, new_ki = set(), {}
+    for h, b in new_index.items():
+        if h >= changed_from:
+            for txid, kis in b['txs'].items():
+                new_txs.add(txid)
+                for ki in kis:
+                    new_ki[ki] = (txid, h)
+    found = []
+    for txid, (h, kis) in sorted(old_txs.items(), key=lambda x: x[1][0]):
+        if txid in new_txs:
+            continue
+        rival = next((new_ki[ki] for ki in kis if ki in new_ki and new_ki[ki][0] != txid), None)
+        if rival:
+            found.append((CRIT, 'doublespend:' + txid[:16],
+                          'POSSIBLE DOUBLE-SPEND: tx %s (was in block %d) was replaced by tx %s (block %d) spending '
+                          'the same coins; tell exchanges to freeze deposits of that tx' % (txid, h, rival[0], rival[1])))
+        elif txid in pool:
+            found.append((OK, 'requeued:' + txid[:16], 'tx %s left block %d in a reorg and is back in the mempool'
+                          % (txid, h)))
+        else:
+            found.append((WARN, 'vanished:' + txid[:16], 'tx %s left block %d in a reorg and is not in the mempool'
+                          % (txid, h)))
+    return found
 
 
 def check(args, nodes, state):
@@ -247,6 +300,32 @@ def check(args, nodes, state):
             add(lvl, 'reorg:%d' % changed[0], msg)
         else:
             lines.append(msg + ' (normal at this depth)')
+    # Double-spend watch: remember recent blocks' transactions; after a reorg, compare old and new.
+    old_index = {int(k): v for k, v in state.get('txindex', {}).items()}
+    new_index = {}
+    if headers and getattr(args, 'tx_watch', True):
+        try:
+            for h in sorted(now)[-INDEX_DEPTH:]:
+                prev = old_index.get(h)
+                if prev and prev['hash'] == now[h]:
+                    new_index[h] = prev
+                else:
+                    bh, txs = block_txs(best, h)
+                    new_index[h] = {'hash': bh, 'txs': txs}
+            if changed and old_index:
+                try:
+                    pool = set(best._post('/get_transaction_pool_hashes', {}).get('tx_hashes') or [])
+                except Exception:  # noqa: BLE001 (restricted node: treat as empty)
+                    pool = set()
+                for lvl, key, msg in double_spend_findings(old_index, new_index, changed[0], pool):
+                    if lvl:
+                        add(lvl, key, msg)
+                    else:
+                        lines.append(msg)
+        except Exception as e:  # noqa: BLE001
+            add(WARN, 'txwatch', '%s: double-spend watch could not read blocks (%s)' % (best.name, str(e)[:160]))
+            new_index = old_index
+        state = dict(state, txindex={str(k): v for k, v in new_index.items()})
     if now:
         state = dict(state, hashes={str(k): v for k, v in now.items()})
     return summarize(findings, lines, state)
@@ -300,6 +379,8 @@ def main():
                    help='warn if difficulty changes by this factor within 120 blocks (default 3; 0 = off)')
     p.add_argument('--future-minutes', type=float, default=10,
                    help='warn if recent blocks are dated this many minutes ahead of this clock (default 10)')
+    p.add_argument('--no-tx-watch', dest='tx_watch', action='store_false',
+                   help='skip the double-spend watch (it reads the last %d blocks\' transactions)' % INDEX_DEPTH)
     p.add_argument('--timeout', type=int, default=15, help='seconds per query (default 15)')
     p.add_argument('--state', help='state file (default ~/.camo-health/<network>.json)')
     p.add_argument('--json', action='store_true', help='print one JSON object instead of text')
