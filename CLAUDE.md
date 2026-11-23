@@ -45,11 +45,11 @@ Never pass `--allow-mismatched-daemon-version` in tests. Details: PROJECT-LOG.md
 - `camo` (public, this repo), website `camo-website` → camocoin.org (edit `website/` here, copy there).
 - Ghillie desktop `ghillie` (public, monero-gui fork, v0.9.0). Ghillie mobile `ghillie-mobile` (public, Flutter; real
   engine on iPhone; run on his iPhone with `cd ~/ghillie-mobile && git pull && ~/flutter/bin/flutter run --release -d iPhone`).
-- Private: `camo-explorer`, `camo-pool`, `camo-swap` (GPL-3.0 eigenwallet fork; BTC↔CAMO swaps work on regtest).
+- Private: `camo-explorer`, `camo-pool`, `camo-swap` (GPL-3.0 eigenwallet fork; BTC↔CAMO swaps work on regtest and stagenet).
 - Stagenet seeds: Google 34.171.218.2, AWS 3.134.132.214 (phone RPC 39749, ntfy alarm). Both go mainnet Dec 14.
 - Release key fingerprint `5F1A 8350 C748 BC43 AD19 2472 AF13 7B28 E11A 0857` (backups on 2 encrypted USB sticks).
 
-## Open items (Nov 19)
+## Open items (Nov 23)
 - Swaps: 42/42 docker tests + first stagenet swap PASSED Nov 18 (camo-taker, iMac build); fixed CAMO price option added
   Nov 21 (camo-swap PR #6, try it live on stagenet); before a real maker: outside review, lawyer.
 - BitcoinTalk [ANN] ~Dec 1; marketing posts await Anthony's approval (campaign doc in PROJECT-LOG.md).
