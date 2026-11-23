@@ -1,5 +1,5 @@
 <!-- DRAFT for Anthony to review. Not posted anywhere. Numbers match CLAUDE.md, ALLOCATION.md and the website.
-     Placeholders filled Nov 13; re-check numbers and links before posting. BitcoinTalk uses BBCode; this is plain text with light formatting
+     Placeholders filled Nov 13; progress section updated Nov 23; re-check numbers and links before posting. BitcoinTalk uses BBCode; this is plain text with light formatting
      that pastes cleanly, convert headings to [b]...[/b] if you like. -->
 
 # [ANN][CAMO] CAMO: private digital cash | RandomX CPU mining | fair launch Dec 15, 2026 18:00 UTC | public stagenet open
@@ -40,7 +40,15 @@ public view key are published so anyone can audit it: `Cdqd3jC3ocP6H1BX4G2Uis8qV
 view key `4846a9442b62be63ac514878acb76bc3ede0468f7f3d3b0710d191fcedf57f09`. Founder and marketing view keys are
 published at launch.
 
-## Timeline
+## Tested before launch (on the public stagenet and in the open)
+- **Reproducible releases**: two independent builders produced byte-identical binaries for Linux, Windows and macOS,
+  and the hash list is signed with the release key below. Anyone can rebuild and compare.
+- **Launch rehearsals**: block 1 allocation, nodes going offline and catching up, block times settling toward 60 s,
+  private sends, and an attack test that tries to change block 1 (every attempt rejected).
+- **BTC to CAMO atomic swaps**: the full swap suite passes, and a real swap ran on the stagenet against Bitcoin testnet.
+  Not live for real coins until an outside review.
+- **Ghillie for phones**: the real wallet runs on iPhone in testing (send, receive, Face ID, recovery sheet).
+
 - **Nov 10, 2026**: public stagenet opens (test network, worthless coins). Please help test.
 - **Dec 7, 2026**: signed release binaries and their hashes.
 - **Dec 15, 2026, 18:00 UTC**: mainnet. Anyone can mine from the first block. Every block must be dated 18:00 UTC or
@@ -52,8 +60,8 @@ published at launch.
 - **Later**: FCMP++ (every spend hidden among every coin on the chain) once it is audited and live on Monero.
 
 ## Mining
-Any modern CPU. Solo with your own node or Ghillie, solo with XMRig, or the official pool (1% fee to the public
-marketing wallet, PPLNS). Mining needs free memory: close heavy apps if your hash rate drops to 0. Guide: https://camocoin.org/mine.html
+Any modern CPU. Solo with your own node or Ghillie, solo with XMRig, or the official pool once it is online (1% fee to the
+public marketing wallet, PPLNS; link posted here). Mining needs free memory: close heavy apps if your hash rate drops to 0. Guide: https://camocoin.org/mine.html
 
 ## Join the stagenet
 Build from source or use the test binaries, start a node, make a test wallet, mine, send: https://camocoin.org/stagenet.html
