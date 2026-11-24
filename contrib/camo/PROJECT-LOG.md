@@ -443,6 +443,11 @@ Work moves to Claude Code from here; that session stops editing this repo.
   install-alarm.sh `--status seedN` sets it all up. Website status.html (live, text-only rendering, CSP connect-src
   raw.githubusercontent.com) + NETWORK STATUS footer link. Tests: rules 39/39, test_double_spend.sh 4/4 (HOLD on,
   sticky, cleared by file), publisher against a local repo 6/6, status page in Chromium (4 states, no HTML injection).
+  **LIVE Nov 24 on stagenet seed 2 (AWS)**: repo camo-status created (public, README with format/rule), deploy key
+  `seal-watch-seed2` (write); first push "seed2: OK" (stagenet, height 16917); camocoin.org/status.html shows ALL
+  CLEAR. Two installer bugs found and fixed (PR #108: restart on re-install; no RuntimeDirectoryPreserve with
+  DynamicUser). Seed 1 (Google) still to add (`--status seed1`, it has no alarm yet). Re-install both with
+  `--mainnet --status seedN` on Dec 14 (same deploy keys).
   **Nov 4 run 3 (with the 22 upstream fixes): PASS.** Block 1 allocation on a non-mining node; 3 nodes in sync at 20/35/86;
   node 2 caught up in ~1 s; block times first 20 avg 28 s, last 20 avg 65 s; miner saw 1,239.63 CAMO; 5 CAMO arrived.
   Same day, with the fix: `regtest-demo.sh` passed without the mismatch flag (Bob 12.345 CAMO, ring 16, amounts
