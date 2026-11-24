@@ -20,8 +20,9 @@ close; block times (last 30 and last 720 blocks) and time since the last block; 
 and reorganizations since the previous run (block hashes are remembered in a small state file); sudden hashrate
 changes (difficulty up or down by --hashrate-jump within the last 120 blocks: a large miner arriving or leaving, the
 usual setup for a 51% attack); block bursts (far more blocks arriving between two runs than chance allows, e.g.
-10 in 2 minutes: a selfish miner releasing hidden blocks, or a flood of new hashrate; --burst-blocks); and block timestamps in the future (difficulty manipulation). Which miner
-found a block cannot be seen on CAMO (rewards go to one-time addresses), so miner share is watched through these signals.
+10 in 2 minutes: a selfish miner releasing hidden blocks, or a flood of new hashrate; --burst-blocks); and block
+timestamps in the future (difficulty manipulation). Which miner found a block cannot be seen on CAMO (rewards go to
+one-time addresses), so miner share is watched through these signals.
 Double-spend watch: the transactions (and the key images they spend) of the last blocks are remembered; after a reorg,
 a transaction that vanished while another transaction spends the same key image is CRIT (the signature of a 51%
 double-spend: which txid lost, which won, at what height); a vanished transaction that isn't back in the mempool is
