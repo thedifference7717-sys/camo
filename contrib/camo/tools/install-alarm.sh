@@ -38,7 +38,6 @@ StateDirectory=camo-alarm
 ExecStart=/usr/bin/python3 /usr/local/bin/camo_health.py ${NET} --min-peers 1 --watch 120 --state /var/lib/camo-alarm/state.json --alert-cmd "curl -s -H 'Title: CAMO alarm ($NAME)' -d @- https://ntfy.sh/$TOPIC" $FEED $NAME=http://127.0.0.1:$PORT
 RuntimeDirectory=camo-status
 RuntimeDirectoryMode=0755
-RuntimeDirectoryPreserve=yes
 Restart=always
 RestartSec=30
 NoNewPrivileges=yes
@@ -50,7 +49,8 @@ PrivateTmp=yes
 WantedBy=multi-user.target
 EOF
 systemctl daemon-reload
-systemctl enable --now camo-alarm
+systemctl enable camo-alarm
+systemctl restart camo-alarm   # restart, so a re-install takes the new settings
 curl -s -H "Title: CAMO alarm ($NAME)" -d "Alarm installed: watching the ${NET#--} node every 2 minutes." "https://ntfy.sh/$TOPIC" >/dev/null
 sleep 3
 systemctl --no-pager --lines=5 status camo-alarm | head -12
