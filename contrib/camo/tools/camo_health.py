@@ -19,18 +19,21 @@ pays the 640,000 CAMO allocation; all nodes agree on the block hash at the lowes
 close; block times (last 30 and last 720 blocks) and time since the last block; competing chains seen by the nodes,
 and reorganizations since the previous run (block hashes are remembered in a small state file); sudden hashrate
 changes (difficulty up or down by --hashrate-jump within the last 120 blocks: a large miner arriving or leaving, the
-usual setup for a 51% attack); and block timestamps in the future (difficulty manipulation). Which miner found a
-block cannot be seen on CAMO (rewards go to one-time addresses), so miner share is watched through these signals.
+usual setup for a 51% attack); block bursts (far more blocks arriving between two runs than chance allows, e.g.
+10 in 2 minutes: a selfish miner releasing hidden blocks, or a flood of new hashrate; --burst-blocks); and block timestamps in the future (difficulty manipulation). Which miner
+found a block cannot be seen on CAMO (rewards go to one-time addresses), so miner share is watched through these signals.
 Double-spend watch: the transactions (and the key images they spend) of the last blocks are remembered; after a reorg,
 a transaction that vanished while another transaction spends the same key image is CRIT (the signature of a 51%
 double-spend: which txid lost, which won, at what height); a vanished transaction that isn't back in the mempool is
 WARN. Key images and txids are public chain data; nothing here identifies anyone.
 
 Exit code: 0 OK, 1 WARN, 2 CRIT (Nagios-style), so it also works from cron or a monitoring system. Read-only: it
-only calls get_info, get_block_header_by_height, get_block_headers_range and get_alternate_chains.
+only calls get_info, get_block_header_by_height, get_block_headers_range, get_alternate_chains and, for the
+double-spend watch, get_block, get_transactions and get_transaction_pool_hashes.
 """
 import argparse
 import json
+import math
 import os
 import subprocess
 import sys
@@ -177,6 +180,37 @@ def double_spend_findings(old_index, new_index, changed_from, pool):
     return found
 
 
+def poisson_tail(k, lam):
+    """P(X >= k) for X ~ Poisson(lam)."""
+    if k <= 0:
+        return 1.0
+    term = total = math.exp(-lam)
+    for i in range(1, k):
+        term *= lam / i
+        total += term
+    return max(0.0, 1.0 - total)
+
+
+def burst_finding(prev, now, height, min_blocks, odds=1e-4):
+    """(level, message) if more blocks arrived since the previous run than chance allows, else None.
+    prev: {'t': unix time, 'height': h} remembered by the previous run (arrival times, not miner timestamps,
+    which a miner sets itself). A burst means a miner released blocks it had kept hidden (selfish mining) or a
+    sudden flood of hashrate that difficulty has not caught up with yet."""
+    if not prev or min_blocks <= 0:
+        return None
+    elapsed, new = now - prev['t'], height - prev['height']
+    if elapsed <= 0 or elapsed > 3 * 3600 or new < min_blocks:
+        return None
+    lam = elapsed / TARGET
+    p = poisson_tail(new, lam)
+    if p >= odds:
+        return None
+    return WARN, ('block burst: %d blocks arrived in %s (about %.0f expected; chance by luck below 1 in %s): a miner '
+                  'may have released hidden blocks (selfish mining) or a large miner just arrived; watch for reorgs '
+                  'and hold large deposits a little longer' % (new, fmt_secs(elapsed), lam,
+                                                              '{:,}'.format(int(round(1 / odds)))))
+
+
 def check(args, nodes, state):
     """Run all checks once. Returns (level, findings, report_lines, new_state)."""
     port, genesis, nettype = NETS[args.net]
@@ -270,7 +304,10 @@ def check(args, nodes, state):
         if a30 and len(ts) > 30 and not (TARGET / 3 <= a30 <= TARGET * 3):
             add(WARN, 'blocktime', 'last 30 blocks averaged %s (target 60s); difficulty is still adjusting'
                 % fmt_secs(a30))
-        for key, found in (('hashrate', hashrate_finding(headers, args.hashrate_jump)),
+        synced = not (bi.get('busy_syncing') or not bi.get('synchronized', True))
+        burst = burst_finding(state.get('arrival'), time.time(), top, args.burst_blocks) if synced else None
+        state = dict(state, arrival={'t': time.time(), 'height': top})
+        for key, found in (('burst', burst), ('hashrate', hashrate_finding(headers, args.hashrate_jump)),
                            ('timestamps', timestamp_finding(headers, time.time(), args.future_minutes))):
             if found:
                 add(found[0], key, found[1])
@@ -379,6 +416,9 @@ def main():
                    help='warn if difficulty changes by this factor within 120 blocks (default 3; 0 = off)')
     p.add_argument('--future-minutes', type=float, default=10,
                    help='warn if recent blocks are dated this many minutes ahead of this clock (default 10)')
+    p.add_argument('--burst-blocks', type=int,
+                   help='warn when at least this many blocks arrive between runs far faster than chance allows '
+                        '(default 6; 0 = off; off on regtest, which mines instantly)')
     p.add_argument('--no-tx-watch', dest='tx_watch', action='store_false',
                    help='skip the double-spend watch (it reads the last %d blocks\' transactions)' % INDEX_DEPTH)
     p.add_argument('--timeout', type=int, default=15, help='seconds per query (default 15)')
@@ -387,6 +427,8 @@ def main():
     p.add_argument('--watch', type=int, metavar='SECONDS', help='repeat every SECONDS; alert only on changes')
     p.add_argument('--alert-cmd', help='shell command run with the alert text on stdin (WARN/CRIT and recovery)')
     args = p.parse_args()
+    if args.burst_blocks is None:
+        args.burst_blocks = 0 if args.net == 'regtest' else 6
     state_path = args.state or os.path.expanduser('~/.camo-health/%s.json' % args.net)
     nodes = [Node(s, NETS[args.net][0], args.timeout) for s in args.nodes]
 

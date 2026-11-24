@@ -431,6 +431,10 @@ Work moves to Claude Code from here; that session stops editing this repo.
   reorg a removed tx whose coins a different tx now spends is CRIT). Rule tests 17/17; test_double_spend.sh (real regtest
   split: one coin paid to Bob on side A, to Carol on longer side B, reconnect) PASS with CRIT naming both txs;
   test_camo_health.sh ALL PASS.
+  **Nov 24: Seal Watch block-burst (selfish-mining) alarm**: blocks arriving between runs far faster than chance
+  (Poisson odds below 1 in 10,000, at least 6 blocks; with --watch 120 about 10 blocks in 2 min) is WARN; off on regtest.
+  Rule tests 27/27; test_camo_health.sh ALL PASS (new live 20-block burst case); test_double_spend.sh PASS.
+  White paper: Seals section added (Security model), PDF re-exported to docs/ and the website.
   **Nov 4 run 3 (with the 22 upstream fixes): PASS.** Block 1 allocation on a non-mining node; 3 nodes in sync at 20/35/86;
   node 2 caught up in ~1 s; block times first 20 avg 28 s, last 20 avg 65 s; miner saw 1,239.63 CAMO; 5 CAMO arrived.
   Same day, with the fix: `regtest-demo.sh` passed without the mismatch flag (Bob 12.345 CAMO, ring 16, amounts
