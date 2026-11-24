@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Copyright (c) 2026, The CAMO Project
 # BSD-3-Clause, see LICENSE.
-"""Offline tests for camo_health.py's hashrate and timestamp checks (regtest runs at fixed difficulty, so these use
+"""Offline tests for camo_health.py's hashrate, timestamp, double-spend and block-burst checks (regtest runs at fixed difficulty, so these use
 synthetic block headers). Run: python3 contrib/camo/tools/test_camo_health_rules.py"""
 import importlib.util
 import os
@@ -71,6 +71,20 @@ got = ch.double_spend_findings(old, idx({100: {'t_pay': ['ki_A']}, 101: {}, 102:
 expect('a tx re-mined in a later block is quiet', got or None, None)
 got = ch.double_spend_findings(old, idx({100: {'t_steal': ['ki_A']}, 101: {'t_other': ['ki_B']}}), 101, set())
 expect('blocks before the reorg are not compared', got or None, None)
+
+# Block bursts (selfish mining): arrivals between runs, from the remembered {'t', 'height'}.
+prev = {'t': NOW - 120, 'height': 1000}
+expect('normal 2 blocks in 2 minutes is OK', ch.burst_finding(prev, NOW, 1002, 6), None)
+expect('lucky 6 blocks in 2 minutes is OK', ch.burst_finding(prev, NOW, 1006, 6), None)
+expect('12 blocks in 2 minutes is WARN', ch.burst_finding(prev, NOW, 1012, 6), ch.WARN, 'selfish mining')
+expect('message gives counts and time', ch.burst_finding(prev, NOW, 1012, 6), ch.WARN, '12 blocks arrived in 2m00s')
+expect('first run (no memory) is OK', ch.burst_finding(None, NOW, 1012, 6), None)
+expect('0 turns it off', ch.burst_finding(prev, NOW, 1050, 0), None)
+expect('60 blocks in an hour is OK', ch.burst_finding({'t': NOW - 3600, 'height': 1000}, NOW, 1060, 6), None)
+expect('100 blocks in an hour is WARN', ch.burst_finding({'t': NOW - 3600, 'height': 1000}, NOW, 1100, 6), ch.WARN)
+expect('catching up after a long gap is OK', ch.burst_finding({'t': NOW - 86400, 'height': 1000}, NOW, 3000, 6),
+       None)
+expect('a reorg to a shorter tip is OK', ch.burst_finding(prev, NOW, 995, 6), None)
 
 print('ALL PASS' if not failed else '%d FAILED' % failed)
 sys.exit(1 if failed else 0)

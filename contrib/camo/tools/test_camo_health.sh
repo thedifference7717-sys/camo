@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Self-test for camo_health.py: three local regtest nodes, then a forced chain split, a reorg, a stall, the wrong
-# network, a dead node, and the SSH transport (through a stand-in ssh that runs the command locally). Starts with the
-# offline hashrate/timestamp rule tests (test_camo_health_rules.py; regtest runs at fixed difficulty).
+# network, a dead node, a block burst, and the SSH transport (through a stand-in ssh that runs the command locally). Starts with the
+# offline rule tests (test_camo_health_rules.py; regtest runs at fixed difficulty).
 #   bash contrib/camo/tools/test_camo_health.sh [build/release/bin]
 set -uo pipefail
 HERE=$(cd "$(dirname "$0")" && pwd)
@@ -13,7 +13,7 @@ pass(){ log "PASS: $*"; }
 fail(){ log "FAIL: $*"; FAILS=$((FAILS+1)); }
 cleanup(){ for p in "$T"/*.pid; do [ -f "$p" ] && kill "$(cat "$p")" 2>/dev/null; done; sleep 2; rm -rf "$T"; }
 trap cleanup EXIT
-python3 "$HERE/test_camo_health_rules.py" | sed "s/^/  rules: /" && pass "hashrate and timestamp rules (10 cases)" || fail "hashrate and timestamp rules"
+python3 "$HERE/test_camo_health_rules.py" | sed "s/^/  rules: /" && pass "offline rules (27 cases)" || fail "offline rules"
 
 rpc(){ curl -s "127.0.0.1:$1/json_rpc" -d "{\"jsonrpc\":\"2.0\",\"id\":0,\"method\":\"$2\",\"params\":${3:-{\}}}"; }
 height(){ curl -s "127.0.0.1:$1/get_info" | python3 -c 'import sys,json;print(json.load(sys.stdin)["height"])'; }
@@ -61,16 +61,21 @@ expect "wrong network is CRIT" 2 "expected stagenet"
 mkdir -p "$T/fakebin"; printf '#!/bin/sh\nfor a; do last=$a; done\nexec sh -c "$last"\n' > "$T/fakebin/ssh"; chmod +x "$T/fakebin/ssh"
 PATH="$T/fakebin:$PATH" run ssh seed=ssh://root@example.invalid:28081; expect "ssh:// transport" 0 "seed +height"
 
+# Block burst (selfish-mining release): 20 blocks between two runs seconds apart (burst watch is off on regtest by default)
+run burst --min-peers 1 --burst-blocks 6 a=http://127.0.0.1:28081; expect "burst watch quiet without a burst" 0 "health: OK"
+mine 28081 20; wait_h 28091 41; wait_h 28101 41
+run burst --min-peers 1 --burst-blocks 6 a=http://127.0.0.1:28081; expect "20-block burst is WARN" 1 "WARN: block burst: 20 blocks"
+
 # Chain split: isolate c, mine on both sides
 stop c; start c 28101 28100 --offline
-mine 28101 3; mine 28081 5; wait_h 28091 26
+mine 28101 3; mine 28081 5; wait_h 28091 46
 run c c=http://127.0.0.1:28101               # remember c's own 3 blocks in its state file
-for h in 21 22 23; do rpc 28101 get_block "{\"height\":$h}" | python3 -c 'import sys,json;print(json.load(sys.stdin)["result"]["blob"])' >> "$T/cblobs"; done
+for h in 41 42 43; do rpc 28101 get_block "{\"height\":$h}" | python3 -c 'import sys,json;print(json.load(sys.stdin)["result"]["blob"])' >> "$T/cblobs"; done
 run all $NODES;                            expect "chain split is CRIT" 2 "CHAIN SPLIT"
 grep -q "running with --offline" "$T/out" && pass "offline node noticed" || fail "offline node not noticed"
 
 # Reconnect c: it reorganizes onto the longer chain (3 blocks replaced)
-stop c; start c 28101 28100 $A:28080 $A:28090; wait_h 28101 26; sleep 3
+stop c; start c 28101 28100 $A:28080 $A:28090; wait_h 28101 46; sleep 3
 run c c=http://127.0.0.1:28101;            expect "3-block reorg is WARN" 1 "reorganization since last run: 3 block"
 run all $NODES
 grep -q "CHAIN SPLIT" "$T/out" && fail "split still reported after reorg" || pass "no split after reconnect"
