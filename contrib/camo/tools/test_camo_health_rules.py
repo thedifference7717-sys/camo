@@ -112,5 +112,8 @@ expect('a deep (CRIT) reorg is HOLD', (0, s8[0]) if s8[0] == 'HOLD' else None, 0
 s9 = feed([], s6[3], NOW + 31 * 60)
 expect('CAUTION clears after 30 minutes', (0, s9[0]) if s9[0] == 'OK' else None, 0)
 
+s10 = feed([(ch.CRIT, 'drill', 'DRILL: a test')])
+expect('a drill is HOLD, labeled', (0, s10[1][0]) if s10[0] == 'HOLD' else None, 0, 'DRILL')
+
 print('ALL PASS' if not failed else '%d FAILED' % failed)
 sys.exit(1 if failed else 0)
