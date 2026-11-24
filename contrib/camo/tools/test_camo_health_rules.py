@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Copyright (c) 2026, The CAMO Project
 # BSD-3-Clause, see LICENSE.
-"""Offline tests for camo_health.py's hashrate, timestamp, double-spend and block-burst checks (regtest runs at fixed difficulty, so these use
+"""Offline tests for camo_health.py's hashrate, timestamp, double-spend, block-burst and status-feed checks (regtest runs at fixed difficulty, so these use
 synthetic block headers). Run: python3 contrib/camo/tools/test_camo_health_rules.py"""
 import importlib.util
 import os
@@ -85,6 +85,32 @@ expect('100 blocks in an hour is WARN', ch.burst_finding({'t': NOW - 3600, 'heig
 expect('catching up after a long gap is OK', ch.burst_finding({'t': NOW - 86400, 'height': 1000}, NOW, 3000, 6),
        None)
 expect('a reorg to a shorter tip is OK', ch.burst_finding(prev, NOW, 995, 6), None)
+
+# Public status feed: OK / CAUTION / HOLD, sticky.
+def feed(findings, st=None, t=NOW, hours=2.0):
+    return ch.feed_status(findings, st, t, hours)
+DS = (ch.CRIT, 'doublespend:abcd', 'POSSIBLE DOUBLE-SPEND: tx a ... replaced by tx b')
+s0 = feed([])
+expect('quiet network is OK', (0, s0[0]) if s0[0] == 'OK' and not s0[1] else None, 0)
+s1 = feed([DS])
+expect('double-spend is HOLD', (0, s1[0]) if s1[0] == 'HOLD' else None, 0)
+expect('HOLD says why', (0, s1[1][0]) if s1[1] else None, 0, 'DOUBLE-SPEND')
+s2 = feed([], s1[3], NOW + 120)
+expect('HOLD stays on the next quiet run', (0, s2[0]) if s2[0] == 'HOLD' else None, 0)
+s3 = feed([], s2[3], NOW + 2 * 3600 + 1)
+expect('HOLD clears after 2 hours', (0, s3[0]) if s3[0] == 'OK' else None, 0)
+s4 = feed([(ch.CRIT, 'down:seed1', 'seed1: not answering')])
+expect('a dead node is not HOLD', (0, s4[0]) if s4[0] == 'OK' else None, 0)
+s5 = feed([(ch.CRIT, 'stall', 'no new block for 40m')])
+expect('a stall is not HOLD', (0, s5[0]) if s5[0] == 'OK' else None, 0)
+s6 = feed([(ch.WARN, 'burst', 'block burst: 12 blocks')])
+expect('a block burst is CAUTION', (0, s6[0]) if s6[0] == 'CAUTION' else None, 0)
+s7 = feed([(ch.WARN, 'reorg:500', 'reorganization: 4 blocks')], s1[3], NOW + 60)
+expect('HOLD outranks a later CAUTION', (0, s7[0]) if s7[0] == 'HOLD' else None, 0)
+s8 = feed([(ch.CRIT, 'reorg:500', 'reorganization: 12 blocks')])
+expect('a deep (CRIT) reorg is HOLD', (0, s8[0]) if s8[0] == 'HOLD' else None, 0)
+s9 = feed([], s6[3], NOW + 31 * 60)
+expect('CAUTION clears after 30 minutes', (0, s9[0]) if s9[0] == 'OK' else None, 0)
 
 print('ALL PASS' if not failed else '%d FAILED' % failed)
 sys.exit(1 if failed else 0)

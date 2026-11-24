@@ -369,6 +369,56 @@ def check(args, nodes, state):
     return summarize(findings, lines, state)
 
 
+# Public status feed (--status-file): one small JSON file per seed that exchanges, pools and swap makers can poll.
+#   HOLD     stop crediting CAMO deposits: a possible double-spend, a chain split or a deep (CRIT) reorg/competing chain
+#   CAUTION  wait for extra confirmations: a reorg, competing chain, block burst, hashrate swing, odd timestamps or a
+#            transaction that vanished in a reorg
+#   OK       nothing unusual
+# Both are sticky (HOLD for --hold-hours, CAUTION for 30 minutes after the last such finding), so a one-off alarm
+# doesn't clear on the next run. Nothing in it identifies anyone: txids and heights are public chain data.
+HOLD_ON = ('doublespend:', 'split', 'reorg:', 'alt:')        # at CRIT level
+CAUTION_ON = ('doublespend:', 'split', 'reorg:', 'alt:', 'burst', 'hashrate', 'timestamps', 'vanished:')
+FEED = {0: 'OK', 1: 'CAUTION', 2: 'HOLD'}
+
+
+def feed_status(findings, feed_state, now, hold_hours=2.0, caution_minutes=30.0):
+    """(status 'OK'|'CAUTION'|'HOLD', reasons [str], until unix time or None, new feed_state). feed_state remembers
+    the active HOLD/CAUTION: {'hold_until', 'hold_reasons', 'caution_until', 'caution_reasons'}."""
+    st = dict(feed_state or {})
+    hold = [m for lv, k, m in findings if lv >= CRIT and k.startswith(HOLD_ON)]
+    caution = [m for lv, k, m in findings if lv >= WARN and k.startswith(CAUTION_ON)]
+    if hold:
+        st['hold_until'] = now + hold_hours * 3600
+        st['hold_reasons'] = sorted(set(st.get('hold_reasons', []) if st.get('hold_until', 0) > now else []) |
+                                    set(hold))[-10:]
+    if caution:
+        st['caution_until'] = now + caution_minutes * 60
+        st['caution_reasons'] = sorted(set(caution))[-10:]
+    if st.get('hold_until', 0) > now:
+        return 'HOLD', st['hold_reasons'], st['hold_until'], st
+    if st.get('caution_until', 0) > now:
+        return 'CAUTION', st['caution_reasons'], st['caution_until'], st
+    return 'OK', [], None, {}
+
+
+def write_status_file(path, name, net, status, reasons, until, lines, now):
+    doc = {
+        'feed': 'camo-seal-watch/1', 'network': net, 'seed': name, 'status': status,
+        'updated': int(now), 'updated_utc': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(now)),
+        'until': int(until) if until else None, 'reasons': reasons,
+        'height': next((int(l.split()[2]) for l in lines if len(l.split()) > 2 and l.split()[1] == 'height'), None),
+        'advice': {'OK': 'normal', 'CAUTION': 'wait for extra confirmations (30+) before crediting deposits',
+                   'HOLD': 'do not credit CAMO deposits until this clears'}[status],
+    }
+    os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
+    tmp = path + '.tmp'
+    with open(tmp, 'w') as f:
+        json.dump(doc, f, indent=1)
+        f.write('\n')
+    os.replace(tmp, path)
+    return doc
+
+
 def summarize(findings, lines, state):
     level = max((f[0] for f in findings), default=OK)
     return level, findings, lines, state
@@ -422,6 +472,14 @@ def main():
                         '(default 6; 0 = off; off on regtest, which mines instantly)')
     p.add_argument('--no-tx-watch', dest='tx_watch', action='store_false',
                    help='skip the double-spend watch (it reads the last %d blocks\' transactions)' % INDEX_DEPTH)
+    p.add_argument('--status-file', help='also write the public status feed (OK/CAUTION/HOLD JSON) to this file')
+    p.add_argument('--status-name', default='seed', help='this seed\'s name in the status feed (default seed)')
+    p.add_argument('--hold-hours', type=float, default=2,
+                   help='HOLD stays on this long after the last critical finding (default 2)')
+    p.add_argument('--clear-hold', action='store_true',
+                   help='clear an active HOLD/CAUTION now (after a person has checked the network), then run')
+    p.add_argument('--clear-hold-file', metavar='PATH',
+                   help='with --watch: when this file appears (e.g. sudo touch it), clear HOLD/CAUTION and delete it')
     p.add_argument('--timeout', type=int, default=15, help='seconds per query (default 15)')
     p.add_argument('--state', help='state file (default ~/.camo-health/<network>.json)')
     p.add_argument('--json', action='store_true', help='print one JSON object instead of text')
@@ -436,7 +494,26 @@ def main():
     last_keys = None
     while True:
         state = load_state(state_path)
+        if args.clear_hold_file and os.path.exists(args.clear_hold_file):
+            args.clear_hold = True
+            try:
+                os.remove(args.clear_hold_file)
+            except OSError as e:
+                print('could not remove %s: %s' % (args.clear_hold_file, e), file=sys.stderr)
+        cleared = args.clear_hold
+        if cleared:
+            state.pop('feed', None)
+            args.clear_hold = False
         level, findings, lines, state = check(args, nodes, state)
+        if cleared:
+            lines.append('status feed: HOLD/CAUTION cleared by hand')
+        if args.status_file:
+            now = time.time()
+            fs, reasons, until, feed = feed_status(findings, state.get('feed'), now, args.hold_hours)
+            state = dict(state, feed=feed)
+            write_status_file(args.status_file, args.status_name, args.net, fs, reasons, until, lines, now)
+            lines.append('status feed: %s%s' % (fs, ' until %s UTC' % time.strftime('%H:%M', time.gmtime(until))
+                                                if until else ''))
         save_state(state_path, state)
         stamp = time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime())
         text = '\n'.join(['CAMO %s health: %s  (%s)' % (args.net, LEVEL[level], stamp)] + lines +
