@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CAMO network status</title>
+<meta name="description" content="Live CAMO network status from the Seals watch team: all clear, caution or hold deposits, with a machine-readable feed for exchanges and pools.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; font-src 'self'; style-src 'self'; script-src 'self'; connect-src https://raw.githubusercontent.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0B0F0C">
+<link rel="icon" href="assets/favicon.ico" sizes="any">
+<link rel="icon" href="assets/camo-logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+<script src="status.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#start">Skip to content</a>
+<div class="grid-bg">
+
+<header class="topbar">
+  <nav class="wrap nav" aria-label="Main">
+    <a class="brand" href="home.html">
+      <img src="assets/camo-logo.svg" alt="" width="36" height="36">
+      <span>CAMO</span>
+    </a>
+    <div class="nav-links">
+      <a href="home.html">HOME</a>
+      <a href="stagenet.html">STAGENET</a>
+      <a href="mine.html">MINING GUIDE</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+    <a class="btn btn-solid btn-sm" href="stagenet.html">JOIN STAGENET</a>
+  </nav>
+</header>
+
+<main class="wrap doc" id="start">
+  <p class="kicker">// THE SEALS · LIVE</p>
+  <h1>Network status</h1>
+  <p class="lede">The Seals watch the CAMO network around the clock from its seed nodes. If they see a possible attack, this page turns to HOLD by itself within minutes, so exchanges and pools can pause deposits before anyone is cheated.</p>
+
+  <section class="status-box st-unknown" id="status" aria-live="polite">
+    <p class="status-word" id="status-word">CHECKING…</p>
+    <p id="status-text">Reading the Seal Watch feed.</p>
+    <ul class="seed-list" id="seeds"></ul>
+    <p class="fine" id="checked"><noscript>This page needs JavaScript to read the live feed. The raw feed is linked below.</noscript></p>
+  </section>
+
+  <section class="doc-sec">
+    <h2>What the three states mean</h2>
+    <dl class="faq">
+      <dt>ALL CLEAR</dt>
+      <dd>Nothing unusual. Normal confirmations are enough.</dd>
+      <dt>CAUTION</dt>
+      <dd>Something unusual, like a chain reorganization, a burst of blocks or a big hashrate swing. Often harmless, but services should wait for 30 or more confirmations. It clears by itself 30 minutes after the last sign.</dd>
+      <dt>HOLD DEPOSITS</dt>
+      <dd>A possible attack: the same coins spent twice, a chain split or a deep reorganization. Services should stop crediting CAMO deposits. It stays on for at least 2 hours, or until the team has checked the network. Coins already in your own wallet are not affected, and the chain itself keeps running: nobody can pause CAMO.</dd>
+    </dl>
+  </section>
+
+  <section class="doc-sec">
+    <h2>For exchanges, pools and swap services</h2>
+    <p>Each seed publishes a small JSON file. Poll both every few minutes:</p>
+<pre><code>https://raw.githubusercontent.com/thedifference7717-sys/camo-status/main/seed1.json
+https://raw.githubusercontent.com/thedifference7717-sys/camo-status/main/seed2.json</code></pre>
+    <p>Fields: <code>status</code> (<code>OK</code>, <code>CAUTION</code> or <code>HOLD</code>), <code>updated</code> (unix time), <code>until</code>, <code>reasons</code>, <code>height</code>, <code>network</code>. Suggested rule: if either file says <code>HOLD</code>, pause crediting deposits; if either says <code>CAUTION</code>, or neither has updated in 45 minutes, require extra confirmations. Run your own CAMO node as well: the feed is an early warning, not a replacement for your own checks.</p>
+    <p>The feed holds only public chain data (heights, transaction IDs). It never identifies anyone. The seeds can write to the status repository and nowhere else.</p>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-in">
+    <div class="stack-xs">
+      <div class="brand brand-sm"><img src="assets/camo-logo.svg" alt="" width="28" height="28"><span>CAMO</span></div>
+      <p class="fine">Open-source software built on Monero. Not an offer to sell anything and not investment advice. Follow the laws where you live.</p>
+    </div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="home.html">HOME</a>
+      <a href="stagenet.html">STAGENET</a>
+      <a href="faq.html">FAQ</a>
+      <a href="status.html">NETWORK STATUS</a>
+      <a href="verify.html">VERIFY DOWNLOADS</a>
+      <a href="assets/CAMO-White-Paper.pdf">WHITE PAPER</a>
+      <a href="https://github.com/thedifference7717-sys/camo" rel="noopener">GITHUB</a>
+      <a href="https://x.com/CAMO_Coin" rel="noopener">X · @CAMO_Coin</a>
+    </nav>
+  </div>
+</footer>
+
+</div>
+</body>
+</html>

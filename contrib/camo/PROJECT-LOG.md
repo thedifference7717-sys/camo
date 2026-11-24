@@ -435,6 +435,14 @@ Work moves to Claude Code from here; that session stops editing this repo.
   (Poisson odds below 1 in 10,000, at least 6 blocks; with --watch 120 about 10 blocks in 2 min) is WARN; off on regtest.
   Rule tests 27/27; test_camo_health.sh ALL PASS (new live 20-block burst case); test_double_spend.sh PASS.
   White paper: Seals section added (Security model), PDF re-exported to docs/ and the website.
+  **Nov 24: public status feed (the Seals' HOLD flag)**: camo_health.py --status-file writes OK / CAUTION / HOLD JSON
+  (HOLD = possible double-spend, split, deep CRIT reorg/competing chain, sticky 2 h; CAUTION = reorg, burst,
+  hashrate, timestamps, vanished tx, sticky 30 min; clear by hand: `sudo touch /run/camo-status/clear-hold`).
+  publish_status.sh pushes it (on change + 30 min heartbeat) to the public repo camo-status (Anthony creates it;
+  seeds get write-only deploy keys there, never to camo/website): seed1 = Google, seed2 = AWS.
+  install-alarm.sh `--status seedN` sets it all up. Website status.html (live, text-only rendering, CSP connect-src
+  raw.githubusercontent.com) + NETWORK STATUS footer link. Tests: rules 39/39, test_double_spend.sh 4/4 (HOLD on,
+  sticky, cleared by file), publisher against a local repo 6/6, status page in Chromium (4 states, no HTML injection).
   **Nov 4 run 3 (with the 22 upstream fixes): PASS.** Block 1 allocation on a non-mining node; 3 nodes in sync at 20/35/86;
   node 2 caught up in ~1 s; block times first 20 avg 28 s, last 20 avg 65 s; miner saw 1,239.63 CAMO; 5 CAMO arrived.
   Same day, with the fix: `regtest-demo.sh` passed without the mismatch flag (Bob 12.345 CAMO, ring 16, amounts

@@ -229,3 +229,13 @@ pre code{background:none;border:0;padding:0;font-size:13px;color:var(--text);whi
 .pay .label { margin-top: 26px !important; margin-bottom: 6px !important; }
 .pay #copy { background: transparent; color: var(--text); border: 1px solid var(--olive-dim); cursor: pointer; }
 .pay .note { margin-top: 22px !important; }
+
+/* network status (status.html) */
+.status-box{margin:32px 0;padding:24px;border:1px solid var(--line-2);border-left-width:6px;background:var(--panel);display:flex;flex-direction:column;gap:12px;max-width:760px}
+.status-word{font-family:var(--display);font-weight:700;font-size:clamp(30px,5vw,44px);letter-spacing:.06em}
+.st-ok{border-left-color:var(--olive)}.st-ok .status-word{color:var(--olive)}
+.st-caution{border-left-color:var(--amber)}.st-caution .status-word{color:var(--amber)}
+.st-hold{border-left-color:#E5534B}.st-hold .status-word{color:#E5534B}
+.st-unknown{border-left-color:var(--text-3)}.st-unknown .status-word{color:var(--text-3)}
+.seed-list{margin:0;padding-left:18px;font-family:var(--mono);font-size:13px;color:var(--text-2);line-height:1.7}
+.seed-list ul{padding-left:18px;color:var(--text-3)}

@@ -88,7 +88,8 @@ sudo bash deploy-seed-node.sh --binary ~/camod --limit-up 4           # Google (
 ```
 (No `--stagenet`: this rewrites `/etc/default/camod` for mainnet; mainnet data lives beside the stagenet data.)
 - [ ] AWS security group: add tcp 19749 "CAMO phone wallets" (19740 is already open on both).
-- [ ] Phone alarm: `sudo bash install-alarm.sh <ntfy topic> --mainnet` on the AWS seed.
+- [ ] Phone alarm + status feed: `sudo bash install-alarm.sh <ntfy topic> --mainnet --status seed2` on the AWS seed
+  (Google seed: `--status seed1`); add each printed deploy key to the camo-status repo (write access).
 - [ ] Check: `journalctl -u camod -f` shows the node waiting at height 1 (genesis only); `curl http://3.134.132.214:19749/get_info`
   from the Mac shows `"mainnet"` / `"restricted": true`.
 
@@ -127,6 +128,11 @@ identify users (watching the network is fine, tracking people is not).
       competing chains, splits, stalls, block 1 were already checked. Tests: `test_camo_health.sh` (rules + 12 network
       checks) ALL PASS 3/3.
 - [ ] Dec 14: `install-alarm.sh --mainnet` on both seeds (pulls the new `camo_health.py`).
+- [ ] Status feed (HOLD flag): Anthony creates the PUBLIC repo `camo-status` (with a README) before Dec 14; each seed's
+      `install-alarm.sh ... --status seed1|seed2` prints a deploy key to add there with write access. Check
+      https://camocoin.org/status.html shows ALL CLEAR from both seeds. HOLD (possible double-spend, split, deep reorg)
+      lasts 2 h; after checking the network, clear it early on each seed with `sudo touch /run/camo-status/clear-hold`.
+      Tell exchanges/pools about the feed when listing (status.html has the URLs and the suggested rule).
 - [x] Nov 19: ruleset "protect main" (Active; restrict deletions, block force pushes) on the default branch of `camo`,
       `ghillie-mobile` (both verified via the API), `ghillie` (screenshot) and `camo-website` (Anthony).
 - [x] Nov 19: on the same four public repos: private vulnerability reporting, Dependabot alerts, malware alerts,

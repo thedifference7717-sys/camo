@@ -25,7 +25,9 @@ w(){ curl -s "127.0.0.1:$WP/json_rpc" -d "{\"jsonrpc\":\"2.0\",\"id\":0,\"method
 py(){ python3 -c "import sys,json;r=json.load(sys.stdin);$1"; }
 height(){ curl -s "127.0.0.1:$1/get_info" | py "print(r['height'])"; }
 top(){ d "$1" get_last_block_header | py "print(r['result']['block_header']['hash'])"; }
-health(){ python3 "$HERE/camo_health.py" --regtest --min-peers 0 --state "$T/state.json" "a=http://127.0.0.1:$PA"; }
+health(){ python3 "$HERE/camo_health.py" --regtest --min-peers 0 --state "$T/state.json" --status-file "$T/status.json" \
+  --status-name a "$@" "a=http://127.0.0.1:$PA"; }
+feed(){ python3 -c "import json;d=json.load(open('$T/status.json'));print(d['status'], ' | '.join(d['reasons']))"; }
 
 start a $PA 28280 28290; start b $PB 28290 28280
 "$BIN/camo-wallet-rpc" --wallet-dir "$T" --rpc-bind-port $WP --disable-rpc-login --daemon-address "127.0.0.1:$PA" \
@@ -65,6 +67,15 @@ log "reconnected: both at height $(height $PA), Bob's payment gone"
 
 health > "$T/after"; RC=$?
 if [ $RC = 2 ] && grep -q "POSSIBLE DOUBLE-SPEND: tx $TX1" "$T/after" && grep -q "$TX2" "$T/after"; then
-  log "PASS: double-spend reported as CRIT"; sed -n '/DOUBLE-SPEND/p' "$T/after" | sed 's/^/    /'; exit 0
+  log "PASS: double-spend reported as CRIT"; sed -n '/DOUBLE-SPEND/p' "$T/after" | sed 's/^/    /'
+else
+  log "FAIL: expected CRIT naming both txs (exit $RC)"; sed 's/^/    /' "$T/after"; exit 1
 fi
-log "FAIL: expected CRIT naming both txs (exit $RC)"; sed 's/^/    /' "$T/after"; exit 1
+# The public status feed turns HOLD, stays HOLD on the next quiet run, and clears only by hand (or after 2 hours)
+F=0
+feed | grep -q "^HOLD .*$TX1" && log "PASS: status feed says HOLD, naming the tx" || { log "FAIL: feed: $(feed)"; F=1; }
+health >/dev/null; feed | grep -q "^HOLD" && log "PASS: HOLD stays on the next run" || { log "FAIL: feed: $(feed)"; F=1; }
+touch "$T/clear-hold"; health --clear-hold-file "$T/clear-hold" > "$T/cleared"
+feed | grep -q "^OK" && grep -q "cleared by hand" "$T/cleared" && [ ! -e "$T/clear-hold" ] \
+  && log "PASS: touching the clear-hold file clears it" || { log "FAIL: feed: $(feed)"; F=1; }
+exit $F
