@@ -49,12 +49,17 @@ Never pass `--allow-mismatched-daemon-version` in tests. Details: PROJECT-LOG.md
 - Stagenet seeds: Google 34.171.218.2, AWS 3.134.132.214 (phone RPC 39749, ntfy alarm). Both go mainnet Dec 14.
 - Release key fingerprint `5F1A 8350 C748 BC43 AD19 2472 AF13 7B28 E11A 0857` (backups on 2 encrypted USB sticks).
 
-## Open items (Nov 23)
+## Open items (Nov 24)
 - Swaps: 42/42 docker tests + first stagenet swap PASSED Nov 18 (camo-taker, iMac build); fixed CAMO price option added
   Nov 21 (camo-swap PR #6, try it live on stagenet); before a real maker: outside review, lawyer.
 - BitcoinTalk [ANN] ~Dec 1; marketing posts await Anthony's approval (campaign doc in PROJECT-LOG.md).
 - Signed release: rehearsed Nov 19 (iMac = GitHub on all 9 files; practice signing OK); real one at code freeze Dec 5.
   Explorer: prebuilt + deploy ready (PR #94), needs AWS console (ports 80/443) or another host.
-- AWS seed account: console login lost (not the project email); recover before Dec 14 (PROJECT-LOG.md).
+- AWS seed account: console login lost (root sign-in with the inbox that got the AWS welcome mail says "does not
+  exist"); recovery via AWS account-support form (Anthony to confirm sent). Fallback if still locked Dec 12:
+  MAINNET-LAUNCH.md D5 (`--public-rpc-port 39749`, explorer over Tor first).
 - Seals watch team (MAINNET-LAUNCH.md, panic page there too): GitHub protection DONE Nov 19 (4 public repos);
-  Seal Watch mainnet checks written Nov 20 (install on seeds Dec 14); Seal Code (Tue) and Seal Scout (Thu) scheduled weekly Nov 22; daily Dec 10-22.
+  Seal Watch on both stagenet seeds (phone alarm) with double-spend + block-burst checks and the public status feed
+  (OK/CAUTION/HOLD -> repo `camo-status`, camocoin.org/status.html; deploy keys seal-watch-seed1/2); HOLD drill passed
+  Nov 24; re-install with `--mainnet --status seedN` Dec 14 and drill again. camo-swap maker pauses on HOLD
+  (`seal_watch_urls`). Exchange guide: contrib/camo/EXCHANGE-GUIDE.md. Seal Code (Tue) and Seal Scout (Thu) weekly; daily Dec 10-22.
