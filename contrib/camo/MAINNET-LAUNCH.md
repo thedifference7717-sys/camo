@@ -47,6 +47,19 @@ AWS seed (free plan, no charges) carry most traffic.
 ### D4. Phone wallet node on mainnet: DECIDED Nov 15 (yes, AWS seed, port 19749)
 Same as stagenet: `--public-rpc` on the AWS seed (port **19749**), plus an AWS security-group rule for tcp 19749.
 
+### D5. If the AWS console is still locked on Dec 12 (fallback, prepared Nov 24)
+The AWS seed itself works (SSH key login); only its cloud firewall (security group) needs the console. It already
+allows 22, 19740, 39740 and 39749. Without the console:
+- **Phone node:** nothing is needed on Dec 14: Ghillie mobile is stagenet-only until its app-store release (Q1 2027).
+  For mainnet phones before then, use a port that is already open and freed when the seed leaves stagenet:
+  `deploy-seed-node.sh --binary ~/camod --public-rpc-port 39749 --limit-up 16` (mainnet RPC on 39749), and point the
+  app's mainnet default at `3.134.132.214:39749`.
+- **Explorer:** Tor first: `deploy-services.sh --explorer --explorer-prebuilt <tar.gz> --tor` needs no open port (the
+  onion address is printed; put it on the website). The clearnet `explorer.camocoin.org` waits for the console (80/443),
+  or for the Oracle ARM server.
+- **Recovery:** AWS account support form (no sign-in): account ID from the seed's instance metadata, contact = the
+  inbox that receives the account's AWS mail. Filed Nov 24.
+
 ## Timeline
 
 ### Now to Nov 30: stagenet
