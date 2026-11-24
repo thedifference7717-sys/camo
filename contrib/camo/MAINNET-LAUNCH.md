@@ -58,7 +58,7 @@ allows 22, 19740, 39740 and 39749. Without the console:
   onion address is printed; put it on the website). The clearnet `explorer.camocoin.org` waits for the console (80/443),
   or for the Oracle ARM server.
 - **Recovery:** AWS account support form (no sign-in): account ID from the seed's instance metadata, contact = the
-  inbox that receives the account's AWS mail. Filed Nov 24.
+  inbox that receives the account's AWS mail. Form prepared Nov 24 (Anthony to confirm it was sent).
 
 ## Timeline
 
