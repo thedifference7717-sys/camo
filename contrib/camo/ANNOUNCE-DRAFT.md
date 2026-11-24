@@ -48,6 +48,8 @@ published at launch.
 - **BTC to CAMO atomic swaps**: the full swap suite passes, and a real swap ran on the stagenet against Bitcoin testnet.
   Not live for real coins until an outside review.
 - **Ghillie for phones**: the real wallet runs on iPhone in testing (send, receive, Face ID, recovery sheet).
+- **The Seals' HOLD flag**: a live drill on the stagenet raised the alarm and turned the public status page to HOLD
+  within minutes, then cleared. A double-spend attempt is caught the same way in tests on a split network.
 
 - **Nov 10, 2026**: public stagenet opens (test network, worthless coins). Please help test.
 - **Dec 7, 2026**: signed release binaries and their hashes.
@@ -69,13 +71,17 @@ Seed nodes: 34.171.218.2:39740 and 3.134.132.214:39740 (both built into the soft
 
 ## Security
 Releases are reproducible and signed (two independent builders matched byte for byte). The Seals, CAMO's watch team,
-monitor the network around the clock for splits, deep reorgs and hashrate swings, and track Monero's security fixes.
+monitor the network around the clock for double-spend attempts, splits, deep reorgs, block bursts and hashrate swings,
+and track Monero's security fixes. On a possible attack they raise a public HOLD flag within minutes:
+https://camocoin.org/status.html, with a JSON feed exchanges and pools can poll to pause deposits automatically. The
+Seals watch and warn; nobody can pause or reverse the chain.
 Report problems privately: camocoin@proton.me or GitHub private vulnerability reporting.
 
 ## Links
 - Website: https://camocoin.org
 - Source: https://github.com/thedifference7717-sys/camo
 - White paper: https://camocoin.org/assets/CAMO-White-Paper.pdf
+- Network status (the Seals): https://camocoin.org/status.html
 - Block explorer and official pool: links posted here when their servers are live
 - Community: X https://x.com/CAMO_Coin (@CAMO_Coin), BitcoinTalk CAMO_Coin; more channels to follow
 - Security reports (private): camocoin@proton.me
