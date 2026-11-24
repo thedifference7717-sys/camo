@@ -448,6 +448,11 @@ Work moves to Claude Code from here; that session stops editing this repo.
   CLEAR. Two installer bugs found and fixed (PR #108: restart on re-install; no RuntimeDirectoryPreserve with
   DynamicUser). Seed 1 (Google) still to add (`--status seed1`, it has no alarm yet). Re-install both with
   `--mainnet --status seedN` on Dec 14 (same deploy keys).
+  Seed 1 (Google) added the same day: alarm + feed (`--status seed1`, deploy key `seal-watch-seed1`), first push OK.
+  camo-swap PR #7: maker pauses on HOLD (`[maker] seal_watch_urls`, fails closed when no seed reports).
+  **HOLD DRILL PASSED Nov 24 (stagenet)**: `sudo touch /run/camo-status/drill` on seed 2 -> phone alarm "DRILL" ->
+  camo-status "seed2: HOLD" within ~1 min -> status.html red "HOLD · DRILL" (~5 min: raw.githubusercontent caches
+  300 s) -> `sudo touch /run/camo-status/clear-hold` -> phone "back to OK" -> page ALL CLEAR. Repeat on mainnet Dec 14.
   **Nov 4 run 3 (with the 22 upstream fixes): PASS.** Block 1 allocation on a non-mining node; 3 nodes in sync at 20/35/86;
   node 2 caught up in ~1 s; block times first 20 avg 28 s, last 20 avg 65 s; miner saw 1,239.63 CAMO; 5 CAMO arrived.
   Same day, with the fix: `regtest-demo.sh` passed without the mismatch flag (Bob 12.345 CAMO, ring 16, amounts
