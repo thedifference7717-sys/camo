@@ -78,4 +78,10 @@ health >/dev/null; feed | grep -q "^HOLD" && log "PASS: HOLD stays on the next r
 touch "$T/clear-hold"; health --clear-hold-file "$T/clear-hold" > "$T/cleared"
 feed | grep -q "^OK" && grep -q "cleared by hand" "$T/cleared" && [ ! -e "$T/clear-hold" ] \
   && log "PASS: touching the clear-hold file clears it" || { log "FAIL: feed: $(feed)"; F=1; }
+# Drill: touching the drill file raises a CRIT "DRILL" finding and a HOLD labeled DRILL
+touch "$T/drill"; health --drill-file "$T/drill" > "$T/drill.out"; RC=$?
+[ $RC = 2 ] && grep -q "CRIT: DRILL" "$T/drill.out" && feed | grep -q "^HOLD DRILL" && [ ! -e "$T/drill" ] \
+  && log "PASS: drill raises CRIT and a HOLD labeled DRILL" || { log "FAIL: drill (exit $RC): $(feed)"; F=1; }
+touch "$T/clear-hold"; health --clear-hold-file "$T/clear-hold" >/dev/null
+feed | grep -q "^OK" && log "PASS: drill cleared" || { log "FAIL: drill not cleared: $(feed)"; F=1; }
 exit $F

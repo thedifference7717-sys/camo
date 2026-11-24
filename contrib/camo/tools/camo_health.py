@@ -376,7 +376,7 @@ def check(args, nodes, state):
 #   OK       nothing unusual
 # Both are sticky (HOLD for --hold-hours, CAUTION for 30 minutes after the last such finding), so a one-off alarm
 # doesn't clear on the next run. Nothing in it identifies anyone: txids and heights are public chain data.
-HOLD_ON = ('doublespend:', 'split', 'reorg:', 'alt:')        # at CRIT level
+HOLD_ON = ('doublespend:', 'split', 'reorg:', 'alt:', 'drill')  # at CRIT level ('drill': --drill-file)
 CAUTION_ON = ('doublespend:', 'split', 'reorg:', 'alt:', 'burst', 'hashrate', 'timestamps', 'vanished:')
 FEED = {0: 'OK', 1: 'CAUTION', 2: 'HOLD'}
 
@@ -478,6 +478,9 @@ def main():
                    help='HOLD stays on this long after the last critical finding (default 2)')
     p.add_argument('--clear-hold', action='store_true',
                    help='clear an active HOLD/CAUTION now (after a person has checked the network), then run')
+    p.add_argument('--drill-file', metavar='PATH',
+                   help='with --watch: when this file appears (sudo touch it), raise a CRIT "DRILL" finding once '
+                        '(phone alarm + HOLD in the status feed, labeled as a drill), then delete it')
     p.add_argument('--clear-hold-file', metavar='PATH',
                    help='with --watch: when this file appears (e.g. sudo touch it), clear HOLD/CAUTION and delete it')
     p.add_argument('--timeout', type=int, default=15, help='seconds per query (default 15)')
@@ -500,11 +503,20 @@ def main():
                 os.remove(args.clear_hold_file)
             except OSError as e:
                 print('could not remove %s: %s' % (args.clear_hold_file, e), file=sys.stderr)
+        drill = bool(args.drill_file) and os.path.exists(args.drill_file)
+        if drill:
+            try:
+                os.remove(args.drill_file)
+            except OSError as e:
+                print('could not remove %s: %s' % (args.drill_file, e), file=sys.stderr)
         cleared = args.clear_hold
         if cleared:
             state.pop('feed', None)
             args.clear_hold = False
         level, findings, lines, state = check(args, nodes, state)
+        if drill:
+            findings.append((CRIT, 'drill', 'DRILL: a test of the Seals\' alarm and HOLD flag, not a real problem'))
+            level = CRIT
         if cleared:
             lines.append('status feed: HOLD/CAUTION cleared by hand')
         if args.status_file:

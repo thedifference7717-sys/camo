@@ -25,7 +25,7 @@ curl -fsSL -o /usr/local/bin/camo_health.py "$RAW/camo_health.py"
 chmod 755 /usr/local/bin/camo_health.py
 NAME="$(hostname)"
 FEED=""
-[ -z "$STATUS_NAME" ] || FEED="--status-file /run/camo-status/status.json --status-name $STATUS_NAME --clear-hold-file /run/camo-status/clear-hold"
+[ -z "$STATUS_NAME" ] || FEED="--status-file /run/camo-status/status.json --status-name $STATUS_NAME --clear-hold-file /run/camo-status/clear-hold --drill-file /run/camo-status/drill"
 cat > /etc/systemd/system/camo-alarm.service <<EOF
 [Unit]
 Description=CAMO network alarm (camo_health.py -> ntfy.sh/$TOPIC)
@@ -104,3 +104,4 @@ cat "$KEY.pub"
 echo
 echo "    Logs: journalctl -u camo-status-publish -f"
 echo "    After checking the network, clear a HOLD with: sudo touch /run/camo-status/clear-hold (takes effect within 2 minutes)"
+echo "    Drill (test HOLD + phone alarm, labeled DRILL): sudo touch /run/camo-status/drill"

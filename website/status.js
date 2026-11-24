@@ -13,6 +13,8 @@
       'Services should wait for extra confirmations (30 or more) before crediting deposits.'],
     HOLD: ['HOLD DEPOSITS', 'The Seals saw a possible attack (a double-spend attempt or a deep chain reorganization). ' +
       'Services should not credit CAMO deposits until this clears. Coins already in your wallet are not affected.'],
+    DRILL: ['HOLD · DRILL', 'This is a scheduled test of the Seals\' HOLD flag, not a real problem. Services that ' +
+      'follow the flag pause deposits for the drill, exactly as they would for a real alarm.'],
     UNKNOWN: ['NOT REPORTING', 'No seed has reported in the last 45 minutes. The status feed starts with mainnet on ' +
       'December 14, 2026; after that, this means the watch itself needs attention.']
   };
@@ -58,8 +60,15 @@
       list.appendChild(li);
     });
     var key = overall || 'UNKNOWN';
+    if (key === 'HOLD') {
+      var holdReasons = [];
+      results.forEach(function (d) {
+        if (d && d.status === 'HOLD' && now - d.updated < STALE) holdReasons = holdReasons.concat(d.reasons || []);
+      });
+      if (holdReasons.length && holdReasons.every(function (r) { return String(r).indexOf('DRILL') === 0; })) key = 'DRILL';
+    }
     var box = el('status');
-    box.className = 'status-box st-' + key.toLowerCase();
+    box.className = 'status-box st-' + (key === 'DRILL' ? 'hold' : key.toLowerCase());
     el('status-word').textContent = TEXT[key][0];
     el('status-text').textContent = TEXT[key][1];
     el('checked').textContent = 'Checked ' + new Date().toUTCString().replace('GMT', 'UTC') + '. Refreshes every minute.';
