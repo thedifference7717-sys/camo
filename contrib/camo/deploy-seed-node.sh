@@ -8,13 +8,14 @@
 #   --public-rpc    also serve a RESTRICTED wallet RPC to the internet (port 19749 mainnet / 39749 stagenet) so phone
 #                   wallets (Ghillie mobile) can sync. Restricted = view-only calls, no admin commands, capped
 #                   connections. The full RPC stays on localhost. Uses upload bandwidth: mind free-tier egress limits.
+#   --public-rpc-port N   serve that restricted RPC on port N instead (e.g. a port the cloud firewall already allows)
 #
 # Security defaults: firewall (only SSH + CAMO P2P open), RPC bound to localhost, SSH key-only login (only if a key
 # is already installed, so you can't lock yourself out), fail2ban, automatic security updates, camod runs as an
 # unprivileged sandboxed user.
 set -euo pipefail
 
-BINARY=""; REPO=""; BRANCH="main"; NET="mainnet"; LIMIT_UP=""; PUBLIC_RPC=""
+BINARY=""; REPO=""; BRANCH="main"; NET="mainnet"; LIMIT_UP=""; PUBLIC_RPC=""; PUB_OVERRIDE=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --binary) BINARY="$2"; shift 2 ;;
@@ -23,11 +24,15 @@ while [ $# -gt 0 ]; do
     --stagenet) NET="stagenet"; shift ;;
     --limit-up) LIMIT_UP="$2"; shift 2 ;;
     --public-rpc) PUBLIC_RPC=1; shift ;;
+    --public-rpc-port) PUBLIC_RPC=1; PUB_OVERRIDE="$2"; shift 2 ;;
     *) echo "unknown option $1"; exit 1 ;;
   esac
 done
 [ -n "$BINARY" ] || [ -n "$REPO" ] || { echo "pass --binary <path-to-camod> or --repo <git-url>"; exit 1; }
 if [ "$NET" = "stagenet" ]; then P2P=39740; RPC=39741; PUB=39749; NETFLAG="--stagenet"; else P2P=19740; RPC=19741; PUB=19749; NETFLAG=""; fi
+[ -z "$PUB_OVERRIDE" ] || { [[ "$PUB_OVERRIDE" =~ ^[0-9]{2,5}$ ]] && [ "$PUB_OVERRIDE" != "$P2P" ] && [ "$PUB_OVERRIDE" != "$RPC" ]; } \
+  || { echo "--public-rpc-port: a free port number, not $P2P or $RPC"; exit 1; }
+[ -z "$PUB_OVERRIDE" ] || PUB=$PUB_OVERRIDE
 PUBLIC_ARGS=""
 [ -n "$PUBLIC_RPC" ] && PUBLIC_ARGS=" --rpc-restricted-bind-ip 0.0.0.0 --rpc-restricted-bind-port $PUB --confirm-external-bind --rpc-max-connections-per-public-ip 4 --rpc-max-connections 64"
 
