@@ -463,6 +463,8 @@ Work moves to Claude Code from here; that session stops editing this repo.
   eyes, code screen, mint), Seal Scout (twigs, spyglass, magnifier badge, amber). Not LEGO figures (protected design):
   own shapes. `contrib/camo/branding/seals/make_seals.py` redraws them (fixed seeds); `website/assets/seals/*.svg`;
   "Meet the Seals" on status.html (3 cards desktop, stacked on phones).
+  **Nov 25: first Seals post on X** (@CAMO_Coin, posted by Anthony): "Meet the Seals, CAMO's watch team..." + banner
+  "ON WATCH." (2400x1350, the three Seals, link camocoin.org/status.html; made from the site's fonts and the mascot SVGs).
   **Nov 4 run 3 (with the 22 upstream fixes): PASS.** Block 1 allocation on a non-mining node; 3 nodes in sync at 20/35/86;
   node 2 caught up in ~1 s; block times first 20 avg 28 s, last 20 avg 65 s; miner saw 1,239.63 CAMO; 5 CAMO arrived.
   Same day, with the fix: `regtest-demo.sh` passed without the mismatch flag (Bob 12.345 CAMO, ring 16, amounts
