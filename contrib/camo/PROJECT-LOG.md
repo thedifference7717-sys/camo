@@ -458,6 +458,11 @@ Work moves to Claude Code from here; that session stops editing this repo.
   (facts checked against cryptonote_config.h, confirmations policy, status-feed snippet tested against the live feed).
   AWS: account ID read from the seed's instance metadata; the Nov 13 "Welcome to AWS" mail is in the project inbox but
   root sign-in with that address still says "does not exist"; recovery via the AWS account-support form (to confirm).
+  **Nov 25: Seal mascots** (Anthony: "way better"): three original blocky robots in ghillie suits, in action poses with
+  elbow/knee joints: Seal Watch (radar dish, one lens eye, heartbeat badge, amber), Seal Code (two antennas, `< >`
+  eyes, code screen, mint), Seal Scout (twigs, spyglass, magnifier badge, amber). Not LEGO figures (protected design):
+  own shapes. `contrib/camo/branding/seals/make_seals.py` redraws them (fixed seeds); `website/assets/seals/*.svg`;
+  "Meet the Seals" on status.html (3 cards desktop, stacked on phones).
   **Nov 4 run 3 (with the 22 upstream fixes): PASS.** Block 1 allocation on a non-mining node; 3 nodes in sync at 20/35/86;
   node 2 caught up in ~1 s; block times first 20 avg 28 s, last 20 avg 65 s; miner saw 1,239.63 CAMO; 5 CAMO arrived.
   Same day, with the fix: `regtest-demo.sh` passed without the mismatch flag (Bob 12.345 CAMO, ring 16, amounts

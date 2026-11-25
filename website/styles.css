@@ -239,3 +239,11 @@ pre code{background:none;border:0;padding:0;font-size:13px;color:var(--text);whi
 .st-unknown{border-left-color:var(--text-3)}.st-unknown .status-word{color:var(--text-3)}
 .seed-list{margin:0;padding-left:18px;font-family:var(--mono);font-size:13px;color:var(--text-2);line-height:1.7}
 .seed-list ul{padding-left:18px;color:var(--text-3)}
+
+/* the Seals (status.html) */
+.seals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin:24px 0 12px}
+.seal{margin:0;border:1px solid var(--line-2);background:var(--panel);padding:16px;display:flex;flex-direction:column;gap:12px}
+.seal img{width:100%;height:auto;max-height:300px;object-fit:contain}
+.seal figcaption{font-size:15px;line-height:1.55;color:var(--text-2)}
+.seal figcaption strong{display:block;font-family:var(--display);font-size:20px;letter-spacing:.06em;color:var(--text);margin-bottom:4px;text-transform:uppercase}
+@media (max-width:760px){.seals{grid-template-columns:1fr}.seal{flex-direction:row;align-items:center}.seal img{width:38%;max-height:200px}}
