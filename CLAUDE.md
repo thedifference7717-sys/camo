@@ -56,7 +56,7 @@ Never pass `--allow-mismatched-daemon-version` in tests. Details: PROJECT-LOG.md
 - Signed release: rehearsed Nov 19 (iMac = GitHub on all 9 files; practice signing OK); real one at code freeze Dec 5.
   Explorer: prebuilt + deploy ready (PR #94), needs AWS console (ports 80/443) or another host.
 - AWS seed account: console login lost (root sign-in with the inbox that got the AWS welcome mail says "does not
-  exist"); recovery via AWS account-support form (Anthony to confirm sent). Fallback if still locked Dec 12:
+  exist"); recovery form SENT Nov 24, awaiting reply. Fallback if still locked Dec 12:
   MAINNET-LAUNCH.md D5 (`--public-rpc-port 39749`, explorer over Tor first).
 - Seals watch team (MAINNET-LAUNCH.md, panic page there too): GitHub protection DONE Nov 19 (4 public repos);
   Seal Watch on both stagenet seeds (phone alarm) with double-spend + block-burst checks and the public status feed
