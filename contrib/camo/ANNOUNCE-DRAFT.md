@@ -1,8 +1,12 @@
-<!-- DRAFT for Anthony to review. Not posted anywhere. Numbers match CLAUDE.md, ALLOCATION.md and the website.
+<!-- DRAFT for Anthony to review. BBCode to paste: contrib/camo/ANNOUNCE-BBCODE.txt (regenerate with tools/ann_to_bbcode.py). Not posted anywhere. Numbers match CLAUDE.md, ALLOCATION.md and the website.
      Placeholders filled Nov 13; progress section updated Nov 23; re-check numbers and links before posting. BitcoinTalk uses BBCode; this is plain text with light formatting
      that pastes cleanly, convert headings to [b]...[/b] if you like. -->
 
-# [ANN][CAMO] CAMO: private digital cash | RandomX CPU mining | fair launch Dec 15, 2026 18:00 UTC | public stagenet open
+![CAMO|160](https://camocoin.org/assets/camo-logo-512.png)
+
+# [ANN][CAMO] CAMO: private digital cash | RandomX CPU | Fair launch Dec 15, 2026
+
+**Fair launch: Dec 15, 2026, 18:00 UTC. Public stagenet open now.**
 
 **Hidden in plain sight.** CAMO is digital cash that hides the sender, the receiver and the amount of every
 payment, with no opt-in and no exceptions. It runs Monero's audited privacy technology, unchanged.
@@ -51,6 +55,7 @@ published at launch.
 - **The Seals' HOLD flag**: a live drill on the stagenet raised the alarm and turned the public status page to HOLD
   within minutes, then cleared. A double-spend attempt is caught the same way in tests on a split network.
 
+## Roadmap
 - **Nov 10, 2026**: public stagenet opens (test network, worthless coins). Please help test.
 - **Dec 7, 2026**: signed release binaries and their hashes.
 - **Dec 15, 2026, 18:00 UTC**: mainnet. Anyone can mine from the first block. Every block must be dated 18:00 UTC or
@@ -70,11 +75,18 @@ Build from source or use the test binaries, start a node, make a test wallet, mi
 Seed nodes: 34.171.218.2:39740 and 3.134.132.214:39740 (both built into the software)
 
 ## Security
+![The Seals: Watch, Code and Scout|800](https://camocoin.org/assets/seals/seals-banner.png)
+
 Releases are reproducible and signed (two independent builders matched byte for byte). The Seals, CAMO's watch team,
 monitor the network around the clock for double-spend attempts, splits, deep reorgs, block bursts and hashrate swings,
 and track Monero's security fixes. On a possible attack they raise a public HOLD flag within minutes:
 https://camocoin.org/status.html, with a JSON feed exchanges and pools can poll to pause deposits automatically. The
 Seals watch and warn; nobody can pause or reverse the chain.
+
+Release signing key: `CAMO release signing <camocoin@proton.me>`, fingerprint
+`5F1A 8350 C748 BC43 AD19 2472 AF13 7B28 E11A 0857` (https://camocoin.org/assets/camo-release.asc, keys.openpgp.org).
+How to check a download: https://camocoin.org/verify.html
+
 Report problems privately: camocoin@proton.me or GitHub private vulnerability reporting.
 
 ## Links
