@@ -552,6 +552,7 @@ namespace rct {
             addKeys(C, C, sig.Ci[i]);
         }
         sig.asig = genBorromean(ai, sig.Ci, CiH, b);
+        memwipe(ai, sizeof(ai));
         return sig;
     }
 

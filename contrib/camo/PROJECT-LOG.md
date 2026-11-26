@@ -465,6 +465,13 @@ Work moves to Claude Code from here; that session stops editing this repo.
   "Meet the Seals" on status.html (3 cards desktop, stacked on phones).
   **Nov 25: first Seals post on X** (@CAMO_Coin, posted by Anthony): "Meet the Seals, CAMO's watch team..." + banner
   "ON WATCH." (2400x1350, the three Seals, link camocoin.org/status.html; made from the site's fonts and the mascot SVGs).
+  **Nov 26: upstream fixes** (check_upstream.sh: release-v0.18 still v0.18.5.4 = our base, 0 new; master fixes since
+  our last merge): cherry-picked -x 5a0757e40 (epee TCP accept hardening), a3ba0122c (multisig participant count),
+  dfc246116 (block template median on the tip), 742bc14c5 (memory wipes of secret scalars; outputs unchanged),
+  77a724649 (yearly mining estimate), fccaccbc8 (static analysis: virtual dtors, dead decls), e5c90071e (trezor ack),
+  8e3066248 (warning); plus "CAMO daily/monthly" wording in mining_status. No consensus or crypto-algorithm change.
+  Tests on the new build: unit 1276 pass + the 7 known failures; test_camo_health.sh ALL PASS; test_double_spend.sh 6/6;
+  regtest-demo (12.345 sent, ring 16, amounts hidden); attack_block1.py ALL PASS.
   **Nov 4 run 3 (with the 22 upstream fixes): PASS.** Block 1 allocation on a non-mining node; 3 nodes in sync at 20/35/86;
   node 2 caught up in ~1 s; block times first 20 avg 28 s, last 20 avg 65 s; miner saw 1,239.63 CAMO; 5 CAMO arrived.
   Same day, with the fix: `regtest-demo.sh` passed without the mismatch flag (Bob 12.345 CAMO, ring 16, amounts

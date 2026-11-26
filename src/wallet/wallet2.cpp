@@ -1004,17 +1004,13 @@ bool get_pruned_tx(const cryptonote::COMMAND_RPC_GET_TRANSACTIONS::entry &entry,
 
 // Given M (threshold) and N (total), calculate the number of private multisig keys each
 // signer should have. This value is equal to (N - 1) choose (N - M)
-// Prereq: M >= 1 && N >= M && N <= 16
+// Prereq: M >= 1 && N >= M && N <= config::MULTISIG_MAX_SIGNERS
 uint64_t num_priv_multisig_keys_post_setup(uint64_t threshold, uint64_t total)
 {
-  THROW_WALLET_EXCEPTION_IF(threshold < 1 || total < threshold || threshold > 16,
+  THROW_WALLET_EXCEPTION_IF(threshold < 1 || total < threshold || total > config::MULTISIG_MAX_SIGNERS,
     tools::error::wallet_internal_error, "Invalid arguments to num_priv_multisig_keys_post_setup");
 
-  uint64_t n_multisig_keys = 1;
-  for (uint64_t i = 2; i <= total - 1; ++i) n_multisig_keys *= i; // multiply by (N - 1)!
-  for (uint64_t i = 2; i <= total - threshold; ++i) n_multisig_keys /= i; // divide by (N - M)!
-  for (uint64_t i = 2; i <= threshold - 1; ++i) n_multisig_keys /= i; // divide by ((N - 1) - (N - M))!
-  return n_multisig_keys;
+  return tools::combinations_count(total - threshold, total - 1);
 }
 
 /**
@@ -5716,7 +5712,7 @@ void wallet2::generate(const std::string& wallet_, const epee::wipeable_string& 
 
   THROW_WALLET_EXCEPTION_IF(threshold < 1, error::invalid_multisig_seed);
   THROW_WALLET_EXCEPTION_IF(total < threshold, error::invalid_multisig_seed);
-  THROW_WALLET_EXCEPTION_IF(threshold > 16, error::invalid_multisig_seed); // doing N choose (N - M + 1) might overflow
+  THROW_WALLET_EXCEPTION_IF(total > config::MULTISIG_MAX_SIGNERS, error::invalid_multisig_seed);
   const uint64_t n_multisig_keys = num_priv_multisig_keys_post_setup(threshold, total);
   THROW_WALLET_EXCEPTION_IF(multisig_data.size() != 8 + 32 * (4 + n_multisig_keys + total), error::invalid_multisig_seed);
 
@@ -7245,7 +7241,7 @@ uint64_t wallet2::unlocked_balance_all(bool strict, uint64_t *blocks_to_unlock, 
     *time_to_unlock = 0;
   for (uint32_t index_major = 0; index_major < get_num_subaddress_accounts(); ++index_major)
   {
-    uint64_t local_blocks_to_unlock, local_time_to_unlock;
+    uint64_t local_blocks_to_unlock = 0, local_time_to_unlock = 0;
     r += unlocked_balance(index_major, strict, blocks_to_unlock ? &local_blocks_to_unlock : NULL, time_to_unlock ? &local_time_to_unlock : NULL);
     if (blocks_to_unlock)
       *blocks_to_unlock = std::max(*blocks_to_unlock, local_blocks_to_unlock);
