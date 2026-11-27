@@ -478,6 +478,8 @@ Work moves to Claude Code from here; that session stops editing this repo.
   so camo-swap now carries a patched copy: vendor/electrum-client (CAMO-PATCH.md: wait at most 1 s, then retry; no
   protocol or crypto change). Patched build: all 55/55 docker tests PASS, no hangs. Seal gate unchanged.
   Docker suite tip: delete each test binary after its run (target/debug/deps/<test>-*), or the disk fills.
+  **Nov 27: [ANN] draft APPROVED by Anthony** ("i like it"). Post ~Dec 1 in Altcoin Announcements as CAMO_Coin.
+  Newbie rank cannot post images: use ANNOUNCE-BBCODE-NOIMG.txt (images as links) unless the rank allows [img].
   **Nov 4 run 3 (with the 22 upstream fixes): PASS.** Block 1 allocation on a non-mining node; 3 nodes in sync at 20/35/86;
   node 2 caught up in ~1 s; block times first 20 avg 28 s, last 20 avg 65 s; miner saw 1,239.63 CAMO; 5 CAMO arrived.
   Same day, with the fix: `regtest-demo.sh` passed without the mismatch flag (Bob 12.345 CAMO, ring 16, amounts

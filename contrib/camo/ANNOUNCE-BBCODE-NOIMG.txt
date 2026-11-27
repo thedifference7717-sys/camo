@@ -1,0 +1,88 @@
+Subject: [ANN][CAMO] CAMO: private digital cash | RandomX CPU | Fair launch Dec 15, 2026
+
+[center][url=https://camocoin.org/assets/camo-logo-512.png]CAMO logo[/url][/center]
+
+[center][size=18pt][b][ANN][CAMO] CAMO: private digital cash | RandomX CPU | Fair launch Dec 15, 2026[/b][/size][/center]
+
+[b]Fair launch: Dec 15, 2026, 18:00 UTC. Public stagenet open now.[/b]
+
+[b]Hidden in plain sight.[/b] CAMO is digital cash that hides the sender, the receiver and the amount of every payment, with no opt-in and no exceptions. It runs Monero's audited privacy technology, unchanged.
+
+[size=14pt][b]Why another coin?[/b][/size]
+CAMO is a deliberately conservative Monero fork: the cryptography and consensus code are Monero's v0.18, kept as-is. What changes is parameters (name, ports, addresses, genesis, 1-minute blocks) and a launch done in the open: a public stagenet first, one disclosed allocation, and its own desktop wallet, Ghillie, ready on launch day.
+
+[size=14pt][b]Specs[/b][/size]
+[table]
+[tr][td]Ticker[/td][td]CAMO[/td][/tr]
+[tr][td]Proof of work[/td][td]RandomX (CPU), XMRig: [tt]-a rx/0[/tt][/td][/tr]
+[tr][td]Block time[/td][td]60 seconds[/td][/tr]
+[tr][td]Main emission[/td][td]18.13M CAMO over ~8 years, ~17 CAMO per block at launch[/td][/tr]
+[tr][td]Tail emission[/td][td]0.3 CAMO per block, forever (miners are always paid)[/td][/tr]
+[tr][td]Privacy[/td][td]Ring signatures (ring size 16, CLSAG), stealth addresses, RingCT + Bulletproofs+, Dandelion++, Tor/I2P support[/td][/tr]
+[tr][td]Addresses[/td][td]mainnet start with [tt]C[/tt], stagenet with [tt]Q[/tt][/td][/tr]
+[tr][td]Ports[/td][td]P2P 19740, RPC 19741 (stagenet 39740/39741)[/td][/tr]
+[tr][td]Code base[/td][td]Monero v0.18.5.4 (BSD-3), plus Monero's later bug and security fixes[/td][/tr]
+[/table]
+
+[size=14pt][b]Allocation: disclosed, fixed by consensus, partly burned[/b][/size]
+There is no pre-sale. Block 1 (the first mined block) carries a single allocation, enforced by consensus so it cannot be changed or added to:
+
+[table]
+[tr][td][/td][td][b]Amount[/b][/td][td][b]Share of main emission[/b][/td][/tr]
+[tr][td]Founder[/td][td]489,600 CAMO[/td][td]2.7%[/td][/tr]
+[tr][td]Marketing (public wallet)[/td][td]54,400 CAMO[/td][td]0.3%[/td][/tr]
+[tr][td]Burned (provably unspendable)[/td][td]96,000 CAMO[/td][td][/td][/tr]
+[/table]
+
+Whoever mines block 1 receives nothing for it; every block after pays the miner in full. The burn address and its public view key are published so anyone can audit it: [tt]Cdqd3jC3ocP6H1BX4G2Uis8qVYj6ddShVfqGaxkvCE64YEgGgZTt5RjLZ4toVBJ3pae1HJR1AcWQxBmSRi55ePTv4dxHzs8[/tt], view key [tt]4846a9442b62be63ac514878acb76bc3ede0468f7f3d3b0710d191fcedf57f09[/tt]. Founder and marketing view keys are published at launch.
+
+[size=14pt][b]Tested before launch (on the public stagenet and in the open)[/b][/size]
+[list]
+[li][b]Reproducible releases[/b]: two independent builders produced byte-identical binaries for Linux, Windows and macOS, and the hash list is signed with the release key below. Anyone can rebuild and compare.[/li]
+[li][b]Launch rehearsals[/b]: block 1 allocation, nodes going offline and catching up, block times settling toward 60 s, private sends, and an attack test that tries to change block 1 (every attempt rejected).[/li]
+[li][b]BTC to CAMO atomic swaps[/b]: the full swap suite passes, and a real swap ran on the stagenet against Bitcoin testnet. Not live for real coins until an outside review.[/li]
+[li][b]Ghillie for phones[/b]: the real wallet runs on iPhone in testing (send, receive, Face ID, recovery sheet).[/li]
+[li][b]The Seals' HOLD flag[/b]: a live drill on the stagenet raised the alarm and turned the public status page to HOLD within minutes, then cleared. A double-spend attempt is caught the same way in tests on a split network.[/li]
+[/list]
+
+[size=14pt][b]Roadmap[/b][/size]
+[list]
+[li][b]Nov 10, 2026[/b]: public stagenet opens (test network, worthless coins). Please help test.[/li]
+[li][b]Dec 7, 2026[/b]: signed release binaries and their hashes.[/li]
+[li][b]Dec 15, 2026, 18:00 UTC[/b]: mainnet. Anyone can mine from the first block. Every block must be dated 18:00 UTC or later; nodes accept blocks dated up to 2 hours ahead, so in practice mining opens at about [b]16:00 UTC[/b]. We say it here so nobody has an insider head start.[/li]
+[li][b]Dec 15, 2026[/b]: Ghillie desktop wallet (Mac, Windows, Linux) ships with the launch downloads.[/li]
+[li][b]Q1 2027[/b]: Ghillie for phones, "mine while idle", control mining on your own computers from your phone.[/li]
+[li][b]Q2 2027[/b]: BTC to CAMO atomic swaps in Ghillie, merchant checkout plugins.[/li]
+[li][b]Later[/b]: FCMP++ (every spend hidden among every coin on the chain) once it is audited and live on Monero.[/li]
+[/list]
+
+[size=14pt][b]Mining[/b][/size]
+Any modern CPU. Solo with your own node or Ghillie, solo with XMRig, or the official pool once it is online (1% fee to the public marketing wallet, PPLNS; link posted here). Mining needs free memory: close heavy apps if your hash rate drops to 0. Guide: [url]https://camocoin.org/mine.html[/url]
+
+[size=14pt][b]Join the stagenet[/b][/size]
+Build from source or use the test binaries, start a node, make a test wallet, mine, send: [url]https://camocoin.org/stagenet.html[/url] Seed nodes: 34.171.218.2:39740 and 3.134.132.214:39740 (both built into the software)
+
+[size=14pt][b]Security[/b][/size]
+[center][url=https://camocoin.org/assets/seals/seals-banner.png]The Seals, CAMO's watch team (image)[/url][/center]
+
+Releases are reproducible and signed (two independent builders matched byte for byte). The Seals, CAMO's watch team, monitor the network around the clock for double-spend attempts, splits, deep reorgs, block bursts and hashrate swings, and track Monero's security fixes. On a possible attack they raise a public HOLD flag within minutes: [url]https://camocoin.org/status.html[/url], with a JSON feed exchanges and pools can poll to pause deposits automatically. The Seals watch and warn; nobody can pause or reverse the chain.
+
+Release signing key: [tt]CAMO release signing <camocoin@proton.me>[/tt], fingerprint [tt]5F1A 8350 C748 BC43 AD19 2472 AF13 7B28 E11A 0857[/tt] ([url]https://camocoin.org/assets/camo-release.asc[/url], keys.openpgp.org). How to check a download: [url]https://camocoin.org/verify.html[/url]
+
+Report problems privately: camocoin@proton.me or GitHub private vulnerability reporting.
+
+[size=14pt][b]Links[/b][/size]
+[list]
+[li]Website: [url]https://camocoin.org[/url][/li]
+[li]Source: [url]https://github.com/thedifference7717-sys/camo[/url][/li]
+[li]White paper: [url]https://camocoin.org/assets/CAMO-White-Paper.pdf[/url][/li]
+[li]Network status (the Seals): [url]https://camocoin.org/status.html[/url][/li]
+[li]Block explorer and official pool: links posted here when their servers are live[/li]
+[li]Community: X [url]https://x.com/CAMO_Coin[/url] (@CAMO_Coin), BitcoinTalk CAMO_Coin; more channels to follow[/li]
+[li]Security reports (private): camocoin@proton.me[/li]
+[/list]
+
+[size=14pt][b]Credits[/b][/size]
+CAMO is built on the work of the Monero Project and the CryptoNote developers. Their copyright notices and BSD-3 license are kept in full. Mistakes in CAMO are ours, not theirs.
+
+[i]Not an offer to sell anything and not investment advice. Follow the laws where you live.[/i]
