@@ -480,6 +480,10 @@ Work moves to Claude Code from here; that session stops editing this repo.
   Docker suite tip: delete each test binary after its run (target/debug/deps/<test>-*), or the disk fills.
   **Nov 27: [ANN] draft APPROVED by Anthony** ("i like it"). Post ~Dec 1 in Altcoin Announcements as CAMO_Coin.
   Newbie rank cannot post images: use ANNOUNCE-BBCODE-NOIMG.txt (images as links) unless the rank allows [img].
+  Nov 27: Anthony's BitcoinTalk rank is Newbie -> post the NOIMG copy.
+  **Nov 27: second stagenet swap PASSED** (camo-swap PR #9): iMac updated from the GitHub ZIP (rsync over ~/camo-swap,
+  keeping target/ and monero-sys/monero*), rebuild 9 min; asb with fixed_price_btc 0.001 + seal_watch_urls ("network OK,
+  quoting again"); camo-taker bought 0.0946 CAMO for 0.0001 tBTC in ~34 min. First live run of 5.0.5, fixed price, Seal gate.
   **Nov 4 run 3 (with the 22 upstream fixes): PASS.** Block 1 allocation on a non-mining node; 3 nodes in sync at 20/35/86;
   node 2 caught up in ~1 s; block times first 20 avg 28 s, last 20 avg 65 s; miner saw 1,239.63 CAMO; 5 CAMO arrived.
   Same day, with the fix: `regtest-demo.sh` passed without the mismatch flag (Bob 12.345 CAMO, ring 16, amounts
