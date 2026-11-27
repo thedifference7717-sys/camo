@@ -50,7 +50,7 @@ Never pass `--allow-mismatched-daemon-version` in tests. Details: PROJECT-LOG.md
 - Release key fingerprint `5F1A 8350 C748 BC43 AD19 2472 AF13 7B28 E11A 0857` (backups on 2 encrypted USB sticks).
 
 ## Open items (Nov 24)
-- Swaps: 42/42 docker tests + first stagenet swap PASSED Nov 18 (camo-taker, iMac build); fixed CAMO price option added
+- Swaps: eigenwallet 5.0.5 + electrum-client hang patch merged Nov 27 (55/55 docker tests). 42/42 docker tests + first stagenet swap PASSED Nov 18 (camo-taker, iMac build); fixed CAMO price option added
   Nov 21 (camo-swap PR #6, try it live on stagenet); before a real maker: outside review, lawyer.
 - BitcoinTalk [ANN] ~Dec 1; marketing posts await Anthony's approval (campaign doc in PROJECT-LOG.md).
 - Signed release: rehearsed Nov 19 (iMac = GitHub on all 9 files; practice signing OK); real one at code freeze Dec 5.

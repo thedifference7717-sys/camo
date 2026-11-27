@@ -472,6 +472,12 @@ Work moves to Claude Code from here; that session stops editing this repo.
   8e3066248 (warning); plus "CAMO daily/monthly" wording in mining_status. No consensus or crypto-algorithm change.
   Tests on the new build: unit 1276 pass + the 7 known failures; test_camo_health.sh ALL PASS; test_double_spend.sh 6/6;
   regtest-demo (12.345 sent, ring 16, amounts hidden); attack_block1.py ALL PASS.
+  **Nov 27: camo-swap on eigenwallet 5.0.5** (camo-swap PR #8, merged): upstream 5.0.5 (highest Electrum tip for
+  block height, Monero RPC pool idle-connection fix, no onion dials without Tor, 2 h rendezvous TTL). 5.0.5 made a race
+  in electrum-client 0.24.1 show up (RawClient::recv waits forever after a missed WakeUp; 3 of 34 docker tests hung),
+  so camo-swap now carries a patched copy: vendor/electrum-client (CAMO-PATCH.md: wait at most 1 s, then retry; no
+  protocol or crypto change). Patched build: all 55/55 docker tests PASS, no hangs. Seal gate unchanged.
+  Docker suite tip: delete each test binary after its run (target/debug/deps/<test>-*), or the disk fills.
   **Nov 4 run 3 (with the 22 upstream fixes): PASS.** Block 1 allocation on a non-mining node; 3 nodes in sync at 20/35/86;
   node 2 caught up in ~1 s; block times first 20 avg 28 s, last 20 avg 65 s; miner saw 1,239.63 CAMO; 5 CAMO arrived.
   Same day, with the fix: `regtest-demo.sh` passed without the mismatch flag (Bob 12.345 CAMO, ring 16, amounts
